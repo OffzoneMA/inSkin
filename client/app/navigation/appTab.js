@@ -3,6 +3,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import BrowseNavigator from "./browse";
 import HomeNavigator from "./home";
 import ProfileNavigator from "./profile";
+import ScanNavigator from "./scan";
 import {
   BottomNavigation,
   BottomNavigationTab,
@@ -52,7 +53,7 @@ export default function AppTabNavigator() {
         />
         <Tab.Screen
           name="Home"
-          component={HomeNavigator}
+          component={ScanNavigator}
           options={{
             tabBarIcon: ({ size, color }) => (
               <MaterialCommunityIcons
