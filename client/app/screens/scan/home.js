@@ -22,7 +22,7 @@ export default function Home({ navigation }) {
   const [isFocus, setFocus] = useState(false);
   const [value, setValue] = useState(0);
 
-  /* const { setQrcode } = useContext(AppContext); */
+  const { setQrcode } = useContext(AppContext);
 
   const toggleFlashlight = async () => {
     setFlashlightOn(!flashlightOn);
@@ -39,7 +39,7 @@ export default function Home({ navigation }) {
           result.assets[0].uri
         );
         if (scanResult.length > 0) {
-          /* setQrcode({ date: new Date(), qr: scanResult[0] }); */
+          setQrcode({ date: new Date(), qr: scanResult[0] });
 
           navigation.navigate("Details");
         } else {

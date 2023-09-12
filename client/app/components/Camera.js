@@ -1,4 +1,4 @@
-import { Button, StyleSheet, View, Text, Pressable } from "react-native";
+import { Button, StyleSheet, View, Text, Pressable, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useState, useContext, useEffect } from "react";
 import { BarCodeScanner } from "expo-barcode-scanner";
@@ -12,19 +12,20 @@ export default function Cam({ flash, zoom }) {
   const [permission, requestPermission] = Camera.useCameraPermissions();
   const [scanned, setScanned] = useState(false);
 
-  /* const { setQrcode } = useContext(AppContext); */
+  const { setQrcode } = useContext(AppContext);
 
   const navigation = useNavigation();
 
   const handleBarcodeScanned = (qr) => {
     setScanned(true);
-    /* setQrcode({ date: new Date(), qr }); */
+    setQrcode({ date: new Date(), qr });
+    Alert.alert("Alert Title", qr.data);
   };
-
+/* 
   useEffect(() => {
     if (scanned) navigation.push("Details");
   }, [scanned]);
-
+ */
   // Camera permissions are still loading
   if (!permission) return <View />;
 
