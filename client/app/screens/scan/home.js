@@ -4,7 +4,7 @@ import { View, StyleSheet, Pressable, Text } from "react-native";
 import { useState, useCallback, useContext } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { BarCodeScanner } from "expo-barcode-scanner";
-import { AppContext } from "../../contexts/Contexts";
+import { AppContext } from "../../contexts/scan-contexts";
 import {
   Ionicons,
   MaterialIcons,

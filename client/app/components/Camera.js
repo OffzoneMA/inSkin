@@ -2,7 +2,7 @@ import { Button, StyleSheet, View, Text, Pressable, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useState, useContext, useEffect } from "react";
 import { BarCodeScanner } from "expo-barcode-scanner";
-import { AppContext } from "../contexts/Contexts";
+import { AppContext } from "../contexts/scan-contexts";
 import { Camera } from "expo-camera";
 
 import AlertBox from "./AlertBox";
@@ -19,11 +19,18 @@ export default function Cam({ flash, zoom }) {
   const handleBarcodeScanned = (qr) => {
     setScanned(true);
     setQrcode({ date: new Date(), qr });
-    Alert.alert("Alert Title", qr.data);
+    Alert.alert("Alert Title", qr.data, [
+      {
+        text: "OK",
+        onPress: () => setScanned(false), // Set 'scanned' to false when OK is clicked
+      },
+    ]);
   };
 /* 
   useEffect(() => {
-    if (scanned) navigation.push("Details");
+    if (scanned) {
+      if (scanned) navigation.push("Details");
+    }
   }, [scanned]);
  */
   // Camera permissions are still loading
