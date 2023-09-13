@@ -3,7 +3,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 
 import ScanHome from "../screens/scan/home";
 
-import { AppProvider } from "../contexts/scan-contexts";
+import { AppProvider } from "../contexts/scan-context";
 
 const Stack = createStackNavigator();
 

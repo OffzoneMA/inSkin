@@ -1,6 +1,6 @@
 import { createContext, useState } from "react";
 // Create the context
-export const AppContext = createContext();
+export const ScanContext = createContext();
 
 // Create a provider component to wrap the root of your application
 export const AppProvider = ({ children }) => {
@@ -9,8 +9,8 @@ export const AppProvider = ({ children }) => {
 
   // Provide the state and functions to the consuming components
   return (
-    <AppContext.Provider value={{ qrcode, setQrcode, history, setHistory }}>
+    <ScanContext.Provider value={{ qrcode, setQrcode, history, setHistory }}>
       {children}
-    </AppContext.Provider>
+    </ScanContext.Provider>
   );
 };

@@ -4,7 +4,7 @@ import { View, StyleSheet, Pressable, Text } from "react-native";
 import { useState, useCallback, useContext } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { BarCodeScanner } from "expo-barcode-scanner";
-import { AppContext } from "../../contexts/scan-contexts";
+import { ScanContext } from "../../contexts/scan-context";
 import {
   Ionicons,
   MaterialIcons,
@@ -22,7 +22,7 @@ export default function Home({ navigation }) {
   const [isFocus, setFocus] = useState(false);
   const [value, setValue] = useState(0);
 
-  const { setQrcode } = useContext(AppContext);
+  const { setQrcode } = useContext(ScanContext);
 
   const toggleFlashlight = async () => {
     setFlashlightOn(!flashlightOn);

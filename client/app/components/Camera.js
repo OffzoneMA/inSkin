@@ -2,7 +2,7 @@ import { Button, StyleSheet, View, Text, Pressable, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useState, useContext, useEffect } from "react";
 import { BarCodeScanner } from "expo-barcode-scanner";
-import { ScanContext } from "../contexts/scan-contexts";
+import { ScanContext } from "../contexts/scan-context";
 import { Camera } from "expo-camera";
 
 import AlertBox from "./AlertBox";
@@ -23,7 +23,7 @@ export default function Cam({ flash, zoom }) {
   const handleBarcodeScanned = (qr) => {
     setScanned(true);
     setQrcode({ date: new Date(), qr });
-    Alert.alert("Alert Title", /* qr.data */ user.firstName, [
+    Alert.alert("Alert Title", qr.data /* user.firstName */, [
       {
         text: "OK",
         onPress: () => setScanned(false), // Set 'scanned' to false when OK is clicked
