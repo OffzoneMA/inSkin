@@ -65,6 +65,7 @@ const Product = mongoose.model("Product", productSchema);
 
 function validateProduct(product) {
   const schema = Joi.object({
+    barcode: Joi.string(),
     userId: Joi.string(), // You can validate the user ID here
     images: Joi.array().items(Joi.string()),
     productDetails: Joi.object({
