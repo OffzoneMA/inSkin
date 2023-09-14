@@ -8,7 +8,7 @@ const router = express.Router();
 // POST a new product
 router.post(
   "/add-product",
-  //auth, // Ensure user is authenticated
+  auth, // Ensure user is authenticated
   asyncMiddleware(async (req, res) => {
     // Validate the incoming request data
     const { error } = validate(req.body);
