@@ -10,7 +10,24 @@ import { TouchableNativeFeedback } from "react-native";
 
 import AuthContext from "../contexts/auth";
 
+import * as Yup from "yup";
+
+import Toast from "react-native-root-toast";
+import { useTheme } from '@ui-kitten/components';
+
+import productActionsApi from "../api/product_actions";
+import useApi from "../hooks/useApi";
+import authStorage from "../utilities/authStorage";
+
+const validationSchema = Yup.object({
+  barcode: Yup.string().required().label("Barcode"),
+});
+
 export default function Cam({ flash, zoom }) {
+  const addProductApi = useApi(productActionsApi.add_product);
+
+  const theme = useTheme();
+
   const [permission, requestPermission] = Camera.useCameraPermissions();
   const [scanned, setScanned] = useState(false);
 
@@ -20,13 +37,64 @@ export default function Cam({ flash, zoom }) {
 
   const navigation = useNavigation();
 
+  const addScannedProduct = async ({
+    barcode,
+  }) => {
+    var readerType;
+    var readerGoals;
+    var readerGenres;
+    try {
+      readerType = route.params.readerType;
+      readerGoals = route.params.readerGoals;
+      readerGenres = route.params.readerGenres;
+    } catch (e) {
+      readerType = null;
+      readerGoals = [];
+      readerGenres = [];
+    }
+
+    const result = await addProductApi.request(
+      barcode,
+    );
+
+    if (!result.ok) {
+      Toast.show(result.data, {
+        duration: Toast.durations.SHORT,
+        backgroundColor: theme["notification-error"],
+      });
+
+      return;
+    }
+
+    Toast.show(result.data.message, {
+      duration: Toast.durations.SHORT,
+      backgroundColor: theme['notification-success'],
+    });
+/* 
+    setTimeout(() => {
+      AsyncStorage.setItem("hasOnboarded", "true");
+      var { user } = jwt_decode(result.headers["bearer-token"]);
+      authContext.setUser(user);
+      authStorage.storeToken(result.headers["bearer-token"]);
+
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Home" }],
+      });
+    }, 300);
+*/
+  };
+
   const handleBarcodeScanned = (qr) => {
     setScanned(true);
     setQrcode({ date: new Date(), qr });
     Alert.alert("Alert Title", qr.data /* user.firstName */, [
       {
         text: "OK",
-        onPress: () => setScanned(false), // Set 'scanned' to false when OK is clicked
+        onPress: () => {
+          setScanned(false);
+          addScannedProduct({ barcode: qr.data });
+        }, // Set 'scanned' to false when OK is clicked
       },
     ]);
   };
