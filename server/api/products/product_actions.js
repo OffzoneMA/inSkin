@@ -18,7 +18,21 @@ router.post(
 
     // Create a new product instance
     const product = new Product({
-      barcode: req.body.barcode,
+      barcode: mongoose.Types.ObjectId(req.body.barcode),
+      userId: req.body.userId,
+      images: ["image_url_1", "image_url_2"], // Replace with image URLs
+      productDetails: {
+        name: req.body.name,
+        brands: req.body.brands,
+        categories: req.body.categories,
+        ingredients: req.body.ingredients,
+      },
+      comments: [
+        {
+          userId: mongoose.Types.ObjectId("comment_user_id_here"), // Replace with the actual user ID
+          text: "This is a comment",
+        },
+      ],
       //userId: req.user._id, // Use the authenticated user's ID
       //images: req.body.images,
       //productDetails: req.body.productDetails,

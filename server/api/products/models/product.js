@@ -22,17 +22,17 @@ const productSchema = new mongoose.Schema({
         name: {
             type: String,
         },
-        Brands: [
+        brands: [
             {
             type: String, // You can store image URLs here
             },
         ],
-        Categories: [
+        categories: [
             {
             type: String, // You can store image URLs here
             },
         ],
-        Ingredients: [
+        ingredients: [
             {
             type: String, // You can store image URLs here
             },

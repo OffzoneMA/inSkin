@@ -1,4 +1,4 @@
-import { Button, StyleSheet, View, Text, Pressable, Alert } from "react-native";
+import { StyleSheet, View, Text, Pressable, Alert, ScrollView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useState, useContext, useEffect } from "react";
 import { BarCodeScanner } from "expo-barcode-scanner";
@@ -18,6 +18,16 @@ import { useTheme } from '@ui-kitten/components';
 import productActionsApi from "../api/product_actions";
 import useApi from "../hooks/useApi";
 import authStorage from "../utilities/authStorage";
+
+import { Formik } from "formik";
+
+// Components
+import Page from "./Page";
+import Heading from "./Heading";
+import Paragraph from "./Paragraph";
+import Button from "./Button";
+import TextInput from "./TextInput";
+import TextLink from "./TextLink";
 
 const validationSchema = Yup.object({
   barcode: Yup.string().required().label("Barcode"),
@@ -40,7 +50,12 @@ export default function Cam({ flash, zoom }) {
   const [showCustomPopup, setShowCustomPopup] = useState(false); // State to control custom pop-up visibility
 
   const addScannedProduct = async ({
-    barcode,
+    barcode, // Initialize with the scanned QR code data
+    userId,
+    name,
+    brands,
+    categories,
+    ingredients,
   }) => {
     var readerType;
     var readerGoals;
@@ -57,6 +72,11 @@ export default function Cam({ flash, zoom }) {
 
     const result = await addProductApi.request(
       barcode,
+      userId,
+      name,
+      brands,
+      categories,
+      ingredients,
     );
 
     if (!result.ok) {
@@ -93,9 +113,9 @@ export default function Cam({ flash, zoom }) {
     setShowCustomPopup(true); // Show the custom pop-up
   };
 
-  const handleOKPress = () => {
+  const handleOKPress = ({qrCodeData}) => {
     setScanned(false); // Reset the scanned state
-    addScannedProduct({ barcode: qrcode.qr.data }); // Handle the barcode submission using the stored barcode
+    addScannedProduct({ barcode: qrCodeData }); // Handle the barcode submission using the stored barcode
     setShowCustomPopup(false); // Close the custom pop-up
   };
 /* 
@@ -148,9 +168,101 @@ export default function Cam({ flash, zoom }) {
       {/* Custom Pop-up */}
       {showCustomPopup && (
         <View style={styles.customPopup}>
-          <Text style={styles.modalTitle}>{qrcode.qr.data}</Text>
-          <Text>{qrcode.data}</Text>
-          <Button title="OK" onPress={handleOKPress} />
+        <Formik
+          initialValues={{
+            barcode: qrcode.qr.data, // Initialize with the scanned QR code data
+            userId: user._id,
+            images: [""],
+            name: "",
+            brands: [""],
+            categories: [""],
+            ingredients: [""],
+          }}
+          onSubmit={handleOKPress}
+          validationSchema={validationSchema}
+        >
+          {({
+            handleChange,
+            handleSubmit,
+            errors,
+            setFieldTouched,
+            touched,
+            values,
+          }) => (
+            <ScrollView>
+              <TextInput
+                placeholder="Barcode"
+                keyboardType="default"
+                returnKeyType="next"
+                autoCapitalize="none"
+                value={values.barcode}
+                onChangeText={handleChange("barcode")}
+                errorMessage={errors.barcode}
+                onBlur={() => setFieldTouched("barcode")}
+                errorVisible={touched.barcode}
+              />
+              <TextInput
+                placeholder="Product Name"
+                keyboardType="default"
+                returnKeyType="next"
+                autoCapitalize="none"
+                value={values.name}
+                onChangeText={handleChange("name")}
+                errorMessage={errors.name}
+                onBlur={() => setFieldTouched("name")}
+                errorVisible={touched.name}
+              />
+              <TextInput
+                placeholder="Brands (comma-separated)"
+                keyboardType="default"
+                returnKeyType="next"
+                autoCapitalize="none"
+                value={values.brands.join(", ")} // Join the array as a comma-separated string
+                onChangeText={(text) =>
+                  handleChange("brands")(text.split(", ").map((brand) => brand.trim()))
+                }
+                errorMessage={errors.brands}
+                onBlur={() => setFieldTouched("brands")}
+                errorVisible={touched.brands}
+              />
+              <TextInput
+                placeholder="Categories (comma-separated)"
+                keyboardType="default"
+                returnKeyType="next"
+                autoCapitalize="none"
+                value={values.categories.join(", ")} // Join the array as a comma-separated string
+                onChangeText={(text) =>
+                  handleChange("categories")(
+                    text.split(", ").map((category) => category.trim())
+                  )
+                }
+                errorMessage={errors.categories}
+                onBlur={() => setFieldTouched("categories")}
+                errorVisible={touched.categories}
+              />
+              <TextInput
+                placeholder="Ingredients (comma-separated)"
+                keyboardType="default"
+                returnKeyType="next"
+                autoCapitalize="none"
+                value={values.ingredients.join(", ")} // Join the array as a comma-separated string
+                onChangeText={(text) =>
+                  handleChange("ingredients")(
+                    text.split(", ").map((ingredient) => ingredient.trim())
+                  )
+                }
+                errorMessage={errors.ingredients}
+                onBlur={() => setFieldTouched("ingredients")}
+                errorVisible={touched.ingredients}
+              />
+              <Button title="OK" onPress={handleSubmit}>
+                Add Product
+              </Button>
+            </ScrollView>
+          )}
+        </Formik>
+
+
         </View>
       )}
     </View>
@@ -207,7 +319,7 @@ const styles = StyleSheet.create({
   },
   customPopup: {
     position: "absolute",
-    top: "40%",
+    top: "10%",
     left: "10%",
     right: "10%",
     backgroundColor: "white",
