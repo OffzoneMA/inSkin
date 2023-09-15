@@ -63,7 +63,7 @@ const productSchema = new mongoose.Schema({
 
 const Product = mongoose.model("Product", productSchema);
 
-function validateProduct(product) {
+/* function validateProduct(product) {
   const schema = Joi.object({
     barcode: Joi.string(),
     userId: Joi.string(), // You can validate the user ID here
@@ -82,7 +82,7 @@ function validateProduct(product) {
   });
 
   return schema.validate(product);
-}
+} */
 
 exports.Product = Product;
-exports.validate = validateProduct;
+//exports.validate = validateProduct;
