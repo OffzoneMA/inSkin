@@ -1,6 +1,6 @@
 import * as ImagePicker from "expo-image-picker";
 
-import { View, StyleSheet, Pressable, Text } from "react-native";
+import { View, StyleSheet, Pressable, Text, Button} from "react-native";
 import { useState, useCallback, useContext } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { BarCodeScanner } from "expo-barcode-scanner";
@@ -16,13 +16,83 @@ import AlertBox from "../../components/AlertBox";
 import Navbar from "../../components/Navbar";
 import Cam from "../../components/Camera";
 
+import AuthContext from "../../contexts/auth";
+import * as Yup from "yup";
+
+import Toast from "react-native-root-toast";
+import { useTheme } from '@ui-kitten/components';
+
+import productActionsApi from "../../api/product_actions";
+import useApi from "../../hooks/useApi";
+import authStorage from "../../utilities/authStorage";
+
+const validationSchema = Yup.object({
+  barcode: Yup.string().required().label("Barcode"),
+});
+
 export default function Home({ navigation }) {
   const [flashlightOn, setFlashlightOn] = useState(false);
   const [alertBox, setAlertBox] = useState(null);
   const [isFocus, setFocus] = useState(false);
   const [value, setValue] = useState(0);
 
-  const { setQrcode } = useContext(ScanContext);
+  const { qrcode, setQrcode } = useContext(ScanContext);
+
+  const { user } = useContext(AuthContext);
+
+  const [showCustomPopup, setShowCustomPopup] = useState(false); // State to control custom pop-up visibility
+
+  const addProductApi = useApi(productActionsApi.add_product);
+
+  const theme = useTheme();
+
+  const addScannedProduct = async ({
+    barcode,
+  }) => {
+    var readerType;
+    var readerGoals;
+    var readerGenres;
+    try {
+      readerType = route.params.readerType;
+      readerGoals = route.params.readerGoals;
+      readerGenres = route.params.readerGenres;
+    } catch (e) {
+      readerType = null;
+      readerGoals = [];
+      readerGenres = [];
+    }
+
+    const result = await addProductApi.request(
+      barcode,
+    );
+
+    if (!result.ok) {
+      Toast.show(result.data, {
+        duration: Toast.durations.SHORT,
+        backgroundColor: theme["notification-error"],
+      });
+
+      return;
+    }
+
+    Toast.show(result.data.message, {
+      duration: Toast.durations.SHORT,
+      backgroundColor: theme['notification-success'],
+    });
+/* 
+    setTimeout(() => {
+      AsyncStorage.setItem("hasOnboarded", "true");
+      var { user } = jwt_decode(result.headers["bearer-token"]);
+      authContext.setUser(user);
+      authStorage.storeToken(result.headers["bearer-token"]);
+
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Home" }],
+      });
+    }, 300);
+*/
+  };
 
   const toggleFlashlight = async () => {
     setFlashlightOn(!flashlightOn);
@@ -40,8 +110,8 @@ export default function Home({ navigation }) {
         );
         if (scanResult.length > 0) {
           setQrcode({ date: new Date(), qr: scanResult[0] });
-
-          navigation.navigate("Details");
+          setShowCustomPopup(true); // Show the custom pop-up
+          //navigation.navigate("Details");
         } else {
           setAlertBox("No qr-code found");
         }
@@ -54,6 +124,11 @@ export default function Home({ navigation }) {
       setAlertBox(null);
     }, 5000);
   }
+
+  const handleOKPress = () => {
+    addScannedProduct({ barcode: qrcode.qr.data }); // Handle the barcode submission using the stored barcode
+    setShowCustomPopup(false); // Close the custom pop-up
+  };
 
   useFocusEffect(
     useCallback(() => {
@@ -113,6 +188,14 @@ export default function Home({ navigation }) {
           <MaterialIcons name="photo" size={32} color="black" />
         </Pressable>
       </View>
+      {/* Custom Pop-up */}
+      {showCustomPopup && (
+        <View style={styles.customPopup}>
+          <Text style={styles.modalTitle}>{qrcode.qr.data}</Text>
+          <Text>{qrcode.data}</Text>
+          <Button title="OK" onPress={handleOKPress} />
+        </View>
+      )}
     </View>
   );
 }
@@ -198,4 +281,15 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   alertBox: {},
+  customPopup: {
+    position: "absolute",
+    top: "40%",
+    left: "10%",
+    right: "10%",
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 10,
+    alignItems: "center",
+    zIndex: 1, // Make sure the pop-up is above the camera view
+  },
 });

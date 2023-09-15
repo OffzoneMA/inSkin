@@ -33,9 +33,11 @@ export default function Cam({ flash, zoom }) {
 
   const { user } = useContext(AuthContext);
 
-  const { setQrcode } = useContext(ScanContext);
+  const { qrcode, setQrcode } = useContext(ScanContext);
 
   const navigation = useNavigation();
+
+  const [showCustomPopup, setShowCustomPopup] = useState(false); // State to control custom pop-up visibility
 
   const addScannedProduct = async ({
     barcode,
@@ -88,15 +90,13 @@ export default function Cam({ flash, zoom }) {
   const handleBarcodeScanned = (qr) => {
     setScanned(true);
     setQrcode({ date: new Date(), qr });
-    Alert.alert("Alert Title", qr.data /* user.firstName */, [
-      {
-        text: "OK",
-        onPress: () => {
-          setScanned(false);
-          addScannedProduct({ barcode: qr.data });
-        }, // Set 'scanned' to false when OK is clicked
-      },
-    ]);
+    setShowCustomPopup(true); // Show the custom pop-up
+  };
+
+  const handleOKPress = () => {
+    setScanned(false); // Reset the scanned state
+    addScannedProduct({ barcode: qrcode.qr.data }); // Handle the barcode submission using the stored barcode
+    setShowCustomPopup(false); // Close the custom pop-up
   };
 /* 
   useEffect(() => {
@@ -104,7 +104,7 @@ export default function Cam({ flash, zoom }) {
       if (scanned) navigation.push("Details");
     }
   }, [scanned]);
- */
+*/
   // Camera permissions are still loading
   if (!permission) return <View />;
 
@@ -145,6 +145,14 @@ export default function Cam({ flash, zoom }) {
       >
         <View />
       </Camera>
+      {/* Custom Pop-up */}
+      {showCustomPopup && (
+        <View style={styles.customPopup}>
+          <Text style={styles.modalTitle}>{qrcode.qr.data}</Text>
+          <Text>{qrcode.data}</Text>
+          <Button title="OK" onPress={handleOKPress} />
+        </View>
+      )}
     </View>
   );
 }
@@ -196,5 +204,16 @@ const styles = StyleSheet.create({
     borderWidth: 0,
     borderRadius: 10,
     backgroundColor: "#00A86B",
+  },
+  customPopup: {
+    position: "absolute",
+    top: "40%",
+    left: "10%",
+    right: "10%",
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 10,
+    alignItems: "center",
+    zIndex: 1, // Make sure the pop-up is above the camera view
   },
 });
