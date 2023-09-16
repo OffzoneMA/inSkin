@@ -14,10 +14,12 @@ const add_product = (
   client.post("/products/add-product", {
     barcode,
     userId,
-    name,
-    brands,
-    categories,
-    ingredients,
+    productDetails: {
+      name,
+      brands,
+      categories,
+      ingredients,
+    },
     /* reader_type,
     reader_goals,
     reader_genres, */

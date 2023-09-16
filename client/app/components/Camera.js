@@ -188,9 +188,9 @@ export default function Cam({ flash, zoom }) {
             userId: user._id,
             images: [""],
             name: "",
-            brands: [""],
-            categories: [""],
-            ingredients: [""],
+            brands: "",
+            categories: "",
+            ingredients: "",
           }}
           onSubmit={handleOKPress}
           validationSchema={validationSchema}
@@ -231,10 +231,8 @@ export default function Cam({ flash, zoom }) {
                 keyboardType="default"
                 returnKeyType="next"
                 autoCapitalize="none"
-                value={values.brands.join(", ")} // Join the array as a comma-separated string
-                onChangeText={(text) =>
-                  handleChange("brands")(text.split(", ").map((brand) => brand.trim()))
-                }
+                value={values.brands} // Join the array as a comma-separated string
+                onChangeText={handleChange("brands")}
                 errorMessage={errors.brands}
                 onBlur={() => setFieldTouched("brands")}
                 errorVisible={touched.brands}
@@ -244,12 +242,8 @@ export default function Cam({ flash, zoom }) {
                 keyboardType="default"
                 returnKeyType="next"
                 autoCapitalize="none"
-                value={values.categories.join(", ")} // Join the array as a comma-separated string
-                onChangeText={(text) =>
-                  handleChange("categories")(
-                    text.split(", ").map((category) => category.trim())
-                  )
-                }
+                value={values.categories} // Join the array as a comma-separated string
+                onChangeText={handleChange("categories")}
                 errorMessage={errors.categories}
                 onBlur={() => setFieldTouched("categories")}
                 errorVisible={touched.categories}
@@ -259,12 +253,8 @@ export default function Cam({ flash, zoom }) {
                 keyboardType="default"
                 returnKeyType="next"
                 autoCapitalize="none"
-                value={values.ingredients.join(", ")} // Join the array as a comma-separated string
-                onChangeText={(text) =>
-                  handleChange("ingredients")(
-                    text.split(", ").map((ingredient) => ingredient.trim())
-                  )
-                }
+                value={values.ingredients} // Join the array as a comma-separated string
+                onChangeText={handleChange("ingredients")}
                 errorMessage={errors.ingredients}
                 onBlur={() => setFieldTouched("ingredients")}
                 errorVisible={touched.ingredients}
