@@ -113,9 +113,23 @@ export default function Cam({ flash, zoom }) {
     setShowCustomPopup(true); // Show the custom pop-up
   };
 
-  const handleOKPress = ({barcode}) => {
+  const handleOKPress = ({
+    barcode,
+    userId,
+    name,
+    brands,
+    categories,
+    ingredients,
+  }) => {
     setScanned(false); // Reset the scanned state
-    addScannedProduct({ barcode: barcode }); // Handle the barcode submission using the stored barcode
+    addScannedProduct({
+        barcode: barcode,
+        userId: userId,
+        name: name,
+        brands: brands,
+        categories: categories,
+        ingredients: ingredients,
+      }); // Handle the barcode submission using the stored barcode
     setShowCustomPopup(false); // Close the custom pop-up
   };
 /* 

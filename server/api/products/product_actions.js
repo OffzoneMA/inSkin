@@ -22,19 +22,14 @@ router.post(
     const product = new Product({
       barcode: req.body.barcode,
       userId: mongoose.Types.ObjectId(req.body.userId),
-      images: ["image_url_1", "image_url_2"], // Replace with image URLs
+      images: req.body.images, // Replace with image URLs
       productDetails: {
-        name: req.body.name,
-        brands: req.body.brands,
-        categories: req.body.categories,
-        ingredients: req.body.ingredients,
+        name: req.body.productDetails.name,
+        brands: req.body.productDetails.brands,
+        categories: req.body.productDetails.categories,
+        ingredients: req.body.productDetails.ingredients,
       },
-      comments: [
-        {
-          userId: mongoose.Types.ObjectId("64f7549f9991cb2f7cfa6b0f"), // Replace with the actual user ID
-          text: "This is a comment",
-        },
-      ],
+      comments: req.body.comments,
       //userId: req.user._id, // Use the authenticated user's ID
       //images: req.body.images,
       //productDetails: req.body.productDetails,
