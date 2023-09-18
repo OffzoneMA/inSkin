@@ -31,6 +31,10 @@ import TextLink from "./TextLink";
 
 const validationSchema = Yup.object({
   barcode: Yup.string().required().label("Barcode"),
+  name: Yup.string().label("Name"),
+  brands: Yup.string().label("Brands"),
+  categories: Yup.string().label("Categories"),
+  ingredients: Yup.string().label("Ingredients"),
 });
 
 export default function Cam({ flash, zoom }) {
@@ -121,14 +125,18 @@ export default function Cam({ flash, zoom }) {
     categories,
     ingredients,
   }) => {
+    const brandsArray = brands.split(",").map((item) => item.trim()).filter((item) => item !== "");
+    const categoriesArray = categories.split(",").map((item) => item.trim()).filter((item) => item !== "");
+    const ingredientsArray = ingredients.split(",").map((item) => item.trim()).filter((item) => item !== "");
+
     setScanned(false); // Reset the scanned state
     addScannedProduct({
         barcode: barcode,
         userId: userId,
         name: name,
-        brands: brands,
-        categories: categories,
-        ingredients: ingredients,
+        brands: brandsArray, // Use the arrays instead of strings
+        categories: categoriesArray,
+        ingredients: ingredientsArray,
       }); // Handle the barcode submission using the stored barcode
     setShowCustomPopup(false); // Close the custom pop-up
   };
