@@ -1,7 +1,7 @@
 const express = require("express");
 const auth = require("../../middleware/auth");
 const asyncMiddleware = require("../../middleware/async");
-const { Product/* , validate */ } = require("./models/product");
+const { Product , validate } = require("./models/product");
 
 const router = express.Router();
 
@@ -10,13 +10,23 @@ const mongoose = require("mongoose");
 // POST a new product
 router.post(
   "/add-product",
-  /* auth, */ // Ensure user is authenticated
+  auth, // Ensure user is authenticated
   asyncMiddleware(async (req, res) => {
     // Validate the incoming request data
-    /* const { error } = validate(req.body);
+    const { error } = validate(req.body);
     if (error) {
-      return res.status(400).send(error.details[0].message);
-    } */
+      res.status(400).send(error.details[0].message);
+      return;
+    }
+
+    const foundProduct = await Product.findOne({
+      barcode: req.body.barcode,
+    });
+
+    if (foundProduct) {
+      res.status(400).send("A product already exist with this barcode!");
+      return;
+    }
 
     // Create a new product instance
     const product = new Product({
@@ -30,9 +40,6 @@ router.post(
         ingredients: req.body.productDetails.ingredients,
       },
       comments: req.body.comments,
-      //userId: req.user._id, // Use the authenticated user's ID
-      //images: req.body.images,
-      //productDetails: req.body.productDetails,
     });
 
     // Save the product to the database

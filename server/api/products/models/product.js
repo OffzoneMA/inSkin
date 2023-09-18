@@ -9,7 +9,7 @@ const productSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User", // Reference to the User model
-        //required: true,
+        required: true,
     },
     images: [
         {
@@ -63,16 +63,19 @@ const productSchema = new mongoose.Schema({
 
 const Product = mongoose.model("Product", productSchema);
 
-/* function validateProduct(product) {
+function validateProduct(product) {
   const schema = Joi.object({
-    barcode: Joi.string(),
-    userId: Joi.string(), // You can validate the user ID here
+    barcode: Joi.string().required(),
+    userId: Joi.string().required(), // Assuming userId is required
     images: Joi.array().items(Joi.string()),
+
     productDetails: Joi.object({
-      name: Joi.string(),
-      description: Joi.string(),
-      price: Joi.number(),
+      name: Joi.string().allow(''),
+      brands: Joi.array().items(Joi.string()),
+      categories: Joi.array().items(Joi.string()),
+      ingredients: Joi.array().items(Joi.string()),
     }),
+
     comments: Joi.array().items(
       Joi.object({
         userId: Joi.string(), // You can validate the user ID here
@@ -82,7 +85,7 @@ const Product = mongoose.model("Product", productSchema);
   });
 
   return schema.validate(product);
-} */
+}
 
 exports.Product = Product;
-//exports.validate = validateProduct;
+exports.validate = validateProduct;

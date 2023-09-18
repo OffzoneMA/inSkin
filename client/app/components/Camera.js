@@ -75,9 +75,9 @@ export default function Cam({ flash, zoom }) {
     }
 
     const result = await addProductApi.request(
-      barcode,
+      barcode.trim(),
       userId,
-      name,
+      name.trim(),
       brands,
       categories,
       ingredients,
@@ -96,19 +96,6 @@ export default function Cam({ flash, zoom }) {
       duration: Toast.durations.SHORT,
       backgroundColor: theme['notification-success'],
     });
-/* 
-    setTimeout(() => {
-      AsyncStorage.setItem("hasOnboarded", "true");
-      var { user } = jwt_decode(result.headers["bearer-token"]);
-      authContext.setUser(user);
-      authStorage.storeToken(result.headers["bearer-token"]);
-
-      navigation.reset({
-        index: 0,
-        routes: [{ name: "Home" }],
-      });
-    }, 300);
-*/
   };
 
   const handleBarcodeScanned = (qr) => {
