@@ -1,82 +1,70 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import BrowseNavigator from "./browse";
-import HomeNavigator from "./home";
 import ProfileNavigator from "./profile";
 import ScanNavigator from "./scan";
 import {
-  BottomNavigation,
-  BottomNavigationTab,
-  Icon,
+  useTheme,
 } from "@ui-kitten/components";
 
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 const Tab = createBottomTabNavigator();
-
-const BrowseIcon = (props) => <Icon {...props} name="search" />;
-
-const HomeIcon = (props) => <Icon {...props} name="home-outline" />;
-
-const ProfileIcon = (props) => <Icon {...props} name="person-outline" />;
-
-const BottomTabBar = ({ navigation, state }) => (
-  <BottomNavigation
-    selectedIndex={state.index}
-    style={{paddingTop: 10}}
-    onSelect={(index) => navigation.navigate(state.routeNames[index])}
-  >
-    <BottomNavigationTab title="Browse" icon={BrowseIcon} />
-    <BottomNavigationTab title="Home" icon={HomeIcon} />
-    <BottomNavigationTab title="Profile" icon={ProfileIcon} />
-  </BottomNavigation>
-);
-
+ 
 export default function AppTabNavigator() {
+  const theme = useTheme(); 
+
   return (
-      <Tab.Navigator
-        tabBar={(props) => <BottomTabBar {...props} />}
+    <Tab.Navigator
         initialRouteName="Home"
+        screenOptions={({ route }) => ({
+          tabBarIcon: ({ focused, color, size }) => {
+            let iconName;
+
+            if (route.name === 'Home') {
+              iconName = focused ? 'barcode-scan' : 'barcode-scan';
+            } else if (route.name === 'Profile') {
+              iconName = focused ? 'account-outline' : 'account-outline';
+            } else if (route.name === 'Browse') {
+              iconName = focused ? 'magnify-expand' : 'magnify-expand';
+            }
+
+            // You can customize the icon styles here
+            return <MaterialCommunityIcons 
+              name={iconName}
+              size={size}
+              color={color}
+            />;
+          },
+        })}
+        tabBarOptions={{
+          activeTintColor: theme["color-primary-default"], // Color of the active tab
+          inactiveTintColor: theme['color-basic-600'], // Color of inactive tabs
+        }}
       >
-        <Tab.Screen
-          name="Browse"
-          component={BrowseNavigator}
-          options={{
-            tabBarIcon: ({ size, color }) => (
-              <MaterialCommunityIcons
-                name="compass"
-                size={size}
-                color={color}
-              />
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="Home"
-          component={ScanNavigator}
-          options={{
-            tabBarIcon: ({ size, color }) => (
-              <MaterialCommunityIcons
-                name="library-shelves"
-                size={size}
-                color={color}
-              />
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="Profile"
-          component={ProfileNavigator}
-          options={{
-            tabBarIcon: ({ size, color }) => (
-              <MaterialCommunityIcons
-                name="account-circle"
-                size={size}
-                color={color}
-              />
-            ),
-          }}
-        />
-      </Tab.Navigator>
+        
+      <Tab.Screen
+        name="Browse"
+        component={BrowseNavigator}
+        options={{
+          tabBarLabel: '', // Empty string to remove the text
+        }}
+      />
+      <Tab.Screen
+        name="Home"
+        component={ScanNavigator}
+        options={{
+          tabBarLabel: '', // Empty string to remove the text
+        }}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={ProfileNavigator}
+        options={{
+          tabBarLabel: '', // Empty string to remove the text
+        }}
+      />
+    </Tab.Navigator>
+        
   );
 }
