@@ -1,70 +1,73 @@
 import React from "react";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import BrowseNavigator from "./browse";
 import ProfileNavigator from "./profile";
 import ScanNavigator from "./scan";
-import {
-  useTheme,
-} from "@ui-kitten/components";
-
+import { useTheme } from "@ui-kitten/components";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-const Tab = createBottomTabNavigator();
- 
+const Tab = createMaterialTopTabNavigator();
+
 export default function AppTabNavigator() {
-  const theme = useTheme(); 
+  const theme = useTheme();
 
   return (
     <Tab.Navigator
-        initialRouteName="Home"
-        screenOptions={({ route }) => ({
-          tabBarIcon: ({ focused, color, size }) => {
-            let iconName;
-
-            if (route.name === 'Home') {
-              iconName = focused ? 'barcode-scan' : 'barcode-scan';
-            } else if (route.name === 'Profile') {
-              iconName = focused ? 'account-outline' : 'account-outline';
-            } else if (route.name === 'Browse') {
-              iconName = focused ? 'magnify-expand' : 'magnify-expand';
-            }
-
-            // You can customize the icon styles here
-            return <MaterialCommunityIcons 
-              name={iconName}
-              size={size}
-              color={color}
-            />;
-          },
-        })}
-        tabBarOptions={{
-          activeTintColor: theme["color-primary-default"], // Color of the active tab
-          inactiveTintColor: theme['color-basic-600'], // Color of inactive tabs
-        }}
-      >
-        
+      initialRouteName="Home"
+      tabBarOptions={{
+        activeTintColor: theme["color-primary-default"],
+        inactiveTintColor: theme["color-basic-600"],
+        showIcon: true, // Show icons in tabs
+        labelStyle: {
+          fontSize: 12,
+        },
+        style: {
+          backgroundColor: theme["color-basic-100"], // Background color of the tab bar
+        },
+        indicatorStyle: {
+          backgroundColor: theme["color-primary-default"], // Color of the active tab indicator
+        },
+      }}
+    >
       <Tab.Screen
         name="Browse"
         component={BrowseNavigator}
         options={{
-          tabBarLabel: '', // Empty string to remove the text
+          tabBarIcon: ({ focused, color, size }) => (
+            <MaterialCommunityIcons
+              name={focused ? "magnify-expand" : "magnify-expand"}
+              size={size}
+              color={color}
+            />
+          ),
         }}
       />
       <Tab.Screen
         name="Home"
         component={ScanNavigator}
         options={{
-          tabBarLabel: '', // Empty string to remove the text
+          tabBarIcon: ({ focused, color, size }) => (
+            <MaterialCommunityIcons
+              name={focused ? "barcode-scan" : "barcode-scan"}
+              size={size}
+              color={color}
+            />
+          ),
         }}
       />
       <Tab.Screen
         name="Profile"
         component={ProfileNavigator}
         options={{
-          tabBarLabel: '', // Empty string to remove the text
+          tabBarIcon: ({ focused, color, size }) => (
+            <MaterialCommunityIcons
+              name={focused ? "account-outline" : "account-outline"}
+              size={size}
+              color={color}
+            />
+          ),
         }}
       />
     </Tab.Navigator>
-        
   );
 }
