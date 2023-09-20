@@ -252,10 +252,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     position: "absolute",
-    bottom: "20%",
+    bottom: "50%",
+    left: "40%",
     height: 50,
     zIndex: 10,
     overflow: "visible",
+    transform:[{rotate: "-90deg"}],
   },
   slider: {
     width: "80%",
