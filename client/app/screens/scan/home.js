@@ -262,7 +262,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     position: "absolute",
     bottom: "50%",
-    left: "45%",
+    left: "42.5%",
     height: 50,
     zIndex: 10,
     overflow: "visible",
