@@ -46,6 +46,7 @@
     "react-native-dotenv": "^3.4.9",
     "react-native-expo-image-cache": "^4.1.0",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
+    "react-native-modal": "^13.0.1",
     "react-native-onboarding-swiper": "^1.2.0",
     "react-native-root-toast": "^3.2.1",
     "react-native-safe-area-context": "4.6.3",

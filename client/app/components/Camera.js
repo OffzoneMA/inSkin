@@ -21,6 +21,8 @@ import authStorage from "../utilities/authStorage";
 
 import { Formik } from "formik";
 
+import Modal from "react-native-modal";
+
 // Components
 import Page from "./Page";
 import Heading from "./Heading";
@@ -174,12 +176,17 @@ export default function Cam({ flash, zoom }) {
       >
         <View />
       </Camera>
-      {/* Custom Pop-up */}
-      {showCustomPopup && (
-        <View style={styles.customPopup}>
+      {/* Bottom Modal */}
+      <Modal
+        isVisible={showCustomPopup}
+        swipeDirection={["down"]}
+        onSwipeComplete={() => setShowCustomPopup(false)}
+        style={styles.bottomModal}
+      >
+        <View style={styles.bottomModalContent}>
         <Formik
           initialValues={{
-            barcode: qrcode.qr.data, // Initialize with the scanned QR code data
+            barcode: qrcode.qr ? qrcode.qr.data : "", // Initialize with the scanned QR code data
             userId: user._id,
             images: [""],
             name: "",
@@ -263,7 +270,7 @@ export default function Cam({ flash, zoom }) {
 
 
         </View>
-      )}
+      </Modal>
     </View>
   );
 }
