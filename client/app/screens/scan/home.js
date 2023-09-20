@@ -147,7 +147,10 @@ export default function Home({ navigation }) {
       {alertBox && <AlertBox message={alertBox} />}
 
       {isFocus && <Cam flash={flashlightOn ? 2 : 0} zoom={value} />}
-
+      <View style={styles.topMask}/>
+      <View style={styles.bottomMask}/>
+      <View style={styles.rightMask}/>
+      <View style={styles.leftMask}/>
       <View style={styles.sliderContainer}>
         <Slider
           style={styles.slider}
@@ -209,6 +212,7 @@ const styles = StyleSheet.create({
     bottom: 30,
     borderRadius: 50,
     alignSelf: 'center',
+    zIndex: 10,
   },
   actionsContainer: {
     backgroundColor: "#DBDCFF",
@@ -258,7 +262,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     position: "absolute",
     bottom: "50%",
-    left: "40%",
+    left: "45%",
     height: 50,
     zIndex: 10,
     overflow: "visible",
@@ -298,5 +302,52 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
     zIndex: 1, // Make sure the pop-up is above the camera view
+  },
+  topMask: {
+    width: "70%",
+    alignSelf: "center",
+    alignItems: "center",
+    justifyContent: "center",
+    position: "absolute",
+    height: "27.5%",
+    zIndex: 10,
+    overflow: "visible",
+    backgroundColor:'rgba(0, 0, 0, 0.2)',
+  },
+  bottomMask: {
+    width: "70%",
+    alignSelf: "center",
+    alignItems: "center",
+    justifyContent: "center",
+    position: "absolute",
+    height: "35%",
+    zIndex: 10,
+    overflow: "visible",
+    backgroundColor:'rgba(0, 0, 0, 0.2)',
+    bottom: 0,
+  },
+  rightMask: {
+    width: "15%",
+    alignItems: "center",
+    justifyContent: "center",
+    position: "absolute",
+    right: 0,
+    height: "100%",
+    zIndex: 10,
+    overflow: "visible",
+    backgroundColor:'rgba(0, 0, 0, 0.2)',
+    top: 0,
+  },
+  leftMask: {
+    width: "15%",
+    alignItems: "center",
+    justifyContent: "center",
+    position: "absolute",
+    left: 0,
+    height: "100%",
+    zIndex: 10,
+    overflow: "visible",
+    backgroundColor:'rgba(0, 0, 0, 0.2)',
+    top: 0,
   },
 });
