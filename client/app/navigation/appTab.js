@@ -20,12 +20,17 @@ export default function AppTabNavigator() {
         showIcon: true, // Show icons in tabs
         labelStyle: {
           fontSize: 12,
+          fontWeight: "bold", // Make the tab labels bold
+          marginVertical: 0,
         },
         style: {
           backgroundColor: theme["color-basic-100"], // Background color of the tab bar
         },
         indicatorStyle: {
           backgroundColor: theme["color-primary-default"], // Color of the active tab indicator
+        },
+        iconStyle: {
+          marginVertical: 0, // Remove vertical margin
         },
       }}
     >
@@ -36,7 +41,7 @@ export default function AppTabNavigator() {
           tabBarIcon: ({ focused, color, size }) => (
             <MaterialCommunityIcons
               name={focused ? "magnify-expand" : "magnify-expand"}
-              size={size}
+              size={24}
               color={color}
             />
           ),
@@ -49,7 +54,7 @@ export default function AppTabNavigator() {
           tabBarIcon: ({ focused, color, size }) => (
             <MaterialCommunityIcons
               name={focused ? "barcode-scan" : "barcode-scan"}
-              size={size}
+              size={24}
               color={color}
             />
           ),
@@ -62,7 +67,7 @@ export default function AppTabNavigator() {
           tabBarIcon: ({ focused, color, size }) => (
             <MaterialCommunityIcons
               name={focused ? "account-outline" : "account-outline"}
-              size={size}
+              size={24}
               color={color}
             />
           ),
