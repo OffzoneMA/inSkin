@@ -31,6 +31,8 @@ import Button from "./Button";
 import TextInput from "./TextInput";
 import TextLink from "./TextLink";
 
+import AddProductModal from './AddProductModal';
+
 const validationSchema = Yup.object({
   barcode: Yup.string().required().label("Barcode"),
   name: Yup.string().label("Name"),
@@ -184,105 +186,15 @@ export default function Cam({ flash, zoom }) {
         <View />
       </Camera>
       {/* Bottom Modal */}
-      <Modal
-        isVisible={showCustomPopup}
-        swipeDirection={["down"]}
-        onSwipeComplete={() => setShowCustomPopup(false)}
-        style={styles.bottomModal}
-      >
-        <View style={styles.bottomModalContent}>
-        <Formik
-          initialValues={{
-            barcode: qrcode.qr ? qrcode.qr.data : "", // Initialize with the scanned QR code data
-            userId: user._id,
-            images: [""],
-            name: "",
-            brands: "",
-            categories: "",
-            ingredients: "",
-          }}
-          onSubmit={handleOKPress}
-          validationSchema={validationSchema}
-        >
-          {({
-            handleChange,
-            handleSubmit,
-            errors,
-            setFieldTouched,
-            touched,
-            values,
-          }) => (
-            <ScrollView>
-              <TextInput
-                placeholder="Barcode"
-                keyboardType="default"
-                returnKeyType="next"
-                autoCapitalize="none"
-                value={values.barcode}
-                onChangeText={handleChange("barcode")}
-                errorMessage={errors.barcode}
-                onBlur={() => setFieldTouched("barcode")}
-                errorVisible={touched.barcode}
-              />
-              <TextInput
-                placeholder="Product Name"
-                keyboardType="default"
-                returnKeyType="next"
-                autoCapitalize="none"
-                value={values.name}
-                onChangeText={handleChange("name")}
-                errorMessage={errors.name}
-                onBlur={() => setFieldTouched("name")}
-                errorVisible={touched.name}
-              />
-              <TextInput
-                placeholder="Brands (comma-separated)"
-                keyboardType="default"
-                returnKeyType="next"
-                autoCapitalize="none"
-                value={values.brands} // Join the array as a comma-separated string
-                onChangeText={handleChange("brands")}
-                errorMessage={errors.brands}
-                onBlur={() => setFieldTouched("brands")}
-                errorVisible={touched.brands}
-              />
-              <TextInput
-                placeholder="Categories (comma-separated)"
-                keyboardType="default"
-                returnKeyType="next"
-                autoCapitalize="none"
-                value={values.categories} // Join the array as a comma-separated string
-                onChangeText={handleChange("categories")}
-                errorMessage={errors.categories}
-                onBlur={() => setFieldTouched("categories")}
-                errorVisible={touched.categories}
-              />
-              <TextInput
-                placeholder="Ingredients (comma-separated)"
-                keyboardType="default"
-                returnKeyType="next"
-                autoCapitalize="none"
-                value={values.ingredients} // Join the array as a comma-separated string
-                onChangeText={handleChange("ingredients")}
-                errorMessage={errors.ingredients}
-                onBlur={() => setFieldTouched("ingredients")}
-                errorVisible={touched.ingredients}
-              />
-              <View style={styles.buttonContainer}>
-                <Button title="OK" style={styles.button} onPress={handleSubmit}>
-                  Add Product
-                </Button>
-                <Button title="Cancel" style={styles.cancelButton} onPress={closeCustomPopup}>
-                  Cancel
-                </Button>
-              </View>
-            </ScrollView>
-          )}
-        </Formik>
-
-
-        </View>
-      </Modal>
+      {/* Use the BarcodeScannerModal component */}
+      <AddProductModal
+        showCustomPopup={showCustomPopup}
+        closeCustomPopup={closeCustomPopup}
+        handleOKPress={handleOKPress}
+        qrcode={qrcode}
+        user={user}
+        theme={theme}
+      />
     </View>
   );
 }
@@ -295,24 +207,6 @@ const styles = StyleSheet.create({
   },
   camera: {
     flex: 1,
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-  },
-  button: {
-    flex: 2,
-    alignSelf: "flex-end",
-    alignItems: "center",
-    marginRight: 5,
-  },
-  cancelButton: {
-    flex: 1,
-    alignSelf: "flex-end",
-    alignItems: "center",
-    marginLeft: 5,
-    backgroundColor: "gray",
-    borderColor: "gray",
   },
   text: {
     fontSize: 24,
