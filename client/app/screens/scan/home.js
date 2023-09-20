@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
   },
   separator: {
     width: 1, // Adjust the width of the white line as needed
-    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
     height: "50%",
     alignSelf: "center",
   },
