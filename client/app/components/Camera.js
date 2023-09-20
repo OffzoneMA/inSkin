@@ -5,31 +5,16 @@ import { BarCodeScanner } from "expo-barcode-scanner";
 import { ScanContext } from "../contexts/scan-context";
 import { Camera } from "expo-camera";
 
-import AlertBox from "./AlertBox";
 import { TouchableNativeFeedback } from "react-native";
 
 import AuthContext from "../contexts/auth";
 
 import * as Yup from "yup";
 
-import Toast from "react-native-root-toast";
 import { useTheme } from '@ui-kitten/components';
 
 import productActionsApi from "../api/product_actions";
 import useApi from "../hooks/useApi";
-import authStorage from "../utilities/authStorage";
-
-import { Formik } from "formik";
-
-import Modal from "react-native-modal";
-
-// Components
-import Page from "./Page";
-import Heading from "./Heading";
-import Paragraph from "./Paragraph";
-import Button from "./Button";
-import TextInput from "./TextInput";
-import TextLink from "./TextLink";
 
 import AddProductModal from './AddProductModal';
 
@@ -49,9 +34,7 @@ export default function Cam({ flash, zoom }) {
   const [permission, requestPermission] = Camera.useCameraPermissions();
   const {scanned, setScanned} = useContext(ScanContext);
 
-  const { user } = useContext(AuthContext);
-
-  const { qrcode, setQrcode } = useContext(ScanContext);
+  const { setQrcode } = useContext(ScanContext);
 
   const navigation = useNavigation();
 
