@@ -129,6 +129,13 @@ export default function Cam({ flash, zoom }) {
       }); // Handle the barcode submission using the stored barcode
     setShowCustomPopup(false); // Close the custom pop-up
   };
+
+  // Function to close the custom pop-up
+  const closeCustomPopup = () => {
+    setScanned(false);
+    setShowCustomPopup(false);
+  };
+
 /* 
   useEffect(() => {
     if (scanned) {
@@ -261,9 +268,14 @@ export default function Cam({ flash, zoom }) {
                 onBlur={() => setFieldTouched("ingredients")}
                 errorVisible={touched.ingredients}
               />
-              <Button title="OK" onPress={handleSubmit}>
-                Add Product
-              </Button>
+              <View style={styles.buttonContainer}>
+                <Button title="OK" style={styles.button} onPress={handleSubmit}>
+                  Add Product
+                </Button>
+                <Button title="Cancel" style={styles.cancelButton} onPress={closeCustomPopup}>
+                  Cancel
+                </Button>
+              </View>
             </ScrollView>
           )}
         </Formik>
@@ -285,13 +297,22 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   buttonContainer: {
-    padding: 10,
-    backgroundColor: "red",
+    flexDirection: "row",
+    justifyContent: "space-around",
   },
   button: {
+    flex: 2,
+    alignSelf: "flex-end",
+    alignItems: "center",
+    marginRight: 5,
+  },
+  cancelButton: {
     flex: 1,
     alignSelf: "flex-end",
     alignItems: "center",
+    marginLeft: 5,
+    backgroundColor: "gray",
+    borderColor: "gray",
   },
   text: {
     fontSize: 24,
