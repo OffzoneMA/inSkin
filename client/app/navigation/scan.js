@@ -1,18 +1,24 @@
 import React, { useState, useEffect } from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 
-import Home from "../screens/main/home";
+import ScanHome from "../screens/scan/home";
+
+import { AppProvider } from "../contexts/scan-context";
 
 const Stack = createStackNavigator();
 
 export default function ShelfNavigator() {
   return (
+    <AppProvider>
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen
-        name="Home"
-        options={{ title: "Home" }}
-        component={Home}
-      />
+      
+        <Stack.Screen
+          name="ScanHome"
+          options={{ title: "Scan" }}
+          component={ScanHome}
+        />
+      
     </Stack.Navigator>
+    </AppProvider>
   );
 }

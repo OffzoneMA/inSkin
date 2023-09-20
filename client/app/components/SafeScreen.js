@@ -27,7 +27,7 @@ export default function SafeScreen({ children, level = '1' }) {
 const styles = StyleSheet.create({
   safeAreaContainer: {
     flex: 1,
-    padding: 20,
+    padding: 0,
     paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
 });

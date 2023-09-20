@@ -25,4 +25,4 @@ const getCurrentSettings = () => {
   return settings.dev;
 };
 
-export default getCurrentSettings();
+module.exports = getCurrentSettings();

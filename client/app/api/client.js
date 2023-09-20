@@ -2,7 +2,8 @@ import { create } from "apisauce";
 import authStorage from "../utilities/authStorage";
 import Constants from "expo-constants";
 import cache from "../utilities/cache";
-import settings from "../config/settings";
+
+const settings = require('../config/settings')
 
 const apiClient = create({
   baseURL: settings.apiUrl,

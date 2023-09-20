@@ -1,81 +1,78 @@
 import React from "react";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import BrowseNavigator from "./browse";
-import HomeNavigator from "./home";
 import ProfileNavigator from "./profile";
-import {
-  BottomNavigation,
-  BottomNavigationTab,
-  Icon,
-} from "@ui-kitten/components";
-
+import ScanNavigator from "./scan";
+import { useTheme } from "@ui-kitten/components";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-const Tab = createBottomTabNavigator();
-
-const BrowseIcon = (props) => <Icon {...props} name="search" />;
-
-const HomeIcon = (props) => <Icon {...props} name="home-outline" />;
-
-const ProfileIcon = (props) => <Icon {...props} name="person-outline" />;
-
-const BottomTabBar = ({ navigation, state }) => (
-  <BottomNavigation
-    selectedIndex={state.index}
-    style={{paddingTop: 10}}
-    onSelect={(index) => navigation.navigate(state.routeNames[index])}
-  >
-    <BottomNavigationTab title="Browse" icon={BrowseIcon} />
-    <BottomNavigationTab title="Home" icon={HomeIcon} />
-    <BottomNavigationTab title="Profile" icon={ProfileIcon} />
-  </BottomNavigation>
-);
+const Tab = createMaterialTopTabNavigator();
 
 export default function AppTabNavigator() {
+  const theme = useTheme();
+
   return (
-      <Tab.Navigator
-        tabBar={(props) => <BottomTabBar {...props} />}
-        initialRouteName="Home"
-      >
-        <Tab.Screen
-          name="Browse"
-          component={BrowseNavigator}
-          options={{
-            tabBarIcon: ({ size, color }) => (
-              <MaterialCommunityIcons
-                name="compass"
-                size={size}
-                color={color}
-              />
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="Home"
-          component={HomeNavigator}
-          options={{
-            tabBarIcon: ({ size, color }) => (
-              <MaterialCommunityIcons
-                name="library-shelves"
-                size={size}
-                color={color}
-              />
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="Profile"
-          component={ProfileNavigator}
-          options={{
-            tabBarIcon: ({ size, color }) => (
-              <MaterialCommunityIcons
-                name="account-circle"
-                size={size}
-                color={color}
-              />
-            ),
-          }}
-        />
-      </Tab.Navigator>
+    <Tab.Navigator
+      initialRouteName="Scan"
+      tabBarOptions={{
+        activeTintColor: theme["color-primary-default"],
+        inactiveTintColor: theme["color-basic-600"],
+        showIcon: true, // Show icons in tabs
+        labelStyle: {
+          fontSize: 12,
+          fontWeight: "bold", // Make the tab labels bold
+          marginVertical: 0,
+        },
+        style: {
+          backgroundColor: theme["color-basic-100"], // Background color of the tab bar
+        },
+        indicatorStyle: {
+          backgroundColor: theme["color-primary-default"], // Color of the active tab indicator
+        },
+        iconStyle: {
+          marginVertical: 0, // Remove vertical margin
+        },
+      }}
+    >
+      <Tab.Screen
+        name="Browse"
+        component={BrowseNavigator}
+        options={{
+          tabBarIcon: ({ focused, color, size }) => (
+            <MaterialCommunityIcons
+              name={focused ? "magnify-expand" : "magnify-expand"}
+              size={24}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Scan"
+        component={ScanNavigator}
+        options={{
+          tabBarIcon: ({ focused, color, size }) => (
+            <MaterialCommunityIcons
+              name={focused ? "barcode-scan" : "barcode-scan"}
+              size={24}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={ProfileNavigator}
+        options={{
+          tabBarIcon: ({ focused, color, size }) => (
+            <MaterialCommunityIcons
+              name={focused ? "account-outline" : "account-outline"}
+              size={24}
+              color={color}
+            />
+          ),
+        }}
+      />
+    </Tab.Navigator>
   );
 }

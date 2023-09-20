@@ -5,6 +5,7 @@ const errorMiddleware = require('../middleware/error')
 
 // Routers 
 const authRouter = require('../api/auth/auth');
+const productsRouter = require('../api/products/product_actions');
 
 
 module.exports = function (app) {
@@ -22,6 +23,7 @@ module.exports = function (app) {
 
   // Routes
   app.use("/auth", authRouter);
+  app.use("/products", productsRouter);
 
   app.get('/', (req, res) => {
     res.send('Server up!')
