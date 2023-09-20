@@ -47,7 +47,7 @@ export default function Cam({ flash, zoom }) {
   const theme = useTheme();
 
   const [permission, requestPermission] = Camera.useCameraPermissions();
-  const [scanned, setScanned] = useState(false);
+  const {scanned, setScanned} = useContext(ScanContext);
 
   const { user } = useContext(AuthContext);
 
@@ -57,79 +57,10 @@ export default function Cam({ flash, zoom }) {
 
   const [showCustomPopup, setShowCustomPopup] = useState(false); // State to control custom pop-up visibility
 
-  const addScannedProduct = async ({
-    barcode, // Initialize with the scanned QR code data
-    userId,
-    name,
-    brands,
-    categories,
-    ingredients,
-  }) => {
-    var readerType;
-    var readerGoals;
-    var readerGenres;
-    try {
-      readerType = route.params.readerType;
-      readerGoals = route.params.readerGoals;
-      readerGenres = route.params.readerGenres;
-    } catch (e) {
-      readerType = null;
-      readerGoals = [];
-      readerGenres = [];
-    }
-
-    const result = await addProductApi.request(
-      barcode.trim(),
-      userId,
-      name.trim(),
-      brands,
-      categories,
-      ingredients,
-    );
-
-    if (!result.ok) {
-      Toast.show(result.data, {
-        duration: Toast.durations.SHORT,
-        backgroundColor: theme["notification-error"],
-      });
-
-      return;
-    }
-
-    Toast.show(result.data.message, {
-      duration: Toast.durations.SHORT,
-      backgroundColor: theme['notification-success'],
-    });
-  };
-
   const handleBarcodeScanned = (qr) => {
     setScanned(true);
     setQrcode({ date: new Date(), qr });
     setShowCustomPopup(true); // Show the custom pop-up
-  };
-
-  const handleOKPress = ({
-    barcode,
-    userId,
-    name,
-    brands,
-    categories,
-    ingredients,
-  }) => {
-    const brandsArray = brands.split(",").map((item) => item.trim()).filter((item) => item !== "");
-    const categoriesArray = categories.split(",").map((item) => item.trim()).filter((item) => item !== "");
-    const ingredientsArray = ingredients.split(",").map((item) => item.trim()).filter((item) => item !== "");
-
-    setScanned(false); // Reset the scanned state
-    addScannedProduct({
-        barcode: barcode,
-        userId: userId,
-        name: name,
-        brands: brandsArray, // Use the arrays instead of strings
-        categories: categoriesArray,
-        ingredients: ingredientsArray,
-      }); // Handle the barcode submission using the stored barcode
-    setShowCustomPopup(false); // Close the custom pop-up
   };
 
   // Function to close the custom pop-up
@@ -138,13 +69,6 @@ export default function Cam({ flash, zoom }) {
     setShowCustomPopup(false);
   };
 
-/* 
-  useEffect(() => {
-    if (scanned) {
-      if (scanned) navigation.push("Details");
-    }
-  }, [scanned]);
-*/
   // Camera permissions are still loading
   if (!permission) return <View />;
 
@@ -189,11 +113,8 @@ export default function Cam({ flash, zoom }) {
       {/* Use the BarcodeScannerModal component */}
       <AddProductModal
         showCustomPopup={showCustomPopup}
+        setShowCustomPopup={setShowCustomPopup}
         closeCustomPopup={closeCustomPopup}
-        handleOKPress={handleOKPress}
-        qrcode={qrcode}
-        user={user}
-        theme={theme}
       />
     </View>
   );

@@ -79,19 +79,6 @@ export default function Home({ navigation }) {
       duration: Toast.durations.SHORT,
       backgroundColor: theme['notification-success'],
     });
-/* 
-    setTimeout(() => {
-      AsyncStorage.setItem("hasOnboarded", "true");
-      var { user } = jwt_decode(result.headers["bearer-token"]);
-      authContext.setUser(user);
-      authStorage.storeToken(result.headers["bearer-token"]);
-
-      navigation.reset({
-        index: 0,
-        routes: [{ name: "Home" }],
-      });
-    }, 300);
-*/
   };
 
   const toggleFlashlight = async () => {
