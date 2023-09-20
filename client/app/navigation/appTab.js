@@ -13,7 +13,7 @@ export default function AppTabNavigator() {
 
   return (
     <Tab.Navigator
-      initialRouteName="Home"
+      initialRouteName="Scan"
       tabBarOptions={{
         activeTintColor: theme["color-primary-default"],
         inactiveTintColor: theme["color-basic-600"],
@@ -48,7 +48,7 @@ export default function AppTabNavigator() {
         }}
       />
       <Tab.Screen
-        name="Home"
+        name="Scan"
         component={ScanNavigator}
         options={{
           tabBarIcon: ({ focused, color, size }) => (

@@ -156,37 +156,32 @@ export default function Home({ navigation }) {
           step={0.1}
           value={value}
           onValueChange={(newValue) => setValue(newValue)}
-          minimumTrackTintColor="#CED0FF"
+          minimumTrackTintColor="white"
           maximumTrackTintColor="white"
           thumbTintColor="white"
         />
       </View>
 
       <View style={styles.footer}>
-        <View style={styles.actionsContainer}>
           <Pressable style={styles.iconContainer} onPress={toggleFlashlight}>
             <View>
               {flashlightOn ? (
-                <Ionicons name="flash" size={32} color="black" />
+                <Ionicons name="flash" size={25} color="yellow" />
               ) : (
-                <Ionicons name="flash-off" size={32} color="black" />
+                <Ionicons name="flash-off" size={25} color="white" />
               )}
             </View>
           </Pressable>
-          <View style={{ width: "30%" }} />
+          <View style={styles.separator}></View>
           <Pressable
             style={styles.iconContainer}
-            onPress={() => navigation.navigate("History")}
+            onPress={scanQRCodeFromGallery}
           >
             <View>
-              <MaterialCommunityIcons name="history" size={32} color="black" />
+              <MaterialIcons name="photo" size={25} color="white" />
             </View>
           </Pressable>
-        </View>
 
-        <Pressable style={styles.primeAction} onPress={scanQRCodeFromGallery}>
-          <MaterialIcons name="photo" size={32} color="black" />
-        </Pressable>
       </View>
       {/* Custom Pop-up */}
       {showCustomPopup && (
@@ -206,10 +201,14 @@ const styles = StyleSheet.create({
     backgroundColor: "#DBDCFF",
   },
   footer: {
-    width: "100%",
-    backgroundColor: "blue",
+    flexDirection: 'row',
+    width: "60%",
+    height: "9%",
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     position: "absolute",
-    bottom: 0,
+    bottom: 30,
+    borderRadius: 50,
+    alignSelf: 'center',
   },
   actionsContainer: {
     backgroundColor: "#DBDCFF",
@@ -219,6 +218,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
+  },
+  separator: {
+    width: 1, // Adjust the width of the white line as needed
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    height: "50%",
+    alignSelf: "center",
   },
   iconContainer: {
     flex: 1,
