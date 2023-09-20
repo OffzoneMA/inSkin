@@ -68,3 +68,6 @@ yarn-error.*
 
 # server winston log files
 server/*.log
+
+# TODOS file
+TODOS
