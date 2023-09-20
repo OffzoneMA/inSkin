@@ -8,27 +8,13 @@ import { ScanContext } from "../../contexts/scan-context";
 import {
   Ionicons,
   MaterialIcons,
-  MaterialCommunityIcons,
 } from "@expo/vector-icons";
 
 import Slider from "@react-native-community/slider";
 import AlertBox from "../../components/AlertBox";
-import Navbar from "../../components/Navbar";
 import Cam from "../../components/Camera";
 
-import AuthContext from "../../contexts/auth";
-import * as Yup from "yup";
-
-import Toast from "react-native-root-toast";
-import { useTheme } from '@ui-kitten/components';
-
-import productActionsApi from "../../api/product_actions";
-import useApi from "../../hooks/useApi";
-import authStorage from "../../utilities/authStorage";
-
-const validationSchema = Yup.object({
-  barcode: Yup.string().required().label("Barcode"),
-});
+import AddProductModal from '../../components/AddProductModal';
 
 export default function Home({ navigation }) {
   const [flashlightOn, setFlashlightOn] = useState(false);
@@ -38,47 +24,12 @@ export default function Home({ navigation }) {
 
   const { qrcode, setQrcode } = useContext(ScanContext);
 
-  const { user } = useContext(AuthContext);
-
   const [showCustomPopup, setShowCustomPopup] = useState(false); // State to control custom pop-up visibility
 
-  const addProductApi = useApi(productActionsApi.add_product);
-
-  const theme = useTheme();
-
-  const addScannedProduct = async ({
-    barcode,
-  }) => {
-    var readerType;
-    var readerGoals;
-    var readerGenres;
-    try {
-      readerType = route.params.readerType;
-      readerGoals = route.params.readerGoals;
-      readerGenres = route.params.readerGenres;
-    } catch (e) {
-      readerType = null;
-      readerGoals = [];
-      readerGenres = [];
-    }
-
-    const result = await addProductApi.request(
-      barcode,
-    );
-
-    if (!result.ok) {
-      Toast.show(result.data, {
-        duration: Toast.durations.SHORT,
-        backgroundColor: theme["notification-error"],
-      });
-
-      return;
-    }
-
-    Toast.show(result.data.message, {
-      duration: Toast.durations.SHORT,
-      backgroundColor: theme['notification-success'],
-    });
+  // Function to close the custom pop-up
+  const closeCustomPopup = () => {
+    setScanned(false);
+    setShowCustomPopup(false);
   };
 
   const toggleFlashlight = async () => {
@@ -173,14 +124,13 @@ export default function Home({ navigation }) {
           </Pressable>
 
       </View>
-      {/* Custom Pop-up */}
-      {showCustomPopup && (
-        <View style={styles.customPopup}>
-          <Text style={styles.modalTitle}>{qrcode.qr.data}</Text>
-          <Text>{qrcode.data}</Text>
-          <Button title="OK" onPress={handleOKPress} />
-        </View>
-      )}
+      {/* Bottom Modal */}
+      {/* Use the BarcodeScannerModal component */}
+      <AddProductModal
+        showCustomPopup={showCustomPopup}
+        setShowCustomPopup={setShowCustomPopup}
+        closeCustomPopup={closeCustomPopup}
+      />
     </View>
   );
 }

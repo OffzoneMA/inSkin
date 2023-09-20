@@ -27,9 +27,6 @@ const validationSchema = Yup.object({
 });
 
 export default function Cam({ flash, zoom }) {
-  const addProductApi = useApi(productActionsApi.add_product);
-
-  const theme = useTheme();
 
   const [permission, requestPermission] = Camera.useCameraPermissions();
   const {scanned, setScanned} = useContext(ScanContext);
