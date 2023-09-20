@@ -7,7 +7,7 @@ import Button from './Button';
 
 import Modal from "react-native-modal";
 
-import { useState, useContext, useEffect } from "react";
+import { useContext } from "react";
 import AuthContext from "../contexts/auth";
 import { ScanContext } from "../contexts/scan-context";
 import productActionsApi from "../api/product_actions";
