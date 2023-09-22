@@ -1,6 +1,6 @@
 import * as ImagePicker from "expo-image-picker";
 
-import { View, StyleSheet, Pressable, Text, Button} from "react-native";
+import { View, StyleSheet, Pressable } from "react-native";
 import { useState, useCallback, useContext } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { BarCodeScanner } from "expo-barcode-scanner";
@@ -25,6 +25,7 @@ export default function Home({ navigation }) {
   const { qrcode, setQrcode } = useContext(ScanContext);
 
   const [showCustomPopup, setShowCustomPopup] = useState(false); // State to control custom pop-up visibility
+  const { setScanned } = useContext(ScanContext);
 
   // Function to close the custom pop-up
   const closeCustomPopup = () => {

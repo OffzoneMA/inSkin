@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, View, Text } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import TextInput from './TextInput';
@@ -12,9 +12,7 @@ import AuthContext from "../contexts/auth";
 import { ScanContext } from "../contexts/scan-context";
 import productActionsApi from "../api/product_actions";
 
-import Toast from "react-native-root-toast";
-
-import { useTheme } from '@ui-kitten/components';
+import { useToast } from "react-native-toast-notifications";
 
 const validationSchema = Yup.object({
   barcode: Yup.string().required().label('Barcode'),
@@ -30,10 +28,11 @@ const AddProductModal = ({
   setShowCustomPopup,
 }) => {
     const { user } = useContext(AuthContext);
-    const {scanned, setScanned} = useContext(ScanContext);
-    const { qrcode, setQrcode } = useContext(ScanContext);
+    const { setScanned} = useContext(ScanContext);
+    const { qrcode } = useContext(ScanContext);
     const addProductApi = useApi(productActionsApi.add_product);
-    const theme = useTheme();
+
+    const toast = useToast();
 
     const addScannedProduct = async ({
         barcode, // Initialize with the scanned QR code data
@@ -66,18 +65,11 @@ const AddProductModal = ({
         );
     
         if (!result.ok) {
-          Toast.show(result.data, {
-            duration: Toast.durations.SHORT,
-            backgroundColor: theme["notification-error"],
-          });
-    
+          toast.show(result.data, {type: "danger"});
           return;
         }
     
-        Toast.show(result.data.message, {
-          duration: Toast.durations.SHORT,
-          backgroundColor: theme['notification-success'],
-        });
+        toast.show(result.data.message, {type: "success"});
       };
 
     const handleOKPress = ({

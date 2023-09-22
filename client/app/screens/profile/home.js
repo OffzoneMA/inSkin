@@ -1,14 +1,8 @@
 import React, { useState, useContext } from "react";
 import {
-  View,
   StyleSheet,
-  Text,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
 } from "react-native";
 
-import Toast from "react-native-root-toast";
 import { useTheme } from '@ui-kitten/components';
 
 import Page from "../../components/Page";
@@ -19,16 +13,15 @@ import Button from "../../components/Button";
 import AuthContext from "../../contexts/auth";
 import authStorage from "../../utilities/authStorage";
 
+import { useToast } from "react-native-toast-notifications";
+
 function ProfileHome({ navigation }) {
   const authContext = useContext(AuthContext);
-  const theme = useTheme();
+
+  const toast = useToast();
 
   const handleLogOut = () => {
-    
-    Toast.show('Logout Successful', {
-      duration: Toast.durations.SHORT,
-      backgroundColor: theme["notification-success"],
-    });
+    toast.show('Logout Successful', {type: "success"});
 
     setTimeout(() => {
       authContext.setUser(null);

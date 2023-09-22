@@ -1,9 +1,7 @@
-import { StatusBar } from "expo-status-bar";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useFonts } from "expo-font";
 import AppLoading from "expo-app-loading";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { RootSiblingParent } from "react-native-root-siblings";
 import { useColorScheme } from 'react-native';
 
 import * as eva from "@eva-design/eva";
@@ -14,8 +12,6 @@ import { ThemeContext } from "./app/contexts/theme-context";
 import {
   ApplicationProvider,
   IconRegistry,
-  Layout,
-  Text,
 } from "@ui-kitten/components";
 
 import { NavigationContainer } from "@react-navigation/native";
@@ -28,6 +24,8 @@ import AuthNavigator from "./app/navigation/auth";
 import AppTabNavigator from "./app/navigation/appTab";
 import SafeScreen from "./app/components/SafeScreen";
 import OfflineNotice from "./app/components/OfflineNotice";
+
+import { ToastProvider } from 'react-native-toast-notifications'
 
 export default function App() {
   const [haveFontsLoaded] = useFonts({
@@ -72,8 +70,10 @@ export default function App() {
   if (haveFontsLoaded && isReady) {
     return (
       <>
+      
         <IconRegistry icons={EvaIconsPack} />
         <AuthContext.Provider value={{ user, setUser }}>
+        
           <ThemeContext.Provider value={{ theme, setTheme }}>
             <ApplicationProvider
               {...eva}
@@ -83,7 +83,13 @@ export default function App() {
                   : { ...eva.dark, ...darkTheme }
               }
             >
-              <RootSiblingParent>
+              <ToastProvider
+                placement="bottom"
+                successColor="#71B515"
+                dangerColor="#DB2E5E"
+                duration={3000}
+                swipeEnabled={true}
+              >
                 <SafeScreen>
                   <OfflineNotice />
                   <NavigationContainer>
@@ -96,10 +102,11 @@ export default function App() {
                     )}
                   </NavigationContainer>
                 </SafeScreen>
-              </RootSiblingParent>
+              </ToastProvider>
             </ApplicationProvider>
           </ThemeContext.Provider>
         </AuthContext.Provider>
+        
       </>
     );
   }
