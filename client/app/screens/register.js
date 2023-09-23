@@ -15,8 +15,7 @@ import Button from "../components/Button";
 import TextInput from "../components/TextInput";
 import TextLink from "../components/TextLink";
 
-import Toast from "react-native-root-toast";
-import { useTheme } from '@ui-kitten/components';
+import { useToast } from "react-native-toast-notifications";
 
 import authApi from "../api/auth";
 import useApi from "../hooks/useApi";
@@ -36,7 +35,8 @@ export default function RegisterScreen({ route, navigation }) {
   const registerApi = useApi(authApi.register);
 
   const authContext = useContext(AuthContext);
-  const theme = useTheme();
+
+  const toast = useToast();
 
   const registerHandler = async ({
     firstName,
@@ -68,18 +68,11 @@ export default function RegisterScreen({ route, navigation }) {
     );
 
     if (!result.ok) {
-      Toast.show(result.data, {
-        duration: Toast.durations.SHORT,
-        backgroundColor: theme["notification-error"],
-      });
-
+      toast.show(result.data, {type: "danger"});
       return;
     }
 
-    Toast.show(result.data.message, {
-      duration: Toast.durations.SHORT,
-      backgroundColor: theme['notification-success'],
-    });
+    toast.show(result.data.message, {type: "success"});
 
     setTimeout(() => {
       AsyncStorage.setItem("hasOnboarded", "true");

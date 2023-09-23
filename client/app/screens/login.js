@@ -3,20 +3,13 @@ import {
   StyleSheet,
   View,
   ScrollView,
-  Dimensions,
-  Image,
-  Alert,
 } from "react-native";
 import { Formik } from "formik";
 import * as Yup from "yup";
-import colors from "../config/colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import AuthContext from "../contexts/auth";
 import jwt_decode from "jwt-decode";
-
-import Toast from "react-native-root-toast";
-import { useTheme } from "@ui-kitten/components";
 
 // Components
 import Page from "../components/Page";
@@ -25,13 +18,13 @@ import Paragraph from "../components/Paragraph";
 import Button from "../components/Button";
 import TextInput from "../components/TextInput";
 import TextLink from "../components/TextLink";
-import Label from "../components/Label";
 
 // API
 import authApi from "../api/auth";
 import useApi from "../hooks/useApi";
 import authStorage from "../utilities/authStorage";
-import ActivityIndicator from "../components/ActivityIndicator";
+
+import { useToast } from "react-native-toast-notifications";
 
 const validationSchema = Yup.object({
   email: Yup.string().required().email().label("Email"),
@@ -42,24 +35,17 @@ export default function LoginScreen({ navigation }) {
   const loginApi = useApi(authApi.login);
 
   const authContext = useContext(AuthContext);
-  const theme = useTheme();
+  const toast = useToast();
 
   const loginHandler = async ({ email, password }) => {
     const result = await loginApi.request(email, password);
 
     if (!result.ok) {
-      Toast.show(result.data, {
-        duration: Toast.durations.SHORT,
-        backgroundColor: theme["notification-error"],
-      });
-
+      toast.show(result.data, {type: "danger"});
       return;
     }
 
-    Toast.show(result.data.message, {
-      duration: Toast.durations.SHORT,
-      backgroundColor: theme["notification-success"],
-    });
+    toast.show(result.data.message, {type: "success"});
 
     setTimeout(() => {
       AsyncStorage.setItem("hasOnboarded", "true");
