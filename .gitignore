@@ -71,3 +71,6 @@ server/*.log
 
 # TODOS file
 TODOS
+
+# vs code workspace
+novachic.code-workspace
