@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center", // Align to the left
-    paddingVertical: 10,
+    paddingTop: 10,
     paddingHorizontal: 10,
   },
   followersNumber: {
