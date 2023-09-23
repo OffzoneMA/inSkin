@@ -7,9 +7,11 @@ import authStorage from "../../utilities/authStorage";
 import { useToast } from "react-native-toast-notifications";
 import Button from "../../components/Button";
 
+import ActionButton from 'react-native-action-button';
 
 function ProfileHome({ navigation }) {
   const authContext = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const toast = useToast();
 
   const theme = useTheme();
@@ -25,22 +27,40 @@ function ProfileHome({ navigation }) {
 
   // Placeholder for user profile data
   const userProfile = {
-    profilePicture: require("../../assets/images/onboarding1.png"), // Replace with the actual profile picture source
-    firstName: "Reda", // Replace with the user's first name
-    lastName: "Haddan", // Replace with the user's last name
-    userName: "@RedaHaddan124", // Replace with the user's profession
-    // Add more profile data as needed
+    profilePicture:"person-outline",
+    firstName: user.firstName,
+    lastName: user.lastName,
+    userName: user.userName,
   };
 
   return (
     <Page>
       <View style={styles.profileContainer}>
         <View style={[styles.profilePictureContainer, { borderColor: theme["color-primary-default"] }]}>
-        <Image
-          source={userProfile.profilePicture}
-          style={styles.profilePicture}
-        />
+          <View style={[styles.profileIconWrapper, { backgroundColor: theme["color-primary-disabled"] }]}>
+            <Icon
+              name={userProfile.profilePicture}
+              style={styles.profilePicture} fill={theme["color-primary-unfocus"]}
+            />
+          </View>
+          {/* Floating button for uploading profile picture */}
+          <ActionButton 
+            buttonColor={theme["color-primary-default"]}
+            size={35}
+            offsetY={-10}
+            offsetX={-10}
+            
+          >
+            <ActionButton.Item
+              buttonColor="#3498db"
+              title="Upload Picture"
+              onPress={() => this.handleUploadProfilePicture()}
+            >
+              <Icon name="upload" style={styles.actionButtonIcon} />
+            </ActionButton.Item>
+          </ActionButton>
         </View>
+
         <Text style={styles.profileName}>
           {userProfile.firstName} {userProfile.lastName}
         </Text>
@@ -126,14 +146,18 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   profilePictureContainer: {
-    borderRadius: 105,
+    borderRadius: 100,
     marginBottom: 10,
     borderWidth: 2,
+    padding: 2,
+    width: 80,
+    height: 80,
+  },
+  profileIconWrapper: {
+    borderRadius: 98,
     padding: 5,
   },
   profilePicture: {
-    width: 80,
-    height: 80,
   },
   profileName: {
     fontSize: 24,
