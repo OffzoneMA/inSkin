@@ -16,7 +16,7 @@ export default function AppTabNavigator() {
       initialRouteName="Scan"
       tabBarOptions={{
         activeTintColor: theme["color-primary-default"],
-        inactiveTintColor: theme["color-basic-600"],
+        inactiveTintColor: theme["color-primary-unfocus"],
         showIcon: true, // Show icons in tabs
         labelStyle: {
           fontSize: 12,
