@@ -1,6 +1,4 @@
 import { create } from "apisauce";
-import authStorage from "../utilities/authStorage";
-import Constants from "expo-constants";
 import cache from "../utilities/cache";
 
 const settings = require('../config/settings')
@@ -26,6 +24,7 @@ apiClient.get = async (url, params, axiosConfig) => {
 };
 
 apiClient.addAsyncRequestTransform(async (request) => {
+  const authStorage = require("../utilities/authStorage").default; // Import authStorage when needed
   const token = await authStorage.getToken();
   if (!token) return;
   request.headers["Authorization"] = "Bearer ".concat(token);

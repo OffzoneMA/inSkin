@@ -1,9 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useFonts } from "expo-font";
-import AppLoading from "expo-app-loading";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useColorScheme } from 'react-native';
-
 import * as eva from "@eva-design/eva";
 import lightTheme from "./app/config/lightTheme";
 import darkTheme from "./app/config/darkTheme";
@@ -13,10 +11,10 @@ import {
   ApplicationProvider,
   IconRegistry,
 } from "@ui-kitten/components";
-
 import { NavigationContainer } from "@react-navigation/native";
 import AuthContext from "./app/contexts/auth";
 import authStorage from "./app/utilities/authStorage";
+import * as SplashScreen from 'expo-splash-screen'; // Import SplashScreen
 
 // Navigation
 import OnboardingNavigator from "./app/navigation/onboarding";
@@ -24,7 +22,6 @@ import AuthNavigator from "./app/navigation/auth";
 import AppTabNavigator from "./app/navigation/appTab";
 import SafeScreen from "./app/components/SafeScreen";
 import OfflineNotice from "./app/components/OfflineNotice";
-
 import { ToastProvider } from 'react-native-toast-notifications'
 
 export default function App() {
@@ -63,17 +60,27 @@ export default function App() {
   };
 
   const startUp = async () => {
+    // Prevent the splash screen from auto-hiding
+    await SplashScreen.preventAutoHideAsync();
+
     await restoreUser();
     await computeInitialRoute();
+
+    // Use SplashScreen to hide the splash screen
+    await SplashScreen.hideAsync();
+
+    setIsReady(true);
   };
+
+  useEffect(() => {
+    startUp(); // Call startUp when the component mounts
+  }, []);
 
   if (haveFontsLoaded && isReady) {
     return (
       <>
-      
         <IconRegistry icons={EvaIconsPack} />
         <AuthContext.Provider value={{ user, setUser }}>
-        
           <ThemeContext.Provider value={{ theme, setTheme }}>
             <ApplicationProvider
               {...eva}
@@ -106,16 +113,9 @@ export default function App() {
             </ApplicationProvider>
           </ThemeContext.Provider>
         </AuthContext.Provider>
-        
       </>
     );
   }
 
-  return (
-    <AppLoading
-      startAsync={startUp}
-      onError={(err) => console.warn(err)}
-      onFinish={() => setIsReady(true)}
-    />
-  );
+  return null; // Return null while loading
 }
