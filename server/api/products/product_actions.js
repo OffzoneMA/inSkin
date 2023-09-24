@@ -49,4 +49,44 @@ router.post(
   })
 );
 
+// GET all products
+router.get("/", async (req, res) => {
+  try {
+    // Query the database to get all products
+    const products = await Product.find();
+
+    // Check if there are no products
+    if (!products || products.length === 0) {
+      return res.status(404).json({ message: "No products found" });
+    }
+
+    // Return the products as JSON response
+    res.status(200).json(products);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+// GET a single product by ID
+router.get("/:id", async (req, res) => {
+  try {
+    const productId = req.params.id;
+
+    // Query the database to find a product by ID
+    const product = await Product.findById(productId);
+
+    // Check if the product exists
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    // Return the product as JSON response
+    res.status(200).json(product);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
 module.exports = router;
