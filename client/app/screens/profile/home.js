@@ -28,9 +28,9 @@ function ProfileHome({ navigation }) {
   // Placeholder for user profile data
   const userProfile = {
     profilePicture:"person-outline",
-    firstName: user.firstName,
-    lastName: user.lastName,
-    userName: user.userName,
+    firstName: "user.firstName",
+    lastName: "user.lastName",
+    userName: "user.userName",
   };
 
   return (
@@ -44,21 +44,10 @@ function ProfileHome({ navigation }) {
             />
           </View>
           {/* Floating button for uploading profile picture */}
-          <ActionButton 
-            buttonColor={theme["color-primary-default"]}
-            size={35}
-            offsetY={-10}
-            offsetX={-10}
-            
-          >
-            <ActionButton.Item
-              buttonColor="#3498db"
-              title="Upload Picture"
-              onPress={() => this.handleUploadProfilePicture()}
-            >
-              <Icon name="upload" style={styles.actionButtonIcon} />
-            </ActionButton.Item>
-          </ActionButton>
+          
+          <Pressable style={[styles.actionButtonIcon, { borderColor: "white", borderWidth: 3, borderRadius: 5, bottom: -10, right: -15, position: "absolute", margin: 5, padding: 8, borderRadius: 100,width: 40, height: 40, backgroundColor: theme["color-primary-disabled"] }]}>
+              <Icon name="edit-outline" fill={theme["color-primary-default"]} style={styles.actionButtonIcon} />
+          </Pressable>
         </View>
 
         <Text style={styles.profileName}>
