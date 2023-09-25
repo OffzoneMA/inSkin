@@ -14,25 +14,33 @@ export default function AppTabNavigator() {
   return (
     <Tab.Navigator
       initialRouteName="Scan"
-      tabBarOptions={{
-        activeTintColor: theme["color-primary-default"],
-        inactiveTintColor: theme["color-primary-unfocus"],
-        showIcon: true, // Show icons in tabs
-        labelStyle: {
+      screenOptions = {({ route }) =>({
+        tabBarActiveTintColor: theme["color-primary-default"],
+        tabBarInactiveTintColor: theme["color-primary-unfocus"],
+        tabBarShowIcon: true, // Show icons in tabs
+        tabBarLabelStyle: {
           fontSize: 12,
           fontWeight: "bold", // Make the tab labels bold
           marginVertical: 0,
         },
-        style: {
+        tabBarStyle: {
           backgroundColor: theme["color-basic-100"], // Background color of the tab bar
         },
-        indicatorStyle: {
+        tabBarIndicatorStyle: {
           backgroundColor: theme["color-primary-default"], // Color of the active tab indicator
         },
-        iconStyle: {
+        tabBarIconStyle: {
           marginVertical: 0, // Remove vertical margin
         },
-      }}
+        tabBarStyle: [
+          {
+            display: "flex"
+          },
+          null
+        ],
+        tabBarIcon: ({ color }) => 
+        screenOptions(route, color),
+      })}
     >
       <Tab.Screen
         name="Browse"
