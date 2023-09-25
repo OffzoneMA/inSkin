@@ -12,7 +12,7 @@ router.post(
     // Find user with email
     const foundUser = await User.findOne({
       email: req.body.email,
-    }).select({ email: 1, firstName: 1, lastName: 1, password: 1 });
+    }).select({ firstName: 1, lastName: 1, userName: 1, email: 1, password: 1 });
 
     // User doesn't exist
     if (!foundUser) {
