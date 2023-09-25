@@ -7,8 +7,6 @@ import authStorage from "../../utilities/authStorage";
 import { useToast } from "react-native-toast-notifications";
 import Button from "../../components/Button";
 
-import ActionButton from 'react-native-action-button';
-
 function ProfileHome({ navigation }) {
   const authContext = useContext(AuthContext);
   const { user } = useContext(AuthContext);
@@ -28,9 +26,9 @@ function ProfileHome({ navigation }) {
   // Placeholder for user profile data
   const userProfile = {
     profilePicture:"person-outline",
-    firstName: "user.firstName",
-    lastName: "user.lastName",
-    userName: "user.userName",
+    firstName: user.firstName,
+    lastName: user.lastName,
+    userName: user.userName,
   };
 
   return (

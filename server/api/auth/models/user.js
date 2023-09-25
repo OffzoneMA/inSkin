@@ -70,6 +70,7 @@ userSchema.methods.generateAuthToken = function () {
         _id: this._id,
         firstName: this.firstName,
         lastName: this.lastName,
+        userName: this.userName,
         email: this.email,
       },
     },
@@ -84,8 +85,8 @@ function validateUser(user) {
   const schema = Joi.object({
     firstName: Joi.string().required(),
     lastName: Joi.string(),
-    email: Joi.string().email().required(),
     userName: Joi.string(),
+    email: Joi.string().email().required(),
     password: Joi.string()
       .min(4)
       .pattern(new RegExp("^[a-zA-Z0-9]{3,30}$"))
