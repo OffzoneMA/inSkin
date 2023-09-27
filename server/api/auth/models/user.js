@@ -32,7 +32,8 @@ const userSchema = new mongoose.Schema({
           },
   profileImage:
         {
-          type: String, 
+          data: Buffer,
+          contentType: String
         },
   isAdmin: 
         {

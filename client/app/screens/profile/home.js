@@ -7,12 +7,24 @@ import authStorage from "../../utilities/authStorage";
 import { useToast } from "react-native-toast-notifications";
 import Button from "../../components/Button";
 
+import * as ImagePicker from "expo-image-picker";
+
+import { useState, useCallback } from "react";
+
+import AlertBox from "../../components/AlertBox";
+
+import { Dimensions } from "react-native";
+
 function ProfileHome({ navigation }) {
   const authContext = useContext(AuthContext);
   const { user } = useContext(AuthContext);
   const toast = useToast();
 
   const theme = useTheme();
+
+  const [alertBox, setAlertBox] = useState(null);
+
+  const [selectedImageUri, setSelectedImageUri] = useState(null); // Step 1: State for selected image URI
 
   const handleLogOut = () => {
     toast.show("Logout Successful", { type: "success" });
@@ -31,19 +43,48 @@ function ProfileHome({ navigation }) {
     userName: user.userName,
   };
 
+  async function modifyProfileImage() {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status === "granted") {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      });
+      if (!result.canceled) {
+        setSelectedImageUri(result.assets[0].uri); // Step 2: Update selected image URI
+        console.log(result.assets[0].uri);
+        toast.show("Logout Successful", { type: "success" });
+      }
+    }
+    if (status !== "granted") {
+      setAlertBox("File permission is required to scan qr-code from photo.");
+    }
+    setTimeout(() => {
+      setAlertBox(null);
+    }, 5000);
+  }
+
   return (
     <Page>
       <View style={styles.profileContainer}>
         <View style={[styles.profilePictureContainer, { borderColor: theme["color-primary-default"] }]}>
-          <View style={[styles.profileIconWrapper, { backgroundColor: theme["color-primary-disabled"] }]}>
-            <Icon
-              name={userProfile.profilePicture}
-              style={styles.profilePicture} fill={theme["color-primary-unfocus"]}
-            />
+          <View style={[styles.profileIconWrapper, { overflow: 'hidden', backgroundColor: theme["color-primary-disabled"] }]}>
+            {selectedImageUri ? ( // Step 3: Conditionally render selected image or default icon
+              <Image 
+                source={{ uri: selectedImageUri }} /* style={styles.profilePicture} */ 
+                style={[styles.profilePicture, {  flex: 1 }]} // Use flex to fit the parent container
+              />
+            ) : (
+              <Icon
+                name={userProfile.profilePicture}
+                style={styles.profilePicture} fill={theme["color-primary-unfocus"]}
+              />
+            )}
           </View>
           {/* Floating button for uploading profile picture */}
           
-          <Pressable style={[styles.actionButtonIcon, { borderColor: "white", borderWidth: 3, borderRadius: 5, bottom: -10, right: -15, position: "absolute", margin: 5, padding: 8, borderRadius: 100,width: 40, height: 40, backgroundColor: theme["color-primary-disabled"] }]}>
+          <Pressable
+            onPress={modifyProfileImage}
+            style={[styles.actionButtonIcon, { borderColor: "white", borderWidth: 3, borderRadius: 5, bottom: -10, right: -15, position: "absolute", margin: 5, padding: 8, borderRadius: 100,width: 40, height: 40, backgroundColor: theme["color-primary-disabled"] }]}>
               <Icon name="edit-outline" fill={theme["color-primary-default"]} style={styles.actionButtonIcon} />
           </Pressable>
         </View>
@@ -142,7 +183,7 @@ const styles = StyleSheet.create({
   },
   profileIconWrapper: {
     borderRadius: 98,
-    padding: 5,
+    flex: 1,
   },
   profilePicture: {
   },
