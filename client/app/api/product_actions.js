@@ -25,6 +25,21 @@ const add_product = (
     reader_genres, */
   });
 
+// GET all products
+const getAllProducts = () => client.get("/products");
+
+// GET a single product by ID
+const getProductById = async (id) => {
+  try {
+    const response = await client.get(`/products/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to fetch product by ID");
+  }
+};
+
 export default {
     add_product,
+    getAllProducts,
 };
