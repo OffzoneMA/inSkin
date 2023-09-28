@@ -7,6 +7,15 @@ const router = express.Router();
 
 const mongoose = require("mongoose");
 
+const Tea = require("./models/tea");
+const multer = require("multer");
+
+const bodyParser = require('body-parser');
+
+const fs = require('fs');
+
+const path = require('path');
+
 // POST a new product
 router.post(
   "/add-product",
@@ -88,5 +97,79 @@ router.get("/:id", async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
+//upload Image
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "./uploads");
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname);
+  },
+});
+
+const uploadImg = multer({ storage: storage }).single("image");
+
+//POST tea
+const newTea = (req, res) => {
+  //check if tea already exists in db
+  Tea.findOne({ name: req.body.name }, (err, data) => {
+    //if tea not in db, add it
+    if (!data) {
+      const newTea = new Tea({
+        name: req.body.name,
+        image: {
+          data: fs.readFileSync('./uploads/' + req.file.filename),
+          contentType: 'image/png'
+        },
+        description: req.body.description,
+        keywords: req.body.keywords,
+        origin: req.body.origin,
+        brew_time: req.body.brew_time,
+        temperature: req.body.temperature,
+      });
+
+      //save to database
+      newTea.save((err, data) => {
+        if (err) return res.json("Something is wrong. Please check.");
+        return res.json(data);
+      });
+      return res.json("New tea is created.");
+    } else {
+      if(err) return res.json(`Something went wrong, please try again. ${err}`);
+      return res.json(`${req.body.name} tea already exists.`);
+    }
+  });
+};
+
+router.post(
+  "/tea",
+  uploadImg,
+  newTea
+);
+
+// GET method to retrieve all posted images
+const getAllTeaImages = (req, res) => {
+  // Find all teas in the database
+  Tea.find({}, (err, teas) => {
+    if (err) {
+      // Handle errors
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    // Extract image data from each tea and create an array of image objects
+    const imageArray = teas.map((tea) => ({
+      name: tea.name,
+      contentType: tea.image.contentType,
+      data: tea.image.data,
+    }));
+
+    // Send the array of image objects as a response
+    res.json(imageArray);
+  });
+};
+
+// Add this route to your Express router
+router.get("/tea/images", getAllTeaImages);
 
 module.exports = router;

@@ -13,7 +13,8 @@ const productSchema = new mongoose.Schema({
     },
     images: [
         {
-        type: String, // You can store image URLs here
+          data: Buffer,
+          contentType: String
         },
     ],
     productDetails: {
@@ -67,7 +68,12 @@ function validateProduct(product) {
   const schema = Joi.object({
     barcode: Joi.string().required(),
     userId: Joi.string().required(), // Assuming userId is required
-    images: Joi.array().items(Joi.string()),
+    images: Joi.array().items(
+      Joi.object({
+          data: Joi.binary().required(),
+          contentType: Joi.string().required(),
+      })
+    ),
 
     productDetails: Joi.object({
       name: Joi.string().allow(''),

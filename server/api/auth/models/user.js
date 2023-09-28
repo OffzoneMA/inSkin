@@ -86,12 +86,16 @@ function validateUser(user) {
   const schema = Joi.object({
     firstName: Joi.string().required(),
     lastName: Joi.string(),
-    userName: Joi.string(),
     email: Joi.string().email().required(),
+    userName: Joi.string(),
     password: Joi.string()
       .min(4)
       .pattern(new RegExp("^[a-zA-Z0-9]{3,30}$"))
       .required(),
+    profileImage: Joi.object({
+      data: Joi.binary().required(),
+      contentType: Joi.string().required(),
+    }),
     isAdmin: Joi.boolean(),
   });
 

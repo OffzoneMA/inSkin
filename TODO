@@ -1,0 +1,18 @@
+TODO: add browsing products feature with images and the ability to comment and review
+TODO: add profile informations (saved posts, my posts)
+TODO: add product image importation feature
+TODO: fix add product pop up UI
+TODO: make add product pop up isolated from Camera.js File
+TODO: implement product pop up in gallery import
+TODO: add admin and not admin users
+TODO: admin users have the ability to delete posts
+TODO: admin users have the ability to validate posts and they only can see unvalidated posts
+TODO: add proper filter to browse screen, validated and unvalidated in case of admin, search bar, categories, brands, etc..., exclude option too
+TODO: implement google/facebook auth
+TODO: implement google/facebook auth
+TODO: add forgot password option
+TODO: fix icon not showing in IOS and latency on Android
+TODO: add brands and categories dropdown lists when add new product
+TODO: use hooks on the browse screen so that the fetching won't be done until the browsing screen is swiped on
+TODO: make profile settings list dynamic, make it a lazy list even if it's short
+DONE: my create account button doesn't work when i logout
