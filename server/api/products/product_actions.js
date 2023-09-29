@@ -12,10 +12,6 @@ const multer = require("multer");
 
 const bodyParser = require('body-parser');
 
-const fs = require('fs');
-
-const path = require('path');
-
 // POST a new product
 router.post(
   "/add-product",
@@ -98,20 +94,13 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-//upload Image
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "./uploads");
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.originalname);
-  },
-});
+router.use(bodyParser.json());
 
-const uploadImg = multer({ storage: storage }).single("image");
+const upload = multer();
 
 //POST tea
 const newTea = (req, res) => {
+
   //check if tea already exists in db
   Tea.findOne({ name: req.body.name }, (err, data) => {
     //if tea not in db, add it
@@ -119,8 +108,8 @@ const newTea = (req, res) => {
       const newTea = new Tea({
         name: req.body.name,
         image: {
-          data: fs.readFileSync('./uploads/' + req.file.filename),
-          contentType: 'image/png'
+          data: req.file.buffer,
+          contentType: req.file.buffer.mimetype
         },
         description: req.body.description,
         keywords: req.body.keywords,
@@ -131,12 +120,14 @@ const newTea = (req, res) => {
 
       //save to database
       newTea.save((err, data) => {
-        if (err) return res.json("Something is wrong. Please check.");
-        return res.json(data);
+        if (err) {
+          return res.json(`Error occurred while saving tea: ${err}`);
+        }
+        return res.json({message: "New tea is created.", data});
       });
-      return res.json("New tea is created.");
+      
     } else {
-      if(err) return res.json(`Something went wrong, please try again. ${err}`);
+      if(err) return res.json(`Something went wrong, when cheking data. ${err}`);
       return res.json(`${req.body.name} tea already exists.`);
     }
   });
@@ -144,7 +135,7 @@ const newTea = (req, res) => {
 
 router.post(
   "/tea",
-  uploadImg,
+  upload.single('image'),
   newTea
 );
 
