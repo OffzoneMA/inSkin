@@ -15,4 +15,5 @@ TODO: fix icon not showing in IOS and latency on Android
 TODO: add brands and categories dropdown lists when add new product
 TODO: use hooks on the browse screen so that the fetching won't be done until the browsing screen is swiped on
 TODO: make profile settings list dynamic, make it a lazy list even if it's short
+TODO: handle errors properly in the auth.js update and get profile image route
 DONE: my create account button doesn't work when i logout

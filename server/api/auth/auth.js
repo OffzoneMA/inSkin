@@ -136,4 +136,31 @@ router.put(
   })
 );
 
+router.get(
+  "/profile-image/:id",
+  /* auth, */ // Ensure the user is authenticated to access this route
+  asyncMiddleware(async (req, res) => {
+    const userId = req.params.id; // Assuming you have the user ID in the request object after authentication
+    const user = await User.findById(userId).select({ userName: 1 , profileImage: 1});
+
+    console.log(user);
+
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+
+    if (!user.profileImage || !user.profileImage.data) {
+      return res.status(404).send("Profile image not found");
+    }
+
+    const profileImage = {
+      name: "profile_image_" + user.userName,
+      contentType: user.profileImage.contentType,
+      data: user.profileImage.data,
+    }
+
+    res.send(profileImage);
+  })
+);
+
 module.exports = router;
