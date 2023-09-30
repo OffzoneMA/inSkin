@@ -6,6 +6,10 @@ const auth = require("../../middleware/auth");
 
 const router = express.Router();
 
+const multer = require("multer");
+
+const bodyParser = require('body-parser');
+
 router.post(
   "/login",
   asyncMiddleware(async (req, res) => {
@@ -96,6 +100,39 @@ router.post(
     res
       .header("bearer-token", token)
       .json({ message: "Registration Successful!" });
+  })
+);
+
+router.use(bodyParser.json());
+
+const upload = multer();
+
+// Route to update profile image
+router.put(
+  "/update-profile-image",
+  /* auth, */
+  upload.single('image'),
+  asyncMiddleware(async (req, res) => {
+    const userId = req.body._id; // Assuming you have the user ID in the request object
+
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: userId },
+      {
+        $set: {
+          profileImage: {
+            data: req.file.buffer,
+            contentType: req.file.buffer.mimetype
+          }
+        }
+      },
+      { new: true } // This option ensures that the updated document is returned
+    );
+
+    if (!updatedUser) {
+      return res.status(404).send("User not found");
+    }
+
+    res.status(200).send("Profile image updated successfully");
   })
 );
 
