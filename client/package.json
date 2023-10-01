@@ -24,6 +24,7 @@
     "@ui-kitten/eva-icons": "^5.1.0",
     "@ui-kitten/metro-config": "^5.1.0",
     "apisauce": "^3.0.1",
+    "base-64": "^1.0.0",
     "dotenv": "^16.3.1",
     "expo": "~49.0.8",
     "expo-app-loading": "^2.1.1",

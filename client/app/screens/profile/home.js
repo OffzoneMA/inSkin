@@ -15,6 +15,11 @@ import AlertBox from "../../components/AlertBox";
 
 import { Dimensions } from "react-native";
 
+import authApi from "../../api/auth";
+import useApi from "../../hooks/useApi";
+
+import { encode, decode } from 'base-64';
+
 function ProfileHome({ navigation }) {
   const authContext = useContext(AuthContext);
   const { user } = useContext(AuthContext);
@@ -25,6 +30,25 @@ function ProfileHome({ navigation }) {
   const [alertBox, setAlertBox] = useState(null);
 
   const [selectedImageUri, setSelectedImageUri] = useState(null); // Step 1: State for selected image URI
+
+  const updateProfileImageApi = useApi(authApi.updateProfileImage);
+  const getProfileImageApi = useApi(authApi.getProfileImage);
+
+  const updateProfileImage = async () => {
+    toast.show("Logout Successful", { type: "success" });
+    const profileImage = await getProfileImageApi.request(user.userName);
+  
+    // Extract the image data from the response
+    const imageData = profileImage.data.data.data;
+  
+    // Convert the image data from bytes to a base64 string
+    const base64ImageData = imageData.map(byte => String.fromCharCode(byte)).join('');
+    const imageUrl = 'data:' + profileImage.data.contentType + ';base64,' + encode(base64ImageData);
+  
+    //console.log(imageUrl);
+  
+    setSelectedImageUri(imageUrl);
+  };
 
   const handleLogOut = () => {
     toast.show("Logout Successful", { type: "success" });
@@ -83,7 +107,7 @@ function ProfileHome({ navigation }) {
           {/* Floating button for uploading profile picture */}
           
           <Pressable
-            onPress={modifyProfileImage}
+            onPress={updateProfileImage}
             style={[styles.actionButtonIcon, { borderColor: "white", borderWidth: 3, borderRadius: 5, bottom: -10, right: -15, position: "absolute", margin: 5, padding: 8, borderRadius: 100,width: 40, height: 40, backgroundColor: theme["color-primary-disabled"] }]}>
               <Icon name="edit-outline" fill={theme["color-primary-default"]} style={styles.actionButtonIcon} />
           </Pressable>
