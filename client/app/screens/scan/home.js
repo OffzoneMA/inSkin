@@ -22,7 +22,7 @@ export default function Home({ navigation }) {
   const [isFocus, setFocus] = useState(false);
   const [value, setValue] = useState(0);
 
-  const { qrcode, setQrcode } = useContext(ScanContext);
+  const { setQrcode } = useContext(ScanContext);
 
   const [showCustomPopup, setShowCustomPopup] = useState(false); // State to control custom pop-up visibility
   const { setScanned } = useContext(ScanContext);
@@ -63,11 +63,6 @@ export default function Home({ navigation }) {
       setAlertBox(null);
     }, 5000);
   }
-
-  const handleOKPress = () => {
-    addScannedProduct({ barcode: qrcode.qr.data }); // Handle the barcode submission using the stored barcode
-    setShowCustomPopup(false); // Close the custom pop-up
-  };
 
   useFocusEffect(
     useCallback(() => {
