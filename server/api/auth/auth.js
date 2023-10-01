@@ -143,8 +143,6 @@ router.get(
     const userId = req.params.id; // Assuming you have the user ID in the request object after authentication
     const user = await User.findById(userId).select({ userName: 1 , profileImage: 1});
 
-    console.log(user);
-
     if (!user) {
       return res.status(404).send("User not found");
     }
@@ -159,7 +157,7 @@ router.get(
       data: user.profileImage.data,
     }
 
-    res.send(profileImage);
+    res.json(profileImage);
   })
 );
 
