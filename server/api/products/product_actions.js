@@ -7,6 +7,11 @@ const router = express.Router();
 
 const mongoose = require("mongoose");
 
+const Tea = require("./models/tea");
+const multer = require("multer");
+
+const bodyParser = require('body-parser');
+
 // POST a new product
 router.post(
   "/add-product",
@@ -88,5 +93,74 @@ router.get("/:id", async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
+router.use(bodyParser.json());
+
+const upload = multer();
+
+//POST tea
+const newTea = (req, res) => {
+
+  //check if tea already exists in db
+  Tea.findOne({ name: req.body.name }, (err, data) => {
+    //if tea not in db, add it
+    if (!data) {
+      const newTea = new Tea({
+        name: req.body.name,
+        image: {
+          data: req.file.buffer,
+          contentType: req.file.buffer.mimetype
+        },
+        description: req.body.description,
+        keywords: req.body.keywords,
+        origin: req.body.origin,
+        brew_time: req.body.brew_time,
+        temperature: req.body.temperature,
+      });
+
+      //save to database
+      newTea.save((err, data) => {
+        if (err) {
+          return res.json(`Error occurred while saving tea: ${err}`);
+        }
+        return res.json({message: "New tea is created.", data});
+      });
+      
+    } else {
+      if(err) return res.json(`Something went wrong, when cheking data. ${err}`);
+      return res.json(`${req.body.name} tea already exists.`);
+    }
+  });
+};
+
+router.post(
+  "/tea",
+  upload.single('image'),
+  newTea
+);
+
+// GET method to retrieve all posted images
+const getAllTeaImages = (req, res) => {
+  // Find all teas in the database
+  Tea.find({}, (err, teas) => {
+    if (err) {
+      // Handle errors
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    // Extract image data from each tea and create an array of image objects
+    const imageArray = teas.map((tea) => ({
+      name: tea.name,
+      contentType: tea.image.contentType,
+      data: tea.image.data,
+    }));
+
+    // Send the array of image objects as a response
+    res.json(imageArray);
+  });
+};
+
+// Add this route to your Express router
+router.get("/tea/images", getAllTeaImages);
 
 module.exports = router;
