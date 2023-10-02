@@ -7,6 +7,7 @@ import {
   FlatList,
   StatusBar,
   RefreshControl,
+  Pressable
 } from "react-native";
 
 import Page from "../../components/Page";
@@ -19,10 +20,18 @@ import { useToast } from "react-native-toast-notifications";
 
 import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEffect from React Navigation
 
+import { useTheme, Icon } from "@ui-kitten/components";
+
+import ShowProductModal from '../../components/showProductModal';
+
 function DiscoverHome({ navigation }) {
   const toast = useToast();
   const [products, setProducts] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const theme = useTheme();
+
+  const [showCustomPopup, setShowCustomPopup] = useState(false); // State to control custom pop-up visibility
 
   const getAllProducts = async () => {
     try {
@@ -53,10 +62,48 @@ function DiscoverHome({ navigation }) {
     getAllProducts();
   };
 
+  const closeCustomPopup = () => {
+    setShowCustomPopup(false);
+  };
+
   const Item = ({ item }) => (
-    <View style={styles.item}>
-      <Text>{item.barcode}</Text>
-    </View>
+    <Pressable style={styles.item} onPress={() => { setShowCustomPopup(true) }}>
+      <View style={{ backgroundColor: "gray", flex: 1/2, justifyContent: 'center', alignItems: 'center' }}>
+        
+        {item.images.length > 0 ? ( // Step 3: Conditionally render selected image or default icon
+          <Image 
+            source={{ uri: selectedImageUri }} /* style={styles.profilePicture} */ 
+            style={[styles.profilePicture, {  flex: 1 }]} // Use flex to fit the parent container
+          />
+        ) : (
+          <Icon
+          name="image-outline"
+          width={24} // Set the width of the icon
+          height={24} // Set the height of the icon
+          fill={theme["color-basic-600"]} // Set the color of the icon
+          />
+        )}
+        
+      </View>
+      <View style={{ flex: 1, flexDirection:"column"}}>
+        <Text>{item.name}</Text>
+        <Text>{item.barcode}</Text>
+      </View>
+      <View style={{ flex: 1/10, flexDirection:"column", justifyContent: "space-between"}}>
+        <Icon
+          name="share-outline"
+          width={24} // Set the width of the icon
+          height={24} // Set the height of the icon
+          fill={theme["color-basic-600"]} // Set the color of the icon
+        />
+        <Icon
+          name="bookmark-outline"
+          width={24} // Set the width of the icon
+          height={24} // Set the height of the icon
+          fill={theme["color-basic-600"]} // Set the color of the icon
+        />
+      </View>
+    </Pressable>
   );
 
   return (
@@ -75,6 +122,11 @@ function DiscoverHome({ navigation }) {
           }
         />
       </SafeAreaView>
+      <ShowProductModal
+        showCustomPopup={showCustomPopup}
+        setShowCustomPopup={setShowCustomPopup}
+        closeCustomPopup={closeCustomPopup}
+      />
     </Page>
   );
 }
@@ -85,10 +137,20 @@ const styles = StyleSheet.create({
     marginTop: StatusBar.currentHeight || 0,
   },
   item: {
-    backgroundColor: "#f9c2ff",
-    padding: 20,
-    marginVertical: 8,
-    marginHorizontal: 16,
+    flexDirection: "row",
+    backgroundColor: "white",
+    padding: 3,
+    marginVertical: 2,
+    borderRadius: 10,
+    shadowColor: "black",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    height: 100,
   },
   title: {
     fontSize: 32,
