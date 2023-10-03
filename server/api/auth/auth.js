@@ -10,6 +10,10 @@ const multer = require("multer");
 
 const bodyParser = require('body-parser');
 
+router.use(bodyParser.json());
+
+const upload = multer();
+
 router.post(
   "/login",
   asyncMiddleware(async (req, res) => {
@@ -103,9 +107,6 @@ router.post(
   })
 );
 
-router.use(bodyParser.json());
-
-const upload = multer();
 
 // Route to update profile image
 router.put(
@@ -121,7 +122,7 @@ router.put(
         $set: {
           profileImage: {
             data: req.file.buffer,
-            contentType: req.file.buffer.mimetype
+            contentType: req.file.mimetype
           }
         }
       },

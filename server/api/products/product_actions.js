@@ -12,10 +12,15 @@ const multer = require("multer");
 
 const bodyParser = require('body-parser');
 
+router.use(bodyParser.json());
+
+const upload = multer();
+
 // POST a new product
 router.post(
   "/add-product",
-  auth, // Ensure user is authenticated
+  /* auth, */ // Ensure user is authenticated
+  upload.array('images'),
   asyncMiddleware(async (req, res) => {
     // Validate the incoming request data
     const { error } = validate(req.body);
@@ -33,17 +38,21 @@ router.post(
       return;
     }
 
+    const images = req.files.map(file => {
+      return {
+        data: file.buffer, // Buffer of the image file
+        contentType: file.mimetype, // ContentType of the image (e.g., 'image/png')
+      };
+    })
+
+    console.log(images)
+
     // Create a new product instance
     const product = new Product({
       barcode: req.body.barcode,
       userId: mongoose.Types.ObjectId(req.body.userId),
-      images: req.body.images, // Replace with image URLs
-      productDetails: {
-        name: req.body.productDetails.name,
-        brands: req.body.productDetails.brands,
-        categories: req.body.productDetails.categories,
-        ingredients: req.body.productDetails.ingredients,
-      },
+      images: images, // Replace with image URLs
+      productDetails: req.body.productDetails,
       comments: req.body.comments,
     });
 
@@ -93,10 +102,6 @@ router.get("/:id", async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
-
-router.use(bodyParser.json());
-
-const upload = multer();
 
 //POST tea
 const newTea = (req, res) => {

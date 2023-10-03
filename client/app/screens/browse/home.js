@@ -22,7 +22,7 @@ import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEff
 
 import { useTheme, Icon } from "@ui-kitten/components";
 
-import ShowProductModal from '../../components/showProductModal';
+import ShowProductModal from '../../components/ShowProductModal';
 
 function DiscoverHome({ navigation }) {
   const toast = useToast();
