@@ -108,7 +108,7 @@ const AddProductModal = ({
             initialValues={{
                 barcode: qrcode.qr ? qrcode.qr.data : "",
                 userId: user._id,
-                images: [""],
+                //images: [],
                 name: "",
                 brands: "",
                 categories: "",

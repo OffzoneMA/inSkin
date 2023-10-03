@@ -22,6 +22,7 @@ router.post(
   /* auth, */ // Ensure user is authenticated
   upload.array('images'),
   asyncMiddleware(async (req, res) => {
+
     // Validate the incoming request data
     const { error } = validate(req.body);
     if (error) {
@@ -44,8 +45,6 @@ router.post(
         contentType: file.mimetype, // ContentType of the image (e.g., 'image/png')
       };
     })
-
-    console.log(images)
 
     // Create a new product instance
     const product = new Product({
