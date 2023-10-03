@@ -16,7 +16,7 @@ import Button from "../../components/Button";
 
 import productActionsApi from "../../api/product_actions";
 
-import { useToast } from "react-native-toast-notifications";
+//import { useToast } from "react-native-toast-notifications";
 
 import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEffect from React Navigation
 
@@ -25,7 +25,7 @@ import { useTheme, Icon } from "@ui-kitten/components";
 import ShowProductModal from '../../components/ShowProductModal';
 
 function DiscoverHome({ navigation }) {
-  const toast = useToast();
+  //const toast = useToast();
   const [products, setProducts] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -37,9 +37,9 @@ function DiscoverHome({ navigation }) {
     try {
       const result = await productActionsApi.getAllProducts();
       if (!result.ok) {
-        toast.show(result.data, { type: "danger" });
+        //toast.show(result.data, { type: "danger" });
       } else {
-        toast.show(result.data.message, { type: "success" });
+        //toast.show(result.data.message, { type: "success" });
         setProducts(result.data.products);
       }
     } catch (error) {

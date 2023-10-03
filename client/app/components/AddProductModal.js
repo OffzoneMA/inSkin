@@ -12,7 +12,7 @@ import AuthContext from "../contexts/auth";
 import { ScanContext } from "../contexts/scan-context";
 import productActionsApi from "../api/product_actions";
 
-import { useToast } from "react-native-toast-notifications";
+//import { useToast } from "react-native-toast-notifications";
 
 const validationSchema = Yup.object({
   barcode: Yup.string().required().label('Barcode'),
@@ -32,7 +32,7 @@ const AddProductModal = ({
     const { qrcode } = useContext(ScanContext);
     const addProductApi = useApi(productActionsApi.add_product);
 
-    const toast = useToast();
+    //const toast = useToast();
 
     const addScannedProduct = async ({
         barcode, // Initialize with the scanned QR code data
@@ -65,11 +65,11 @@ const AddProductModal = ({
         );
     
         if (!result.ok) {
-          toast.show(result.data, {type: "danger"});
+          //toast.show(result.data, {type: "danger"});
           return;
         }
     
-        toast.show(result.data.message, {type: "success"});
+        //toast.show(result.data.message, {type: "success"});
       };
 
     const handleOKPress = ({

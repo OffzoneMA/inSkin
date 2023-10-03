@@ -24,7 +24,7 @@ import authApi from "../api/auth";
 import useApi from "../hooks/useApi";
 import authStorage from "../utilities/authStorage";
 
-import { useToast } from "react-native-toast-notifications";
+//import { useToast } from "react-native-toast-notifications";
 
 const validationSchema = Yup.object({
   email: Yup.string().required().email().label("Email"),
@@ -35,17 +35,17 @@ export default function LoginScreen({ navigation }) {
   const loginApi = useApi(authApi.login);
 
   const authContext = useContext(AuthContext);
-  const toast = useToast();
+  //const toast = useToast();
 
   const loginHandler = async ({ email, password }) => {
     const result = await loginApi.request(email, password);
 
     if (!result.ok) {
-      toast.show(result.data, {type: "danger"});
+      //toast.show(result.data, {type: "danger"});
       return;
     }
 
-    toast.show(result.data.message, {type: "success"});
+    //toast.show(result.data.message, {type: "success"});
 
     setTimeout(() => {
       AsyncStorage.setItem("hasOnboarded", "true");

@@ -22,7 +22,7 @@ import AuthNavigator from "./app/navigation/auth";
 import AppTabNavigator from "./app/navigation/appTab";
 import SafeScreen from "./app/components/SafeScreen";
 import OfflineNotice from "./app/components/OfflineNotice";
-import { ToastProvider } from 'react-native-toast-notifications'
+//import { ToastProvider } from 'react-native-toast-notifications'
 
 export default function App() {
   const [haveFontsLoaded] = useFonts({
@@ -90,13 +90,13 @@ export default function App() {
                   : { ...eva.dark, ...darkTheme }
               }
             >
-              <ToastProvider
+              {/* <ToastProvider
                 placement="bottom"
                 successColor="#71B515"
                 dangerColor="#DB2E5E"
                 duration={3000}
                 swipeEnabled={true}
-              >
+              > */}
                 <SafeScreen>
                   <OfflineNotice />
                   <NavigationContainer>
@@ -109,7 +109,7 @@ export default function App() {
                     )}
                   </NavigationContainer>
                 </SafeScreen>
-              </ToastProvider>
+              {/* </ToastProvider> */}
             </ApplicationProvider>
           </ThemeContext.Provider>
         </AuthContext.Provider>
