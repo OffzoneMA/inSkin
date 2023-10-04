@@ -17,7 +17,6 @@ export default function OnboardingNavigator() {
       >
         <Stack.Screen name="GetStarted" component={GetStartedScreen} />
         <Stack.Screen name="Onboarding" component={OnboardingScreen} />
-        <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen name="Login" component={AuthNavigator} />
       </Stack.Navigator>
   );
