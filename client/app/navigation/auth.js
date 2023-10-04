@@ -5,6 +5,7 @@ import LoginScreen from "../screens/login";
 import RegisterScreen from "../screens/register";
 import LoadingScreen from "../screens/loading";
 import AppTabNavigator from "./appTab";
+import ProductHome from "../screens/product/home";
 
 const Stack = createStackNavigator();
 
@@ -18,6 +19,7 @@ export default function AuthNavigator() {
         <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen name="Loading" component={LoadingScreen} />
         <Stack.Screen name="Home" component={AppTabNavigator} />
+        <Stack.Screen name="Product" component={ProductHome} />
       </Stack.Navigator>
   );
 }
