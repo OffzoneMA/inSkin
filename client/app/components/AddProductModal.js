@@ -107,7 +107,7 @@ const AddProductModal = ({
             <Formik
             initialValues={{
                 barcode: qrcode.qr ? qrcode.qr.data : "",
-                userId: user._id,
+                userId: user ? user._id : "",
                 //images: [],
                 name: "",
                 brands: "",

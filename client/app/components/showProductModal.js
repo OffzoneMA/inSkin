@@ -103,7 +103,7 @@ const ShowProductModal = ({
             <Formik
             initialValues={{
                 barcode: "",
-                userId: user._id,
+                userId: user ? user._id : null,
                 images: [""],
                 name: "",
                 brands: "",

@@ -82,7 +82,7 @@ export default function RegisterScreen({ route, navigation }) {
 
       navigation.reset({
         index: 0,
-        routes: [{ name: "Home" }],
+        routes: [{ name: "Tab" }],
       });
     }, 300);
   };

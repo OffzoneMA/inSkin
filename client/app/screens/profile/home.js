@@ -62,9 +62,9 @@ function ProfileHome({ navigation }) {
   // Placeholder for user profile data
   const userProfile = {
     profilePicture:"person-outline",
-    firstName: user.firstName,
-    lastName: user.lastName,
-    userName: user.userName,
+    firstName: user ? user.firstName : null,
+    lastName: user ? user.lastName : null,
+    userName: user ? user.userName : null,
   };
 
   async function modifyProfileImage() {
@@ -169,7 +169,7 @@ function ProfileHome({ navigation }) {
         </View>
       </Pressable>
 
-      <Pressable onPress={handleLogOut} style={styles.logoutButton}>
+      <Pressable onPress={() => {navigation.navigate('Product')}} style={styles.logoutButton}>
         <View style={[styles.primaryIconWrapper, { backgroundColor: theme["color-primary-disabled"] }]}>
           <Icon name="settings-outline" fill={theme["color-primary-default"]} style={styles.logoutIcon} />
         </View>

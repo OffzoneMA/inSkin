@@ -19,7 +19,7 @@ import * as SplashScreen from 'expo-splash-screen'; // Import SplashScreen
 // Navigation
 import OnboardingNavigator from "./app/navigation/onboarding";
 import AuthNavigator from "./app/navigation/auth";
-import AppTabNavigator from "./app/navigation/appTab";
+import AppNavigator from "./app/navigation/appNav";
 import SafeScreen from "./app/components/SafeScreen";
 import OfflineNotice from "./app/components/OfflineNotice";
 //import { ToastProvider } from 'react-native-toast-notifications'
@@ -101,7 +101,7 @@ export default function App() {
                   <OfflineNotice />
                   <NavigationContainer>
                     {user ? (
-                      <AppTabNavigator />
+                      <AppNavigator />
                     ) : initialRoute == "Onboarding" ? (
                       <OnboardingNavigator />
                     ) : (
