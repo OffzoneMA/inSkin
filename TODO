@@ -16,6 +16,7 @@ TODO: handle errors properly in the auth.js update and get profile image route
 TODO: handle proper data fetch timing, use hooks on the browse screen so that the fetching won't be done until the browsing screen is swiped on
 TODO: implement edit product server routes
 TODO: add search bar, list type grid or simple, products or accounts browsing choice, different filter
+TODO: users can only view comments of accounts they've followed
 DONE: my create account button doesn't work when i logout
 DONE: make add product pop up isolated from Camera.js File
 DONE: implement product pop up in gallery import
