@@ -106,7 +106,7 @@ router.get("/:id", async (req, res) => {
 
 // POST a new product
 router.get(
-  "/get-scanned-product/:barcode",
+  "/get-product-bybarcode/:barcode",
   /* auth, */ // Ensure user is authenticated
   asyncMiddleware(async (req, res) => {
 

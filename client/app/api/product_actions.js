@@ -44,7 +44,18 @@ const getProductById = async (id) => {
   }
 };
 
+const getProductByBarcode = async (barcode) => {
+  try {
+    const response = await client.get(`/products/get-product-bybarcode/${barcode}`);
+    return response;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to fetch product by barcode");
+  }
+}
+
 export default {
     add_product,
     getAllProducts,
+    getProductByBarcode,
 };
