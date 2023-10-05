@@ -16,6 +16,8 @@ router.use(bodyParser.json());
 
 const upload = multer();
 
+
+
 // POST a new product
 router.post(
   "/add-product",
@@ -101,6 +103,26 @@ router.get("/:id", async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
+// POST a new product
+router.get(
+  "/get-scanned-product/:barcode",
+  /* auth, */ // Ensure user is authenticated
+  asyncMiddleware(async (req, res) => {
+
+    const foundProduct = await Product.findOne({
+      barcode: req.params.barcode,
+    });
+
+    if (!foundProduct) {
+      res.status(400).send("This product doesn't exist!");
+      return;
+    }
+
+    // Return the product as JSON response
+    res.status(200).json(foundProduct);
+  })
+);
 
 //POST tea
 const newTea = (req, res) => {
