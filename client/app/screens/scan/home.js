@@ -48,23 +48,21 @@ export default function Home({ navigation }) {
   const getProductByBarcode = async (barcode) => {
     try {
       const result = await productActionsApi.getProductByBarcode(barcode);
-      if (result && result.data) {
-        console.log(result.data);
-        if (!result.ok) {
-          // Handle the case when result is not ok
-          closeCustomPopup();
-        } else {
-          setScannedProduct(result.data);
-          navigation.navigate('Product', {product: result.data});
-        }
+  
+      if (result.ok) {
+        // Handle the case when result is ok
+        setScannedProduct(result.data);
+        navigation.navigate('Product', { product: result.data });
       } else {
-        // Handle the case when result or result.data is null or undefined
-        console.error("Invalid API response format");
+        // Handle the case when result is not ok
+        console.error("API response not okay");
+        closeCustomPopup();
       }
+  
     } catch (error) {
       console.error("Error getting product data: ", error);
     }
-  };
+  };  
   
 
   async function scanQRCodeFromGallery() {
@@ -79,7 +77,7 @@ export default function Home({ navigation }) {
         );
         if (scanResult.length > 0) {
           setQrcode({ date: new Date(), qr: scanResult[0] });
-          getProductByBarcode(qrcode.qr.data); // Show the custom pop-up
+          getProductByBarcode(scanResult[0].data); // Show the custom pop-up
           //navigation.navigate("Details");
         } else {
           setAlertBox("No qr-code found");
