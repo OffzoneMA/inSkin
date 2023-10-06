@@ -64,7 +64,6 @@ function ProductHome({ route }) {
           </View>
           <View style={{ marginLeft: 10, flexDirection: "column", justifyContent: 'center', alignItems: 'center' }}>
             <Text>{product.productDetails.name}</Text>
-            <Text>{product.productDetails.brands.join(', ')}</Text>
             <View style={{ justifyContent: "center"}}>
               <StarRating
                 rating={rating}
@@ -77,7 +76,7 @@ function ProductHome({ route }) {
         <FlatList
           data={mockComments}
           renderItem={({ item }) => <Item item={item} />}
-          keyExtractor={(item) => item._id}
+          keyExtractor={(item, index) => {return item.id}}
         />
       </SafeAreaView>
     </Page>

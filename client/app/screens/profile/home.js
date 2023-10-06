@@ -121,23 +121,23 @@ function ProfileHome({ navigation }) {
         </Text>
 
         <View style={styles.followersContainer}>
-          <Pressable onPress={handleLogOut} style={styles.followersContainerButton}>
+          <Pressable style={styles.followersContainerButton}>
             <Text style={styles.followersNumber}>10,4m</Text>
             <Text style={[styles.followersText, { color: theme["color-primary-unfocus"] }]}>Followers</Text>
           </Pressable>
 
-          <Pressable onPress={handleLogOut} style={styles.followersContainerButton}>
+          <Pressable style={styles.followersContainerButton}>
             <Text style={styles.followersNumber}>543</Text>
             <Text style={[styles.followersText, { color: theme["color-primary-unfocus"] }]}>Following</Text>
           </Pressable>
         </View>
         
-        <Button style={styles.editProfileButton} onPress={handleLogOut}>Edit Profile</Button>
+        <Button style={styles.editProfileButton}>Edit Profile</Button>
       </View>
 
       <View style={[styles.separator, { backgroundColor: theme["color-primary-disabled"] }]}></View>
 
-      <Pressable onPress={handleLogOut} style={styles.logoutButton}>
+      <Pressable style={styles.logoutButton}>
         <View style={[styles.primaryIconWrapper, { backgroundColor: theme["color-primary-disabled"] }]}>
           <Icon name="bookmark-outline" fill={theme["color-primary-default"]} style={styles.logoutIcon} />
         </View>
@@ -147,7 +147,7 @@ function ProfileHome({ navigation }) {
         </View>
       </Pressable>
 
-      <Pressable onPress={handleLogOut} style={styles.logoutButton}>
+      <Pressable style={styles.logoutButton}>
         <View style={[styles.primaryIconWrapper, { backgroundColor: theme["color-primary-disabled"] }]}>
           <Icon name="clock-outline" fill={theme["color-primary-default"]} style={styles.logoutIcon} />
         </View>
@@ -159,7 +159,7 @@ function ProfileHome({ navigation }) {
 
       <View style={[styles.separator, { backgroundColor: theme["color-primary-disabled"] }]}></View>
 
-      <Pressable onPress={handleLogOut} style={styles.logoutButton}>
+      <Pressable style={styles.logoutButton}>
         <View style={[styles.primaryIconWrapper, { backgroundColor: theme["color-primary-disabled"] }]}>
           <Icon name="info-outline" fill={theme["color-primary-default"]} style={styles.logoutIcon} />
         </View>
