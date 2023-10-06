@@ -4,7 +4,7 @@ import { useTheme, Text, Icon } from "@ui-kitten/components";
 import Page from "../../components/Page";
 import AuthContext from "../../contexts/auth";
 import authStorage from "../../utilities/authStorage";
-import { useToast } from "react-native-toast-notifications";
+//import { useToast } from "react-native-toast-notifications";
 import Button from "../../components/Button";
 
 import * as ImagePicker from "expo-image-picker";
@@ -23,7 +23,7 @@ import { encode, decode } from 'base-64';
 function ProfileHome({ navigation }) {
   const authContext = useContext(AuthContext);
   const { user } = useContext(AuthContext);
-  const toast = useToast();
+  //const toast = useToast();
 
   const theme = useTheme();
 
@@ -35,7 +35,7 @@ function ProfileHome({ navigation }) {
   const getProfileImageApi = useApi(authApi.getProfileImage);
 
   const updateProfileImage = async () => {
-    toast.show("Logout Successful", { type: "success" });
+    //toast.show("Logout Successful", { type: "success" });
     const profileImage = await getProfileImageApi.request(user.userName);
   
     // Extract the image data from the response
@@ -51,7 +51,7 @@ function ProfileHome({ navigation }) {
   };
 
   const handleLogOut = () => {
-    toast.show("Logout Successful", { type: "success" });
+    //toast.show("Logout Successful", { type: "success" });
 
     setTimeout(() => {
       authContext.setUser(null);
@@ -62,9 +62,9 @@ function ProfileHome({ navigation }) {
   // Placeholder for user profile data
   const userProfile = {
     profilePicture:"person-outline",
-    firstName: user.firstName,
-    lastName: user.lastName,
-    userName: user.userName,
+    firstName: user ? user.firstName : null,
+    lastName: user ? user.lastName : null,
+    userName: user ? user.userName : null,
   };
 
   async function modifyProfileImage() {
@@ -76,7 +76,7 @@ function ProfileHome({ navigation }) {
       if (!result.canceled) {
         setSelectedImageUri(result.assets[0].uri); // Step 2: Update selected image URI
         console.log(result.assets[0].uri);
-        toast.show("Logout Successful", { type: "success" });
+        //toast.show("Logout Successful", { type: "success" });
       }
     }
     if (status !== "granted") {
@@ -169,7 +169,7 @@ function ProfileHome({ navigation }) {
         </View>
       </Pressable>
 
-      <Pressable onPress={handleLogOut} style={styles.logoutButton}>
+      <Pressable onPress={() => {navigation.navigate('Product')}} style={styles.logoutButton}>
         <View style={[styles.primaryIconWrapper, { backgroundColor: theme["color-primary-disabled"] }]}>
           <Icon name="settings-outline" fill={theme["color-primary-default"]} style={styles.logoutIcon} />
         </View>

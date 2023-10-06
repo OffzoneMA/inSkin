@@ -22,14 +22,12 @@ const validationSchema = Yup.object({
   ingredients: Yup.string().label('Ingredients'),
 });
 
-const AddProductModal = ({
+const ShowProductModal = ({
   showCustomPopup,
   closeCustomPopup,
   setShowCustomPopup,
 }) => {
     const { user } = useContext(AuthContext);
-    const { setScanned} = useContext(ScanContext);
-    const { qrcode } = useContext(ScanContext);
     const addProductApi = useApi(productActionsApi.add_product);
 
     //const toast = useToast();
@@ -83,8 +81,6 @@ const AddProductModal = ({
         const brandsArray = brands.split(",").map((item) => item.trim()).filter((item) => item !== "");
         const categoriesArray = categories.split(",").map((item) => item.trim()).filter((item) => item !== "");
         const ingredientsArray = ingredients.split(",").map((item) => item.trim()).filter((item) => item !== "");
-    
-        setScanned(false); // Reset the scanned state
         addScannedProduct({
             barcode: barcode,
             userId: userId,
@@ -106,9 +102,9 @@ const AddProductModal = ({
         <View style={styles.modalContent}>
             <Formik
             initialValues={{
-                barcode: qrcode.qr ? qrcode.qr.data : "",
-                userId: user ? user._id : "",
-                //images: [],
+                barcode: "",
+                userId: user ? user._id : null,
+                images: [""],
                 name: "",
                 brands: "",
                 categories: "",
@@ -224,4 +220,4 @@ const styles = {
   },
 };
 
-export default AddProductModal;
+export default ShowProductModal;

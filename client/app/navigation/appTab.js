@@ -14,6 +14,7 @@ export default function AppTabNavigator() {
   return (
     <Tab.Navigator
       initialRouteName="Scan"
+      backBehavior= "none"
       screenOptions = {({ route }) =>({
         tabBarActiveTintColor: theme["color-primary-default"],
         tabBarInactiveTintColor: theme["color-primary-unfocus"],

@@ -8,6 +8,8 @@ const settings = require('./config/settings')
 
 const app = express()
 
+require('./startup/mockdata')();
+
 require('./startup/logging')()
 require('./startup/routes')(app)
 

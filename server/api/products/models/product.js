@@ -3,41 +3,40 @@ const Joi = require("joi");
 
 const productSchema = new mongoose.Schema({
     barcode: {
-        type: String, // You can store barcode information here
-        required: true,
+      type: String, // You can store barcode information here
+      required: true,
     },
     userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User", // Reference to the User model
-        required: true,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User", // Reference to the User model
+      required: true,
     },
     images: [
-        {
-          data: Buffer,
-          contentType: String
-        },
+      {
+        data: Buffer,
+        contentType: String
+      },
     ],
     productDetails: {
-        // Define your product details schema here
-        // Example:
-        name: {
-            type: String,
-        },
-        brands: [
-            {
-            type: String, // You can store image URLs here
-            },
-        ],
-        categories: [
-            {
-            type: String, // You can store image URLs here
-            },
-        ],
-        ingredients: [
-            {
-            type: String, // You can store image URLs here
-            },
-        ],
+      // Define your product details schema here
+      // Example:
+      name: {
+          type: String,
+      },
+      brand:  {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Brand",
+      },
+      categories: [
+          {
+          type: String, // You can store image URLs here
+          },
+      ],
+      ingredients: [
+          {
+          type: String, // You can store image URLs here
+          },
+      ],
     },
   createdAt:
     {
@@ -54,9 +53,19 @@ const productSchema = new mongoose.Schema({
       userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User", // Reference to the User model
+        required: true,
       },
       text: {
         type: String,
+        required: function() {
+          return !this.review; // Comment is required if review is not provided
+        },
+      },
+      review: {
+        type: String,
+        required: function() {
+          return !this.text; // Review is required if comment is not provided
+        },
       },
     },
   ],
@@ -67,7 +76,7 @@ const Product = mongoose.model("Product", productSchema);
 function validateProduct(product) {
   const schema = Joi.object({
     barcode: Joi.string().required(),
-    userId: Joi.string().required(), // Assuming userId is required
+    userId: Joi.string().hex().length(24).required(), // Assuming userId is required
     images: Joi.array().items(
       Joi.object({
           data: Joi.binary().required(),
@@ -84,8 +93,8 @@ function validateProduct(product) {
 
     comments: Joi.array().items(
       Joi.object({
-        userId: Joi.string(), // You can validate the user ID here
-        text: Joi.string(),
+        userId: Joi.string().hex().length(24).required(), // You can validate the user ID here
+        text: Joi.string().required(),
       })
     ),
   });

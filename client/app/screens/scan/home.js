@@ -1,6 +1,6 @@
 import * as ImagePicker from "expo-image-picker";
 
-import { View, StyleSheet, Pressable } from "react-native";
+import { View, StyleSheet, Pressable, Text } from "react-native";
 import { useState, useCallback, useContext } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { BarCodeScanner } from "expo-barcode-scanner";
@@ -16,26 +16,56 @@ import Cam from "../../components/Camera";
 
 import AddProductModal from '../../components/AddProductModal';
 
+import Modal from "react-native-modal";
+
+import Button from "../../components/Button";
+
+import productActionsApi from "../../api/product_actions";
+
 export default function Home({ navigation }) {
   const [flashlightOn, setFlashlightOn] = useState(false);
   const [alertBox, setAlertBox] = useState(null);
   const [isFocus, setFocus] = useState(false);
   const [value, setValue] = useState(0);
 
-  const { setQrcode } = useContext(ScanContext);
+  const { qrcode, setQrcode } = useContext(ScanContext);
 
   const [showCustomPopup, setShowCustomPopup] = useState(false); // State to control custom pop-up visibility
-  const { setScanned } = useContext(ScanContext);
+  const { scanned, setScanned } = useContext(ScanContext);
+
+  const [ scannedProduct, setScannedProduct ] = useState(null);
 
   // Function to close the custom pop-up
   const closeCustomPopup = () => {
-    setScanned(false);
-    setShowCustomPopup(false);
+    //setScanned(!scanned);
+    setShowCustomPopup(!showCustomPopup);
   };
 
   const toggleFlashlight = async () => {
     setFlashlightOn(!flashlightOn);
   };
+
+  const getProductByBarcode = async (barcode) => {
+    try {
+      const result = await productActionsApi.getProductByBarcode(barcode);
+      if (result && result.data) {
+        console.log(result.data);
+        if (!result.ok) {
+          // Handle the case when result is not ok
+          closeCustomPopup();
+        } else {
+          setScannedProduct(result.data);
+          navigation.navigate('Product', {product: result.data});
+        }
+      } else {
+        // Handle the case when result or result.data is null or undefined
+        console.error("Invalid API response format");
+      }
+    } catch (error) {
+      console.error("Error getting product data: ", error);
+    }
+  };
+  
 
   async function scanQRCodeFromGallery() {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -49,7 +79,7 @@ export default function Home({ navigation }) {
         );
         if (scanResult.length > 0) {
           setQrcode({ date: new Date(), qr: scanResult[0] });
-          setShowCustomPopup(true); // Show the custom pop-up
+          getProductByBarcode(qrcode.qr.data); // Show the custom pop-up
           //navigation.navigate("Details");
         } else {
           setAlertBox("No qr-code found");
@@ -63,6 +93,8 @@ export default function Home({ navigation }) {
       setAlertBox(null);
     }, 5000);
   }
+
+  
 
   useFocusEffect(
     useCallback(() => {
@@ -122,11 +154,35 @@ export default function Home({ navigation }) {
       </View>
       {/* Bottom Modal */}
       {/* Use the BarcodeScannerModal component */}
-      <AddProductModal
+      {/* <AddProductModal
         showCustomPopup={showCustomPopup}
         setShowCustomPopup={setShowCustomPopup}
         closeCustomPopup={closeCustomPopup}
-      />
+      /> */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={showCustomPopup}
+        onRequestClose={closeCustomPopup}
+      >
+        <View style={{flexDirection: "column", justifyContent: "center", alignItems: "center", padding: 10, backgroundColor: "white", borderRadius: 10, height: 100}}>
+          <Text>This product doesn't exist!</Text>
+          <Text>Would you like to add it?</Text>
+          <View style={{flexDirection: "row"}}>
+            <Button style={{flex: 1, marginRight: 2}}title="Close"
+              onPress={() => {
+                closeCustomPopup();
+                navigation.navigate("AddProduct", {barcode: qrcode.qr.data})
+              }}
+            >
+              Yes
+            </Button>
+            <Button style={{flex: 1, marginLeft: 2}}title="Close" onPress={closeCustomPopup}>
+              No
+            </Button>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }

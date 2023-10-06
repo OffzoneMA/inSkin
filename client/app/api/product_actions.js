@@ -3,6 +3,7 @@ import client from "./client";
 const add_product = (
   barcode,
   userId,
+  //images,
   name,
   brands,
   categories,
@@ -10,20 +11,24 @@ const add_product = (
   /* reader_type = null,
   reader_goals = [],
   reader_genres = [] */
-) =>
-  client.post("/products/add-product", {
-    barcode,
-    userId,
-    productDetails: {
-      name,
-      brands,
-      categories,
-      ingredients,
+) => {
+  console.log(brands);
+  const formData = new FormData();
+  formData.append("barcode", barcode);
+  formData.append("userId", userId); // Include userId in the FormData
+  //formData.append("images", images);
+  formData.append("productDetails[name]", name);
+  brands.forEach((item) => formData.append("productDetails[brands][]", item));
+  categories.forEach((item) => formData.append("productDetails[categories][]", categories));
+  ingredients.forEach((item) => formData.append("productDetails[ingredients][]", ingredients));
+
+  return client.post("/products/add-product", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
     },
-    /* reader_type,
-    reader_goals,
-    reader_genres, */
   });
+}
+  
 
 // GET all products
 const getAllProducts = () => client.get("/products");
@@ -39,7 +44,18 @@ const getProductById = async (id) => {
   }
 };
 
+const getProductByBarcode = async (barcode) => {
+  try {
+    const response = await client.get(`/products/get-product-bybarcode/${barcode}`);
+    return response;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to fetch product by barcode");
+  }
+}
+
 export default {
     add_product,
     getAllProducts,
+    getProductByBarcode,
 };
