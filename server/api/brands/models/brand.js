@@ -2,12 +2,12 @@ const mongoose = require("mongoose");
 const Joi = require("joi");
 
 const brandSchema = new mongoose.Schema({
-    brandName: 
+    name: 
         { 
             type: String, 
             required: true 
         },
-    profileImage:
+    image:
         {
             data: Buffer,
             contentType: String
@@ -18,8 +18,8 @@ const Brand = mongoose.model("Brand", brandSchema);
 
 function validateBrand(brand) {
   const schema = Joi.object({
-    brandName: Joi.string().required(),
-    profileImage: Joi.object({
+    name: Joi.string().required(),
+    image: Joi.object({
       data: Joi.binary().required(),
       contentType: Joi.string().required(),
     }),

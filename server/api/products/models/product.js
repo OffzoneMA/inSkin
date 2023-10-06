@@ -23,9 +23,9 @@ const productSchema = new mongoose.Schema({
       name: {
           type: String,
       },
-      brand: 
-      {
-        type: String, // You can store image URLs here
+      brand:  {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Brand",
       },
       categories: [
           {
@@ -57,7 +57,15 @@ const productSchema = new mongoose.Schema({
       },
       text: {
         type: String,
-        required: true,
+        required: function() {
+          return !this.review; // Comment is required if review is not provided
+        },
+      },
+      review: {
+        type: String,
+        required: function() {
+          return !this.text; // Review is required if comment is not provided
+        },
       },
     },
   ],
