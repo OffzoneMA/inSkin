@@ -23,11 +23,10 @@ const productSchema = new mongoose.Schema({
       name: {
           type: String,
       },
-      brands: [
-          {
-          type: String, // You can store image URLs here
-          },
-      ],
+      brand: 
+      {
+        type: String, // You can store image URLs here
+      },
       categories: [
           {
           type: String, // You can store image URLs here

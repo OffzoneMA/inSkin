@@ -17,6 +17,13 @@ TODO: handle proper data fetch timing, use hooks on the browse screen so that th
 TODO: implement edit product server routes
 TODO: add search bar, list type grid or simple, products or accounts browsing choice, different filter
 TODO: users can only view comments of accounts they've followed
+TODO: implement posting review and comments feature
+TODO: link products with brands, and add a drop down list of available brands when adding a new product
+TODO: change product schema so that brand can only take one item
+TODO: how can users follow other users if in the first the only see accounts they've followed ?
+TODO: handle null error in scan home response.data
+TODO: implement new behaviour in camera scan
+TODO: implement add product manually button in scan screen
 DONE: my create account button doesn't work when i logout
 DONE: make add product pop up isolated from Camera.js File
 DONE: implement product pop up in gallery import

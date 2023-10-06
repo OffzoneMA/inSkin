@@ -167,9 +167,14 @@ export default function Home({ navigation }) {
       >
         <View style={{flexDirection: "column", justifyContent: "center", alignItems: "center", padding: 10, backgroundColor: "white", borderRadius: 10, height: 100}}>
           <Text>This product doesn't exist!</Text>
-          <Text>Would you want to add it?</Text>
+          <Text>Would you like to add it?</Text>
           <View style={{flexDirection: "row"}}>
-            <Button style={{flex: 1, marginRight: 2}}title="Close" onPress={closeCustomPopup}>
+            <Button style={{flex: 1, marginRight: 2}}title="Close"
+              onPress={() => {
+                closeCustomPopup();
+                navigation.navigate("AddProduct", {barcode: qrcode.qr.data})
+              }}
+            >
               Yes
             </Button>
             <Button style={{flex: 1, marginLeft: 2}}title="Close" onPress={closeCustomPopup}>

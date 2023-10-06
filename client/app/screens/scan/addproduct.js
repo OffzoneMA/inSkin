@@ -15,11 +15,11 @@ import { useTheme, Icon, Text } from "@ui-kitten/components";
 
 import StarRating from 'react-native-star-rating-widget';
 
-function ProductHome({ route }) {
+function AddProduct({ route }) {
 
   const theme = useTheme();
 
-  const { product } = route.params;
+  const { barcode } = route.params;
   
   const mockComments = [
     {
@@ -52,7 +52,7 @@ function ProductHome({ route }) {
   
   return (
     <Page>
-      <Heading>{product.barcode}</Heading>
+      <Heading>{barcode}</Heading>
       <View style={{ flexDirection: "row" }}>
           <View style={{ width: 100, height: 100, borderRadius: 10, backgroundColor: "gray", justifyContent: 'center', alignItems: 'center' }}>
             <Icon
@@ -63,8 +63,8 @@ function ProductHome({ route }) {
             />
           </View>
           <View style={{ marginLeft: 10, flexDirection: "column", justifyContent: 'center', alignItems: 'center' }}>
-            <Text>{product.productDetails.name}</Text>
-            <Text>{product.productDetails.brands.join(', ')}</Text>
+            {/* <Text>{product.productDetails.name}</Text>
+            <Text>{product.productDetails.brands.join(', ')}</Text> */}
             <View style={{ justifyContent: "center"}}>
               <StarRating
                 rating={rating}
@@ -77,7 +77,7 @@ function ProductHome({ route }) {
         <FlatList
           data={mockComments}
           renderItem={({ item }) => <Item item={item} />}
-          keyExtractor={(item) => item._id}
+          keyExtractor={(item) => item.id}
         />
       </SafeAreaView>
     </Page>
@@ -87,4 +87,4 @@ function ProductHome({ route }) {
 const styles = StyleSheet.create({
 });
 
-export default ProductHome;
+export default AddProduct;

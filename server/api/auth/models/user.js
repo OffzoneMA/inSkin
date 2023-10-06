@@ -35,6 +35,20 @@ const userSchema = new mongoose.Schema({
           data: Buffer,
           contentType: String
         },
+  followers:  [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User", // Reference to the User model
+      required: true,
+    },
+  ],
+  following:  [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User", // Reference to the User model
+      required: true,
+    },
+  ],
   isAdmin: 
         {
           type: Boolean,
