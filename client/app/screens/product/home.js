@@ -76,7 +76,7 @@ function ProductHome({ route }) {
         <FlatList
           data={mockComments}
           renderItem={({ item }) => <Item item={item} />}
-          keyExtractor={(item) => item._id}
+          keyExtractor={(item, index) => {return item.id}}
         />
       </SafeAreaView>
     </Page>
