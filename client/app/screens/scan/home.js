@@ -48,20 +48,24 @@ export default function Home({ navigation }) {
   const getProductByBarcode = async (barcode) => {
     try {
       const result = await productActionsApi.getProductByBarcode(barcode);
-      console.log(result.data);
-      if (!result.ok) {
-        //toast.show(result.data, { type: "danger" });
-        closeCustomPopup();
+      if (result && result.data) {
+        console.log(result.data);
+        if (!result.ok) {
+          // Handle the case when result is not ok
+          closeCustomPopup();
+        } else {
+          setScannedProduct(result.data);
+          navigation.navigate('Product', {product: result.data});
+        }
       } else {
-        //toast.show(result.data.message, { type: "success" });
-        console.log("test");
-        setScannedProduct(result.data);
-        navigation.navigate('Product');
+        // Handle the case when result or result.data is null or undefined
+        console.error("Invalid API response format");
       }
     } catch (error) {
       console.error("Error getting product data: ", error);
     }
   };
+  
 
   async function scanQRCodeFromGallery() {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();

@@ -15,10 +15,12 @@ import { useTheme, Icon, Text } from "@ui-kitten/components";
 
 import StarRating from 'react-native-star-rating-widget';
 
-function ProductHome({ navigation }) {
+function ProductHome({ route }) {
 
   const theme = useTheme();
 
+  const { product } = route.params;
+  
   const mockComments = [
     {
       id: 1,
@@ -61,8 +63,8 @@ function ProductHome({ navigation }) {
             />
           </View>
           <View style={{ marginLeft: 10, flexDirection: "column", justifyContent: 'center', alignItems: 'center' }}>
-            <Text>Name : Naked Heat</Text>
-            <Text>Brand : Urban Decay</Text>
+            <Text>{product.productDetails.name}</Text>
+            <Text>{product.productDetails.brands.join(', ')}</Text>
             <View style={{ justifyContent: "center"}}>
               <StarRating
                 rating={rating}
