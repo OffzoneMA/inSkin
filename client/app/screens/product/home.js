@@ -12,7 +12,8 @@ import Heading from "../../components/Heading";
 
 import { useTheme, Icon, Text } from "@ui-kitten/components";
 
-import StarRating from 'react-native-star-rating';
+
+import StarRating from 'react-native-star-rating-widget';
 
 function ProductHome({ navigation }) {
 
@@ -45,6 +46,8 @@ function ProductHome({ navigation }) {
     </Pressable>
   );
 
+  const [rating, setRating] = useState(0);
+  
   return (
     <Page>
       <Heading>9780004721156</Heading>
@@ -62,9 +65,8 @@ function ProductHome({ navigation }) {
             <Text>Brand : Urban Decay</Text>
             <View style={{ justifyContent: "center"}}>
               <StarRating
-                disabled={false}
-                maxStars={5}
-                rating={3.8}
+                rating={rating}
+                onChange={setRating}
               />
             </View>
           </View>
