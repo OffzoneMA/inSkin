@@ -7,6 +7,8 @@ const fs = require('fs');
 
 const { resolve } = require('path');
 
+const bcrypt = require("bcrypt");
+
 module.exports = async function () {
     // Check if users, products, and brands collections are empty
   const usersCount = await User.countDocuments();
@@ -24,8 +26,8 @@ module.exports = async function () {
   // If collections are empty, create mock data
   if (usersCount === 0) {
     const users = await User.create([
-      { firstName: "user1FirstName", lastName: "user1LastName", userName: "user1UserName", email: "user1@example.com", password: "user1Password"},
-      { firstName: "user1FirstName", lastName: "user2LastName", userName: "user2UserName", email: "user2@example.com", password: "user2Password" },
+      { firstName: "user1FirstName", lastName: "user1LastName", userName: "user1UserName", email: "user1@example.com", password: await bcrypt.hash("user1Password", 10) },
+      { firstName: "user1FirstName", lastName: "user2LastName", userName: "user2UserName", email: "user2@example.com", password: await bcrypt.hash("user2Password", 10) },
     ]);
 
     // Get the userId of user1
