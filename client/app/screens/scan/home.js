@@ -55,7 +55,6 @@ export default function Home({ navigation }) {
         navigation.navigate('Product', { product: result.data });
       } else {
         // Handle the case when result is not ok
-        console.error("API response not okay");
         closeCustomPopup();
       }
   
