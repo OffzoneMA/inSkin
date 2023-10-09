@@ -10,7 +10,7 @@ import {
 import Page from "../../components/Page";
 import Heading from "../../components/Heading";
 
-import { useTheme, Icon } from "@ui-kitten/components";
+import { useTheme, Icon, Input } from "@ui-kitten/components";
 
 import { MultipleSelectList } from 'react-native-dropdown-select-list'
 
@@ -25,7 +25,7 @@ function AddProduct({ navigation, route }) {
 
   const { barcode } = route.params;
 
-  const [selected, setSelected] = useState("");
+  const [selectedBrandsIds, setSelectedBrandsIds] = useState("");
   
   const data = [
     {key:'1', value:'Mobiles', disabled:true},
@@ -78,24 +78,29 @@ function AddProduct({ navigation, route }) {
           />
         </View>
           <TextInput>{barcode}</TextInput>
-          <TextInput>{"product.productDetails.name"}</TextInput>
+          <TextInput placeholder="Name"/>
           <View>
-            <MultipleSelectList 
-              setSelected={(val) => setSelected(val)} 
-              data={data} 
-              save="value"
-              onSelect={() => alert(selected)} 
-              label="Categories"
+            <MultipleSelectList
+              placeholder="Brands"
+              setSelected={(val) => setSelectedBrandsIds(val)} 
+              data={brandsNames} 
+              save="key"
+              label="Brands"
+              boxStyles={{ backgroundColor: "#F7F9FC", borderColor: "#E4E9F2", borderRadius: 4}}
+              fontFamily='Jost-Regular'
+              inputStyles={{ color: "#8F9BB3", fontSize: 17}}
+              dropdownTextStyles={{color: "#222B45"}}
+              dropdownStyles={{marginBottom: 10, backgroundColor: "#F7F9FC", borderColor: "#E4E9F2", borderRadius: 4}}
+              checkBoxStyles={{borderColor: '#8F9BB3'}}
+              badgeStyles={{backgroundColor: "#8F9BB3", borderRadius: 4}}
             />
           </View>
-          <TextInput>{"product.productDetails.description"}</TextInput>
+          <TextInput textAlignVertical="top" multiline={true} numberOfLines={4} placeholder="Description..."/>
           <View style={{flexDirection: "row", justifyContent: "space-between"}}>
             <Button style={{flex: 2, marginRight: 2}}>Add Product</Button>
-            <Button onPress={onCancelClick} style={{flex: 1, marginLeft: 2, backgroundColor: "gray", borderColor: "gray"}}>Cancel</Button>
+            <Button onPress={onCancelClick} style={{flex: 1, marginLeft: 2, backgroundColor: "#8F9BB3", borderColor: "#8F9BB3"}}>Cancel</Button>
           </View>
-          <Button onPress={alert(brandsNames)}
-            style={{flex: 1, margin: 20}}
-          >test</Button>
+          <Button onPress={() => console.log(selectedBrandsIds)} style={{flex: 1, margin: 20}}>test</Button>
     </Page>
   );
 }
