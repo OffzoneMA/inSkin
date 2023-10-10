@@ -30,7 +30,7 @@ client/.DS_Store
 client/*.pem
 
 # local env files
-client/.env
+client/.env*
 server/.env*
 
 # typescript
