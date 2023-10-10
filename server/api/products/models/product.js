@@ -53,15 +53,19 @@ const productSchema = new mongoose.Schema({
       },
       text: {
         type: String,
+        /*
         required: function() {
           return !this.review; // Comment is required if review is not provided
         },
+        */
       },
       review: {
-        type: String,
+        type: Number,
+        /*
         required: function() {
           return !this.text; // Review is required if comment is not provided
         },
+        */
       },
     },
   ],
@@ -90,6 +94,7 @@ function validateProduct(product) {
       Joi.object({
         userId: Joi.string().hex().length(24).required(), // You can validate the user ID here
         text: Joi.string().required(),
+        review:  Joi.string().required(),
       })
     ),
   });
