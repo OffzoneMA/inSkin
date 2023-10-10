@@ -20,7 +20,7 @@ TODO: implement posting review and comments feature
 TODO: how can users follow other users if in the first the only see accounts they've followed ?
 TODO: handle null error in scan home response.data
 TODO: implement new behaviour in camera scan
-TODO: implement add product manually button in scan screen
+TODO: implement add product manually button in scan screen typing the barcode manually
 DONE: my create account button doesn't work when i logout
 DONE: make add product pop up isolated from Camera.js File
 DONE: implement product pop up in gallery import
