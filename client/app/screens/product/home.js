@@ -23,27 +23,63 @@ function ProductHome({ route }) {
   
   const mockComments = [
     {
-      id: 1,
-      name: 'Item 1',
-      barcode: '123456789',
+      userId: "1",
+      text: 'Nice',
+      review: 5,
     },
     {
-      id: 2,
-      name: 'Item 2',
-      barcode: '987654321',
+      userId: "2",
+      text: 'Great product!',
+      review: 4,
     },
     {
-      id: 3,
-      name: 'Item 3',
-      barcode: '234567890',
+      userId: "3",
+      text: 'Not bad',
+      review: 3,
+    },
+    {
+      userId: "4",
+      text: 'Amazing!',
+      review: 5,
+    },
+    {
+      userId: "5",
+      text: 'Could be better',
+      review: 2,
+    },
+    {
+      userId: "6",
+      text: 'Impressive quality',
+      review: 4,
+    },
+    {
+      userId: "7",
+      text: 'Decent',
+      review: 3,
+    },
+    {
+      userId: "8",
+      text: 'Top-notch!',
+      review: 5,
+    },
+    {
+      userId: "9",
+      text: 'Satisfactory',
+      review: 3,
+    },
+    {
+      userId: "10",
+      text: 'Excellent service',
+      review: 5,
     },
   ];
+  
 
   const Item = ({ item }) => (
     <Pressable style={styles.item}>
-      <View style={{ flex: 1, flexDirection:"column"}}>
-        <Text>{item.name}</Text>
-        <Text>{item.barcode}</Text>
+      <View style={{ marginVertical: 20, flex: 1, flexDirection:"column"}}>
+        <Text>{item.text}</Text>
+        <Text>{item.review}</Text>
       </View>
     </Pressable>
   );
@@ -76,7 +112,7 @@ function ProductHome({ route }) {
         <FlatList
           data={mockComments}
           renderItem={({ item }) => <Item item={item} />}
-          keyExtractor={(item, index) => {return item.id}}
+          keyExtractor={(item, index) => {return item.userId}}
         />
       </SafeAreaView>
     </Page>

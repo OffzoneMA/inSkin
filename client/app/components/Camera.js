@@ -18,6 +18,10 @@ import useApi from "../hooks/useApi";
 
 import AddProductModal from './AddProductModal';
 
+import Modal from "react-native-modal";
+
+import Button from "./Button";
+
 const validationSchema = Yup.object({
   barcode: Yup.string().required().label("Barcode"),
   name: Yup.string().label("Name"),
@@ -31,16 +35,39 @@ export default function Cam({ flash, zoom }) {
   const [permission, requestPermission] = Camera.useCameraPermissions();
   const {scanned, setScanned} = useContext(ScanContext);
 
-  const { setQrcode } = useContext(ScanContext);
+  const { qrcode, setQrcode } = useContext(ScanContext);
 
   const navigation = useNavigation();
 
   const [showCustomPopup, setShowCustomPopup] = useState(false); // State to control custom pop-up visibility
 
+  const [value, setValue] = useState(0);
+
+  const [ scannedProduct, setScannedProduct ] = useState(null);
+
+  const getProductByBarcode = async (barcode) => {
+    try {
+      const result = await productActionsApi.getProductByBarcode(barcode);
+  
+      if (result.ok) {
+        // Handle the case when result is ok
+        setScannedProduct(result.data);
+        navigation.navigate('Product', { product: result.data });
+        setScanned(false);
+      } else {
+        // Handle the case when result is not ok
+        setShowCustomPopup(true);
+      }
+  
+    } catch (error) {
+      console.error("Error getting product data: ", error);
+    }
+  };  
+
   const handleBarcodeScanned = (qr) => {
     setScanned(true);
     setQrcode({ date: new Date(), qr });
-    setShowCustomPopup(true); // Show the custom pop-up
+    getProductByBarcode(qr.data);
   };
 
   // Function to close the custom pop-up
@@ -89,13 +116,31 @@ export default function Cam({ flash, zoom }) {
       >
         <View />
       </Camera>
-      {/* Bottom Modal */}
-      {/* Use the BarcodeScannerModal component */}
-      <AddProductModal
-        showCustomPopup={showCustomPopup}
-        setShowCustomPopup={setShowCustomPopup}
-        closeCustomPopup={closeCustomPopup}
-      />
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={showCustomPopup}
+        onRequestClose={closeCustomPopup}
+      >
+        <View style={{flexDirection: "column", justifyContent: "center", alignItems: "center", padding: 10, backgroundColor: "white", borderRadius: 10, height: 100}}>
+          <Text>This product doesn't exist!</Text>
+          <Text>Would you like to add it?</Text>
+          <View style={{flexDirection: "row"}}>
+            <Button style={{flex: 1, marginRight: 2}}title="Close"
+              onPress={() => {
+                closeCustomPopup();
+                navigation.navigate("AddProduct", {barcode: qrcode.qr.data})
+              }}
+            >
+              Yes
+            </Button>
+            <Button style={{flex: 1, marginLeft: 2}}title="Close" onPress={closeCustomPopup}>
+              No
+            </Button>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }

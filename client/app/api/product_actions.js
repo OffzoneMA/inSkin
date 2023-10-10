@@ -6,21 +6,19 @@ const add_product = (
   //images,
   name,
   brands,
-  categories,
-  ingredients,
+  description,
   /* reader_type = null,
   reader_goals = [],
   reader_genres = [] */
 ) => {
-  console.log(brands);
+  
   const formData = new FormData();
   formData.append("barcode", barcode);
   formData.append("userId", userId); // Include userId in the FormData
   //formData.append("images", images);
   formData.append("productDetails[name]", name);
   brands.forEach((item) => formData.append("productDetails[brands][]", item));
-  categories.forEach((item) => formData.append("productDetails[categories][]", categories));
-  ingredients.forEach((item) => formData.append("productDetails[ingredients][]", ingredients));
+  formData.append("productDetails[description]", description);
 
   return client.post("/products/add-product", formData, {
     headers: {
