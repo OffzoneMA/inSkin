@@ -7,7 +7,8 @@ import {
   FlatList,
   StatusBar,
   RefreshControl,
-  Pressable
+  Pressable,
+  Image,
 } from "react-native";
 
 import Page from "../../components/Page";
@@ -70,19 +71,20 @@ function DiscoverHome({ navigation }) {
     <Pressable style={styles.item} onPress={() => { setShowCustomPopup(true) }}>
       <View style={{ backgroundColor: "gray", flex: 1/2, justifyContent: 'center', alignItems: 'center' }}>
         
-        {item.images.length > 0 ? ( // Step 3: Conditionally render selected image or default icon
-          <Image 
-            source={{ uri: selectedImageUri }} /* style={styles.profilePicture} */ 
-            style={[styles.profilePicture, {  flex: 1 }]} // Use flex to fit the parent container
-          />
-        ) : (
-          <Icon
+      {item.images.length > 0 ? (
+        <Image 
+          source={{ uri: item.images[0].imageUrl }} // Use the correct property for the image URL
+          style={[styles.profilePicture, {  flex: 1 }]}
+        />
+      ) : (
+        <Icon
           name="image-outline"
           width={24} // Set the width of the icon
           height={24} // Set the height of the icon
           fill={theme["color-basic-600"]} // Set the color of the icon
-          />
-        )}
+        />
+      )}
+
         
       </View>
       <View style={{ flex: 1, flexDirection:"column"}}>
