@@ -23,19 +23,12 @@ const productSchema = new mongoose.Schema({
       name: {
           type: String,
       },
-      brand:  {
+      brands:  [
+        {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Brand",
-      },
-      categories: [
-          {
-          type: String, // You can store image URLs here
-          },
-      ],
-      ingredients: [
-          {
-          type: String, // You can store image URLs here
-          },
+        required: true,
+        },
       ],
     },
   createdAt:
@@ -86,9 +79,7 @@ function validateProduct(product) {
 
     productDetails: Joi.object({
       name: Joi.string().allow(''),
-      brands: Joi.array().items(Joi.string()),
-      categories: Joi.array().items(Joi.string()),
-      ingredients: Joi.array().items(Joi.string()),
+      brands: Joi.array().items(Joi.string().hex().length(24).required()),
     }),
 
     comments: Joi.array().items(
