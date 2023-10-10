@@ -149,13 +149,7 @@ export default function Home({ navigation }) {
           </Pressable>
 
       </View>
-      {/* Bottom Modal */}
-      {/* Use the BarcodeScannerModal component */}
-      {/* <AddProductModal
-        showCustomPopup={showCustomPopup}
-        setShowCustomPopup={setShowCustomPopup}
-        closeCustomPopup={closeCustomPopup}
-      /> */}
+      
       <Modal
         animationType="slide"
         transparent={true}

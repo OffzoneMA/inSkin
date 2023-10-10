@@ -30,6 +30,9 @@ const productSchema = new mongoose.Schema({
         required: true,
         },
       ],
+      description: {
+        type: String,
+      },
     },
   createdAt:
     {
@@ -80,6 +83,7 @@ function validateProduct(product) {
     productDetails: Joi.object({
       name: Joi.string().allow(''),
       brands: Joi.array().items(Joi.string().hex().length(24).required()),
+      description: Joi.string().allow(''),
     }),
 
     comments: Joi.array().items(

@@ -38,7 +38,8 @@ import { MultiSelect } from 'react-native-element-dropdown';
 const validationSchema = Yup.object({
   barcode: Yup.string().required().label('Barcode'),
   name: Yup.string().label('Name'),
-  brands: Yup.string().label('Brands'),
+  brands: Yup.array().of(Yup.string()).label('Brands'),
+  description: Yup.string().label('Description'),
 });
 
 function AddProduct({ navigation, route }) {
@@ -121,6 +122,7 @@ function AddProduct({ navigation, route }) {
     userId,
     name,
     brands,
+    description,
   }) => {
     var readerType;
     var readerGoals;
@@ -140,6 +142,7 @@ function AddProduct({ navigation, route }) {
       userId,
       name.trim(),
       brands,
+      description,
     );
 
     if (!result.ok) {
@@ -158,6 +161,7 @@ const handleOKPress = ({
     userId,
     name,
     brands,
+    description,
   }) => {
     //const brandsArray = brands.split(",").map((item) => item.trim()).filter((item) => item !== "");
 
@@ -168,6 +172,7 @@ const handleOKPress = ({
         userId: userId,
         name: name,
         brands: brands, // Use the arrays instead of strings
+        description: description,
       }); // Handle the barcode submission using the stored barcode
   };
 
@@ -208,11 +213,10 @@ const handleOKPress = ({
                 //images: [],
                 name: "",
                 brands: selected,
-                categories: "",
-                ingredients: "",
+                description: "",
             }}
             onSubmit={handleOKPress}
-            //validationSchema={validationSchema}
+            validationSchema={validationSchema}
             >
             {({
                 handleChange,
@@ -308,7 +312,21 @@ const handleOKPress = ({
                   )}
                 />
 
-                <TextInput textAlignVertical="top" maxHeight={100} multiline={true} numberOfLines={4} placeholder="Description..."/>
+                <TextInput
+                  textAlignVertical="top"
+                  maxHeight={100}
+                  multiline={true}
+                  numberOfLines={4}
+                  placeholder="Description..."
+                  keyboardType="default"
+                  returnKeyType="next"
+                  autoCapitalize="none"
+                  value={values.description}
+                  onChangeText={handleChange("description")}
+                  errorMessage={errors.description}
+                  onBlur={() => setFieldTouched("description")}
+                  errorVisible={touched.description}
+                />
                 <View style={{flexDirection: "row", justifyContent: "space-between"}}>
                   <Button title="OK" onPress={handleSubmit} style={{flex: 2, marginRight: 2}}>Add Product</Button>
                   <Button onPress={onCancelClick} style={{flex: 1, marginLeft: 2, backgroundColor: "#8F9BB3", borderColor: "#8F9BB3"}}>Cancel</Button>

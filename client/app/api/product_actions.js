@@ -6,8 +6,7 @@ const add_product = (
   //images,
   name,
   brands,
-  categories,
-  ingredients,
+  description,
   /* reader_type = null,
   reader_goals = [],
   reader_genres = [] */
@@ -19,6 +18,7 @@ const add_product = (
   //formData.append("images", images);
   formData.append("productDetails[name]", name);
   brands.forEach((item) => formData.append("productDetails[brands][]", item));
+  formData.append("productDetails[description]", description);
 
   return client.post("/products/add-product", formData, {
     headers: {
