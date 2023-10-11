@@ -27,6 +27,8 @@ TODO: add server routes: get brands by id, get users username by id, get first b
 TODO: filter comment by most recent or most liked
 TODO: increment product views, product shared, and product scanned
 TODO: share and save product
+TODO: remove commented auth parameter in server routes
+TODO: add a working toast library
 DONE: my create account button doesn't work when i logout
 DONE: make add product pop up isolated from Camera.js File
 DONE: implement product pop up in gallery import

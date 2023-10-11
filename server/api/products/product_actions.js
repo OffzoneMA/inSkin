@@ -124,6 +124,37 @@ router.get(
   })
 );
 
+// Route to update profile image
+router.put(
+  "/add-comment",
+  /* auth, */
+  asyncMiddleware(async (req, res) => {
+    const productId = req.body._id; // Assuming you have the user ID in the request object
+    const { userId, text, review } = req.body; // Assuming userId, text, and review are in the request body
+
+    const updatedProduct = await Product.findOneAndUpdate(
+      { _id: productId },
+      {
+        $push: {
+          comments: {
+            userId: userId,
+            text: text,
+            review: review,
+            createdAt: new Date()
+          }
+        }
+      },
+      { new: true } // This option ensures that the updated document is returned
+    );
+
+    if (!updatedProduct) {
+      return res.status(404).send("Product not found");
+    }
+
+    res.status(200).send("Comment added successfully");
+  })
+);
+
 //POST tea
 const newTea = (req, res) => {
 
