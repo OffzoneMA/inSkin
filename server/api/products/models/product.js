@@ -67,6 +67,10 @@ const productSchema = new mongoose.Schema({
         },
         */
       },
+      createdAt: {
+        type: Date,
+        default: Date.now
+      },
     },
   ],
 });
@@ -93,8 +97,8 @@ function validateProduct(product) {
     comments: Joi.array().items(
       Joi.object({
         userId: Joi.string().hex().length(24).required(), // You can validate the user ID here
-        text: Joi.string().required(),
-        review:  Joi.string().required(),
+        text: Joi.string()/* .required() */,
+        review: Joi.number().integer()/* .required() */,
       })
     ),
   });
