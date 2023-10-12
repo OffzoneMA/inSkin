@@ -155,6 +155,37 @@ router.put(
   })
 );
 
+
+// Add this route to your Express router
+router.get(
+  "/product-comments/:id",
+  asyncMiddleware(async (req, res) => {
+    try {
+      // Find the product by ID in the database
+      const product = await Product.findById(req.params.id);
+
+      if (!product) {
+        // If the product with the given ID doesn't exist, return 404 Not Found
+        return res.status(404).json({ error: "Product not found" });
+      }
+
+      // Extract comments data from the product and send it as a response
+      const comments = product.comments.map((comment) => ({
+        userId: comment.userId,
+        text: comment.text,
+        review: comment.review,
+      }));
+
+      // Send the array of comments as a response
+      res.json(comments);
+    } catch (error) {
+      // Handle errors
+      console.error(error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
 //POST tea
 const newTea = (req, res) => {
 
