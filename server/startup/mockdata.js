@@ -21,6 +21,7 @@ module.exports = async function () {
   const imageBuffer = Buffer.from(imageData);
 
   let user1Id;
+  let user2Id;
   let brand1Id;
 
   // If collections are empty, create mock data
@@ -31,20 +32,33 @@ module.exports = async function () {
     ]);
 
     // Get the userId of user1
-    const foundUser = await User.findOne({email: "user1@example.com",}).select({ _id: 1 });
-    user1Id = foundUser._id;
+    const foundUser1 = await User.findOne({email: "user1@example.com",}).select({ _id: 1 });
+    user1Id = foundUser1._id;
+    const foundUser2 = await User.findOne({email: "user2@example.com",}).select({ _id: 1 });
+    user2Id = foundUser2._id
     console.log("Mock users created.");
 
     if (brandsCount === 0) {
-        const brands = await Brand.create([
-            { name: "Brand 1", image: { data: imageBuffer, contentType: "image/png" } },
-            { name: "Brand 2" },
-        ]);
-
-        const foundBrand = await Brand.findOne({name: "Brand 1",}).select({ _id: 1 });
-        brand1Id = foundBrand._id;
-        console.log("Mock brands created.");
-    }
+        // Create an array of brand creation promises
+        const brandCreationPromises = [
+            Brand.create({ name: "La Roche Posay", image: { data: imageBuffer, contentType: "image/png" } }),
+            Brand.create({ name: "Brand 2" })
+        ];
+    
+        // Wait for all brand creation promises to resolve
+        await Promise.all(brandCreationPromises);
+    
+        // Find "Brand 1" after all brands have been created
+        const foundBrand = await Brand.findOne({ name: "La Roche Posay" }).select({ _id: 1 });
+    
+        // Ensure that foundBrand is not null before accessing its _id property
+        if (foundBrand) {
+            brand1Id = foundBrand._id;
+            console.log("Mock brands created.");
+        } else {
+            console.log("Brand 1 not found.");
+        }
+    }    
 
     if (productsCount === 0) {
             await Product.create([
@@ -52,14 +66,12 @@ module.exports = async function () {
                 barcode: "30070349",
                 userId: user1Id,
                 productDetails: {
-                name: "Product 1",
-                brand: brand1Id,
-                categories: ["Category 1", "Category 2"],
-                ingredients: ["Ingredient 1", "Ingredient 2"],
+                name: "nutritic lip balm",
+                brands: brand1Id,
                 },
                 comments: [
-                { userId: user1Id, text: "Comment 1" },
-                { userId: user1Id, text: "Comment 2" },
+                { userId: user1Id, text: "Awesome !", review: 5 },
+                { userId: user2Id, text: "Not bad", review: 2 },
                 ],
             },
             // Add more products as needed
