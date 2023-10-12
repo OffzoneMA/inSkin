@@ -171,6 +171,7 @@ router.get(
 
       // Extract comments data from the product and send it as a response
       const comments = product.comments.map((comment) => ({
+        _id: comment._id,
         userId: comment.userId,
         text: comment.text,
         review: comment.review,

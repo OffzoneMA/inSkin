@@ -5,6 +5,7 @@ import {
   StyleSheet,
   View,
   Pressable,
+  RefreshControl,
 } from "react-native";
 
 import Page from "../../components/Page";
@@ -17,11 +18,22 @@ import StarRating from 'react-native-star-rating-widget';
 
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
+import productActionsApi from "../../api/product_actions";
+
+import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEffect from React Navigation
+
+
 function ProductHome({ route }) {
 
   const theme = useTheme();
 
   const { product } = route.params;
+
+  const [rating, setRating] = useState(0);
+
+  const [comments, setComments] = useState([]);
+
+  const [isRefreshing, setIsRefreshing] = useState(false);
   
   const mockComments = [
     {
@@ -84,14 +96,31 @@ function ProductHome({ route }) {
       text: 'Amazing',
       review: 4.6,
     }
-  ];  
+  ];
+
+  const getProductComments = async () => {
+    try {
+      const result = await productActionsApi.getProductComments(product._id);
+     
+      if (!result.ok) {
+        //toast.show(result.data, { type: "danger" });
+      } else {
+        //toast.show(result.data.message, { type: "success" });
+        setComments(result.data);
+      }
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+    } finally {
+      setIsRefreshing(false); // Set refreshing state to false after data fetch is completed
+    }
+  };
 
   const Item = ({ item }) => (
     <Pressable style={styles.item}>
       <View style={{ flexDirection: "row", alignItems: "center" }}>
         <View style={{ marginTop: 10, flex: 1, flexDirection:"column"}}>
           <View style={{ flexDirection: "row", alignItems: "center"}}>
-            <Text>{item.userName}</Text>
+            <Text>{item.userId}</Text>
             <StarRating
               style={{marginLeft: 20}}
               rating={item.review}
@@ -103,7 +132,6 @@ function ProductHome({ route }) {
           </View>
           
           <Text>{item.text}</Text>
-          <Text>{item.review}</Text>
         </View>
         <View>
           <Icon
@@ -117,7 +145,20 @@ function ProductHome({ route }) {
     </Pressable>
   );
 
-  const [rating, setRating] = useState(0);
+  // Fetch products when the component mounts and when the screen comes into focus
+  useFocusEffect(
+    React.useCallback(() => {
+      setIsRefreshing(true); // Set refreshing state to true when the screen comes into focus
+      getProductComments();
+    }, [])
+  );
+
+  const onRefresh = () => {
+    setIsRefreshing(true); // Set refreshing state to true when the user pulls down to refresh
+    getProductComments();
+  };
+
+  
   
   return (
     <Page>
@@ -206,9 +247,15 @@ function ProductHome({ route }) {
       </View>
       <View style={{ flex: 1 }}>
           <FlatList
-            data={mockComments}
+            data={comments}
             renderItem={({ item }) => <Item item={item} />}
-            keyExtractor={(item, index) => {return item.userId}}
+            keyExtractor={(item, index) => {return item._id}}
+            refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={onRefresh}
+            />
+          }
           />
       </View>
       <View style={{ paddingTop: 10, flexDirection: "column", borderWidth: 1, borderColor: "black", borderRadius: 8, alignItems: "center" }}>
@@ -227,13 +274,19 @@ function ProductHome({ route }) {
             />
           </View>
           
-          <View style={{paddingHorizontal: 10}}>
+          <Pressable
+            onPress={()=>{
+              getProductComments();
+              console.log(comments);
+            }} 
+            style={{paddingHorizontal: 10}}
+          >
             <MaterialCommunityIcons
               name={"send"}
               size={24}
               color={theme["color-basic-600"]}
             />
-          </View>
+          </Pressable>
           
         </View>
       </View>

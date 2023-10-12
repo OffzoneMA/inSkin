@@ -52,8 +52,19 @@ const getProductByBarcode = async (barcode) => {
   }
 }
 
+const getProductComments = async (_id) => {
+  try {
+    const response = await client.get(`/products/product-comments/${_id}`);
+    return response;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to fetch product by barcode");
+  }
+}
+
 export default {
     add_product,
     getAllProducts,
     getProductByBarcode,
+    getProductComments,
 };
