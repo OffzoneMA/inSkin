@@ -22,6 +22,7 @@ import productActionsApi from "../../api/product_actions";
 
 import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEffect from React Navigation
 
+import brandActionsApi from "../../api/brand_actions";
 
 function ProductHome({ route }) {
 
@@ -112,6 +113,26 @@ function ProductHome({ route }) {
       console.error("Error fetching data: ", error);
     } finally {
       setIsRefreshing(false); // Set refreshing state to false after data fetch is completed
+    }
+  };
+
+  const getBrandById = async (_id) => {
+    try {
+      const result = await brandActionsApi.getBrandById(_id);
+      console.log(result);
+      if (!result.ok) {
+        //toast.show(result.data, { type: "danger" });
+      } else {
+        //toast.show(result.data.message, { type: "success" });
+        /* const brandName = result.data.brands.map(brand => ({
+          value: brand._id, // Use _id as the key
+          label: brand.name // Use name as the value
+        })); */
+        //const brandName = result.data.brand;
+        //setBrandsNames(brandsNames);
+      }
+    } catch (error) {
+      console.error("Error fetching data: ", error);
     }
   };
 
@@ -276,8 +297,8 @@ function ProductHome({ route }) {
           
           <Pressable
             onPress={()=>{
-              getProductComments();
-              console.log(comments);
+              getBrandById("6527dfd779335935f822fd91");
+              //console.log(comments);
             }} 
             style={{paddingHorizontal: 10}}
           >

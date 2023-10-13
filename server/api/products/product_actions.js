@@ -7,7 +7,6 @@ const router = express.Router();
 
 const mongoose = require("mongoose");
 
-const Tea = require("./models/tea");
 const multer = require("multer");
 
 const bodyParser = require('body-parser');
