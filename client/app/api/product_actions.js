@@ -34,7 +34,7 @@ const getAllProducts = () => client.get("/products");
 // GET a single product by ID
 const getProductById = async (id) => {
   try {
-    const response = await client.get(`/products/${id}`);
+    const response = await client.get(`/products/get-product-byid/${id}`);
     return response.data;
   } catch (error) {
     console.error(error);
@@ -88,10 +88,14 @@ const getProductComments = async (_id) => {
   }
 }
 
+// GET all products
+const getAllComments = () => client.get("/products/all-comments");
+
 export default {
     add_product,
     getAllProducts,
     getProductByBarcode,
     addCommentToProduct,
     getProductComments,
+    getAllComments,
 };

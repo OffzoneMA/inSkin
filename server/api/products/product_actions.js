@@ -83,7 +83,7 @@ router.get("/", async (req, res) => {
 });
 
 // GET a single product by ID
-router.get("/:id", async (req, res) => {
+router.get("/get-product-byid/:id", async (req, res) => {
   try {
     const productId = req.params.id;
 
@@ -185,5 +185,44 @@ router.get(
     }
   })
 );
+
+router.get("/all-comments", asyncMiddleware(async (req, res) => {
+  try {
+      const products = await Product.find().populate({
+          path: 'comments.userId',
+          select: 'userName', // Assuming the username is a field in your User model
+      }).exec();
+
+      if (!products || products.length === 0) {
+          return res.json([]);
+      }
+
+      // Manually populate the username field inside the comments array
+      let allComments = [];
+      products.forEach(product => {
+          product.comments.forEach(comment => {
+              if (comment.userId && comment.userId.userName) {
+                  const formattedComment = {
+                      productId: product._id,
+                      productName: product.productDetails.name,
+                      userId: comment.userId._id,
+                      text: comment.text,
+                      review: comment.review,
+                      createdAt: comment.createdAt,
+                      username: comment.userId.userName // Add the username field directly to the comment object
+                  };
+                  allComments.push(formattedComment);
+              }
+          });
+      });
+
+      // Send the array of comments as a response
+      res.json(allComments);
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal Server Error" });
+  }
+}));
+
 
 module.exports = router;
