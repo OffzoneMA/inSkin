@@ -162,4 +162,29 @@ router.get(
   })
 );
 
+// GET multiple users by IDs
+router.get("/get-users-byids", async (req, res) => {
+  try {
+      // Retrieve an array of brand IDs from the request query parameters
+      const userIds = req.query.ids.split(',');
+
+      console.log(userIds);
+
+      // Query the database to find brands by IDs
+      const users = await User.find({ _id: { $in: userIds } });
+      console.log(users);
+
+      // Check if any brands exist
+      if (users.length === 0) {
+          return res.status(404).json({ message: "No users found for the provided IDs" });
+      }
+
+      // Return the brands as a JSON response
+      res.status(200).json(users);
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
 module.exports = router;

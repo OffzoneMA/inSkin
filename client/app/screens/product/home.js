@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   FlatList,
   SafeAreaView,
@@ -6,6 +6,7 @@ import {
   View,
   Pressable,
   RefreshControl,
+  TouchableOpacity,
 } from "react-native";
 
 import Page from "../../components/Page";
@@ -24,6 +25,10 @@ import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEff
 
 import brandActionsApi from "../../api/brand_actions";
 
+import authApi from "../../api/auth";
+
+import AuthContext from "../../contexts/auth";
+
 function ProductHome({ route }) {
 
   const theme = useTheme();
@@ -35,79 +40,44 @@ function ProductHome({ route }) {
   const [comments, setComments] = useState([]);
 
   const [isRefreshing, setIsRefreshing] = useState(false);
-  
-  const mockComments = [
-    {
-      userName: "user123",
-      userId: "1",
-      text: 'Nice',
-      review: 5,
-    },
-    {
-      userName: "user456",
-      userId: "2",
-      text: 'Great!',
-      review: 4,
-    },
-    {
-      userName: "user789",
-      userId: "3",
-      text: 'Awesome',
-      review: 4.5,
-    },
-    {
-      userName: "user010",
-      userId: "4",
-      text: 'Excellent',
-      review: 5,
-    },
-    {
-      userName: "user111",
-      userId: "5",
-      text: 'Fantastic',
-      review: 4.8,
-    },
-    {
-      userName: "user222",
-      userId: "6",
-      text: 'Wonderful',
-      review: 4.2,
-    },
-    {
-      userName: "user333",
-      userId: "7",
-      text: 'Impressive',
-      review: 4.7,
-    },
-    {
-      userName: "user444",
-      userId: "8",
-      text: 'Superb',
-      review: 4.3,
-    },
-    {
-      userName: "user555",
-      userId: "9",
-      text: 'Brilliant',
-      review: 4.9,
-    },
-    {
-      userName: "user666",
-      userId: "10",
-      text: 'Amazing',
-      review: 4.6,
-    }
-  ];
+
+  const authContext = useContext(AuthContext);
+
+  const { user } = useContext(AuthContext);
+
+  const [commentText, setCommentText] = useState("");
+
+  const [commentRating, setCommentRating] = useState(0);
+
+  const [brands, setBrands] = useState([]);
+
 
   const getProductComments = async () => {
     try {
       const result = await productActionsApi.getProductComments(product._id);
-     
+
       if (!result.ok) {
         //toast.show(result.data, { type: "danger" });
       } else {
         //toast.show(result.data.message, { type: "success" });
-        setComments(result.data);
+
+        // Extract user IDs from comments
+        const userIds = result.data.map(comment => comment.userId);
+        
+        const usernamesIds = await authApi.getUsersByIds(userIds);
+
+        // Create a list of comments with usernames
+        const comments = result.data.map(comment => {
+          const user = usernamesIds.find(u => u._id === comment.userId);
+          return {
+              ...comment,
+              userName: user ? user.userName : 'Unknown User' // Handle the case if user is not found
+          };
+        });
+
+        console.log(comments);
+        
+        setComments(comments);
       }
     } catch (error) {
       console.error("Error fetching data: ", error);
@@ -119,7 +89,69 @@ function ProductHome({ route }) {
   const getBrandById = async (_id) => {
     try {
       const result = await brandActionsApi.getBrandById(_id);
+      if (!result.ok) {
+        //toast.show(result.data, { type: "danger" });
+      } else {
+        //toast.show(result.data.message, { type: "success" });
+        /* const brandName = result.data.brands.map(brand => ({
+          value: brand._id, // Use _id as the key
+          label: brand.name // Use name as the value
+        })); */
+        //const brandName = result.data.brand;
+        //setBrandsNames(brandsNames);
+      }
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+    }
+  };
+
+  const getBrandsByIds = async (_id) => {
+    try {
+      const result = await brandActionsApi.getBrandsByIds(_id);
+
       console.log(result);
+
+      setBrands(result);
+
+      if (!result.ok) {
+        //toast.show(result.data, { type: "danger" });
+      } else {
+        //toast.show(result.data.message, { type: "success" });
+        /* const brandName = result.data.brands.map(brand => ({
+          value: brand._id, // Use _id as the key
+          label: brand.name // Use name as the value
+        })); */
+        //const brandName = result.data.brand;
+        //setBrandsNames(brandsNames);
+      }
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+    }
+  };
+
+
+
+  const addCommentToProduct = async () => {
+    try {
+
+      if(commentText == "" && commentRating == 0) {
+        console.log("Comment is empty !")
+        return;
+      }
+
+      const result = await productActionsApi
+      .addCommentToProduct(
+        product._id,
+        user._id,
+        commentText,
+        commentRating
+      );
+      
+
+      setCommentRating(0);
+      setCommentText("");
+
+      //console.log(result);
       if (!result.ok) {
         //toast.show(result.data, { type: "danger" });
       } else {
@@ -141,7 +173,7 @@ function ProductHome({ route }) {
       <View style={{ flexDirection: "row", alignItems: "center" }}>
         <View style={{ marginTop: 10, flex: 1, flexDirection:"column"}}>
           <View style={{ flexDirection: "row", alignItems: "center"}}>
-            <Text>{item.userId}</Text>
+            <Text>{item.userName}</Text>
             <StarRating
               style={{marginLeft: 20}}
               rating={item.review}
@@ -178,8 +210,6 @@ function ProductHome({ route }) {
     setIsRefreshing(true); // Set refreshing state to true when the user pulls down to refresh
     getProductComments();
   };
-
-  
   
   return (
     <Page>
@@ -214,7 +244,11 @@ function ProductHome({ route }) {
           <View style={{ flex: 1, marginHorizontal: 5, flexDirection: "row", justifyContent: 'space-between', alignItems: 'center' }}>
             <View style={{ flex: 2, flexDirection: "column", alignItems: "center"}}>
               <Text>{product.productDetails.name}</Text>
-              <Text>{product.productDetails.brands.join(', ')}</Text>
+              <Text>
+                {brands.length > 0
+                  ? brands.map(item => item.name).join(', ')
+                  : 'No brands available'}
+              </Text>
             </View>  
             <View style={{ flex: 1, flexDirection: "column", alignItems: "center"}}>
               <Text>{rating}</Text>
@@ -279,35 +313,41 @@ function ProductHome({ route }) {
           }
           />
       </View>
-      <View style={{ paddingTop: 10, flexDirection: "column", borderWidth: 1, borderColor: "black", borderRadius: 8, alignItems: "center" }}>
+      <View style={[styles.commentContainer, { paddingTop: 10, flexDirection: "column", alignItems: "center" }]}>
         <StarRating
-          rating={rating}
-          onChange={setRating}
+          rating={commentRating}
+          onChange={setCommentRating}
           style={{marginLeft: 20}}
           animationConfig={{scale: 1}}
           starSize={35}
           starStyle={{marginHorizontal: 0}}
         />
         <View style={{ paddingHorizontal: 5, flexDirection: "row", alignItems: "center" }}>
-          <View style={{flex: 1, marginTop: 10, marginHorizontal: 5}}>
+          <View style={{flex: 1, marginTop: 10, marginHorizontal: 10}}>
             <TextInput
               placeholder="Comment..."
+              keyboardType="default"
+              returnKeyType="next"
+              autoCapitalize="none"
+              value={commentText}
+              onChangeText={setCommentText}
             />
           </View>
           
-          <Pressable
+          <TouchableOpacity
             onPress={()=>{
-              getBrandById("6527dfd779335935f822fd91");
-              //console.log(comments);
+              addCommentToProduct();
+              getBrandsByIds(product.productDetails.brands);
             }} 
-            style={{paddingHorizontal: 10}}
+            style={styles.button}
+            activeOpacity={0.7} // Customize the opacity when pressed
           >
             <MaterialCommunityIcons
               name={"send"}
               size={24}
               color={theme["color-basic-600"]}
             />
-          </Pressable>
+          </TouchableOpacity>
           
         </View>
       </View>
@@ -317,6 +357,33 @@ function ProductHome({ route }) {
 }
 
 const styles = StyleSheet.create({
+  button: {
+    justifyContent: "center",
+    marginVertical: 10,
+    paddingHorizontal: 10,
+    backgroundColor: 'lightgray', // Customize the background color
+    borderRadius: 5, // Optional: Customize the border radius
+    alignSelf: 'stretch',
+  },
+  text: {
+    fontSize: 16,
+    color: 'black', // Customize the text color
+  },
+  commentContainer: {
+    borderColor: "red",
+    borderRadius: 4,
+    marginBottom: 10,
+    padding: 12,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+
+    elevation: 2,
+  },
 });
 
 export default ProductHome;
