@@ -93,7 +93,6 @@ function ProductHome({ route }) {
           };
         });
         calculateProductRating(comments);
-        console.log(productRating);
         setComments(comments);
       }
     } catch (error) {
@@ -249,7 +248,7 @@ function ProductHome({ route }) {
       </View>
       
       <View style={{ flexDirection: "row" }}>
-        <View style={{ width: 80, height: 80, borderRadius: 10, backgroundColor: "gray", justifyContent: 'center', alignItems: 'center' }}>
+        <View style={{ width: 80, height: 80, borderRadius: 5, backgroundColor: "gray", justifyContent: 'center', alignItems: 'center' }}>
           <Icon
           name="image-outline"
           width={24} // Set the width of the icon
@@ -385,7 +384,7 @@ const styles = StyleSheet.create({
   },
   commentContainer: {
     borderColor: "red",
-    borderRadius: 4,
+    borderRadius: 5,
     marginBottom: 10,
     padding: 12,
     shadowColor: '#000',
