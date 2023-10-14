@@ -74,8 +74,6 @@ function ProductHome({ route }) {
               userName: user ? user.userName : 'Unknown User' // Handle the case if user is not found
           };
         });
-
-        console.log(comments);
         
         setComments(comments);
       }
@@ -108,8 +106,6 @@ function ProductHome({ route }) {
   const getBrandsByIds = async (_id) => {
     try {
       const result = await brandActionsApi.getBrandsByIds(_id);
-
-      console.log(result);
 
       setBrands(result);
 

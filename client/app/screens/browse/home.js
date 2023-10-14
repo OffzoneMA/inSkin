@@ -9,6 +9,7 @@ import {
   RefreshControl,
   Pressable,
   Image,
+  TouchableOpacity,
 } from "react-native";
 
 import Page from "../../components/Page";
@@ -36,6 +37,8 @@ function DiscoverHome({ navigation }) {
 
   const [showCustomPopup, setShowCustomPopup] = useState(false); // State to control custom pop-up visibility
 
+  const [ scannedProduct, setScannedProduct ] = useState(null);
+
   const getAllProducts = async () => {
     try {
       const result = await productActionsApi.getAllComments();
@@ -45,7 +48,6 @@ function DiscoverHome({ navigation }) {
       } else {
         //toast.show(result.data.message, { type: "success" });
         setComments(result.data);
-        console.log(comments);
       }
     } catch (error) {
       console.error("Error fetching data: ", error);
@@ -71,8 +73,25 @@ function DiscoverHome({ navigation }) {
     setShowCustomPopup(false);
   };
 
+  const getProductById = async (_id) => {
+    try {
+      const result = await productActionsApi.getProductById(_id);
+      
+      // Handle the case when result is ok
+      setScannedProduct(result);
+      navigation.navigate('Product', { product: result });
+  
+    } catch (error) {
+      console.error("Error getting product data: ", error);
+    }
+  }
+  
   const Item = ({ item }) => (
-    <Pressable style={styles.item} onPress={() => { setShowCustomPopup(true) }}>
+    <TouchableOpacity activeOpacity={0.7} style={styles.item} onPress={() => 
+      { 
+        getProductById(item.productId);
+      }}
+    >
       <View style={{ backgroundColor: "gray", flex: 1/2, justifyContent: 'center', alignItems: 'center' }}>
       
       {/* {item.images.length > 0 ? (
@@ -118,7 +137,7 @@ function DiscoverHome({ navigation }) {
           fill={theme["color-basic-600"]} // Set the color of the icon
         />
       </View>
-    </Pressable>
+    </TouchableOpacity>
   );
 
   return (

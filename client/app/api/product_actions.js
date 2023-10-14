@@ -94,6 +94,7 @@ const getAllComments = () => client.get("/products/all-comments");
 export default {
     add_product,
     getAllProducts,
+    getProductById,
     getProductByBarcode,
     addCommentToProduct,
     getProductComments,
