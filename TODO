@@ -1,7 +1,6 @@
 TODO: add browsing products feature with images and the ability to comment and review
 TODO: add profile informations (saved posts, my posts)
 TODO: add product image importation feature
-TODO: fix add product pop up UI
 TODO: add admin and not admin users
 TODO: admin users have the ability to delete posts
 TODO: admin users have the ability to validate posts and they only can see unvalidated posts
@@ -18,12 +17,19 @@ TODO: implement edit product server routes
 TODO: add search bar, list type grid or simple, products or accounts browsing choice, different filter
 TODO: users can only view comments of accounts they've followed
 TODO: implement posting review and comments feature
-TODO: link products with brands, and add a drop down list of available brands when adding a new product
-TODO: change product schema so that brand can only take one item
 TODO: how can users follow other users if in the first the only see accounts they've followed ?
 TODO: handle null error in scan home response.data
 TODO: implement new behaviour in camera scan
-TODO: implement add product manually button in scan screen
+TODO: implement add product manually button in scan screen typing the barcode manually
+TODO: improve add product screen U.I
+TODO: handle show brand image
+TODO: add server routes: get brands by id, get users username by id, get first brand image, get product comments, put comments and review
+TODO: filter comment by most recent or most liked
+TODO: increment product views, product shared, and product scanned
+TODO: share and save product
+TODO: remove commented auth parameter in server routes
+TODO: add a working toast library
 DONE: my create account button doesn't work when i logout
 DONE: make add product pop up isolated from Camera.js File
 DONE: implement product pop up in gallery import
+DONE: link products with brands, and add a drop down list of available brands when adding a new product

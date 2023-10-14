@@ -40,10 +40,28 @@ const getProfileImage = (userId) => {
   return client.get(`/auth/profile-image/6517645e1776a81824a64e4a`);
 };
 
+const getUsersByIds = async (ids) => {
+  try {
+      // Join the array of brand IDs into a comma-separated string
+      const idsString = ids.join(',');
+
+      // Make a GET request to the server endpoint with the brand IDs
+      const response = await client.get(`auth/get-users-byids?ids=${idsString}`);
+
+      // Return the response data (brands)
+      return response.data;
+  } catch (error) {
+      // Handle errors if the request fails
+      console.error(error);
+      throw new Error("Failed to fetch brands by IDs");
+  }
+};
+
 export default {
   login,
   register,
   checkUserStatus,
   updateProfileImage,
-  getProfileImage
+  getProfileImage,
+  getUsersByIds,
 };

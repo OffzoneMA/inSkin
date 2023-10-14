@@ -7,7 +7,6 @@ const router = express.Router();
 
 const mongoose = require("mongoose");
 
-const Tea = require("./models/tea");
 const multer = require("multer");
 
 const bodyParser = require('body-parser');
@@ -84,7 +83,7 @@ router.get("/", async (req, res) => {
 });
 
 // GET a single product by ID
-router.get("/:id", async (req, res) => {
+router.get("/get-product-byid/:id", async (req, res) => {
   try {
     const productId = req.params.id;
 
@@ -124,69 +123,107 @@ router.get(
   })
 );
 
-//POST tea
-const newTea = (req, res) => {
+// Route to update profile image
+router.put(
+  "/add-comment",
+  /* auth, */
+  asyncMiddleware(async (req, res) => {
+    const productId = req.body._id; // Assuming you have the user ID in the request object
+    const { userId, text, review } = req.body; // Assuming userId, text, and review are in the request body
 
-  //check if tea already exists in db
-  Tea.findOne({ name: req.body.name }, (err, data) => {
-    //if tea not in db, add it
-    if (!data) {
-      const newTea = new Tea({
-        name: req.body.name,
-        image: {
-          data: req.file.buffer,
-          contentType: req.file.buffer.mimetype
-        },
-        description: req.body.description,
-        keywords: req.body.keywords,
-        origin: req.body.origin,
-        brew_time: req.body.brew_time,
-        temperature: req.body.temperature,
-      });
-
-      //save to database
-      newTea.save((err, data) => {
-        if (err) {
-          return res.json(`Error occurred while saving tea: ${err}`);
+    const updatedProduct = await Product.findOneAndUpdate(
+      { _id: productId },
+      {
+        $push: {
+          comments: {
+            userId: userId,
+            text: text,
+            review: review,
+            createdAt: new Date()
+          }
         }
-        return res.json({message: "New tea is created.", data});
-      });
-      
-    } else {
-      if(err) return res.json(`Something went wrong, when cheking data. ${err}`);
-      return res.json(`${req.body.name} tea already exists.`);
-    }
-  });
-};
+      },
+      { new: true } // This option ensures that the updated document is returned
+    );
 
-router.post(
-  "/tea",
-  upload.single('image'),
-  newTea
+    if (!updatedProduct) {
+      return res.status(404).send("Product not found");
+    }
+
+    res.status(200).send("Comment added successfully");
+  })
 );
 
-// GET method to retrieve all posted images
-const getAllTeaImages = (req, res) => {
-  // Find all teas in the database
-  Tea.find({}, (err, teas) => {
-    if (err) {
-      // Handle errors
-      return res.status(500).json({ error: "Internal Server Error" });
-    }
-
-    // Extract image data from each tea and create an array of image objects
-    const imageArray = teas.map((tea) => ({
-      name: tea.name,
-      contentType: tea.image.contentType,
-      data: tea.image.data,
-    }));
-
-    // Send the array of image objects as a response
-    res.json(imageArray);
-  });
-};
 
 // Add this route to your Express router
-router.get("/tea/images", getAllTeaImages);
+router.get(
+  "/product-comments/:id",
+  asyncMiddleware(async (req, res) => {
+    try {
+      // Find the product by ID in the database
+      const product = await Product.findById(req.params.id);
+
+      if (!product) {
+        // If the product with the given ID doesn't exist, return 404 Not Found
+        return res.status(404).json({ error: "Product not found" });
+      }
+
+      // Extract comments data from the product and send it as a response
+      const comments = product.comments.map((comment) => ({
+        _id: comment._id,
+        userId: comment.userId,
+        text: comment.text,
+        review: comment.review,
+      }));
+
+      // Send the array of comments as a response
+      res.json(comments);
+    } catch (error) {
+      // Handle errors
+      console.error(error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.get("/all-comments", asyncMiddleware(async (req, res) => {
+  try {
+      const products = await Product.find().populate({
+          path: 'comments.userId',
+          select: 'userName', // Assuming the username is a field in your User model
+      }).exec();
+
+      if (!products || products.length === 0) {
+          return res.json([]);
+      }
+
+      // Manually populate the username field inside the comments array
+      let allComments = [];
+      products.forEach(product => {
+          product.comments.forEach(comment => {
+              if (comment.userId && comment.userId.userName) {
+                  const formattedComment = {
+                      _id: comment._id,
+                      productId: product._id,
+                      productName: product.productDetails.name,
+                      userId: comment.userId._id,
+                      text: comment.text,
+                      review: comment.review,
+                      createdAt: comment.createdAt,
+                      userName: comment.userId.userName // Add the username field directly to the comment object
+                  };
+                  allComments.push(formattedComment);
+              }
+          });
+      });
+
+      // Send the array of comments as a response
+      res.json(allComments);
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal Server Error" });
+  }
+}));
+
 
 module.exports = router;

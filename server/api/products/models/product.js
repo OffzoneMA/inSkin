@@ -23,20 +23,16 @@ const productSchema = new mongoose.Schema({
       name: {
           type: String,
       },
-      brand:  {
+      brands:  [
+        {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Brand",
+        required: true,
+        },
+      ],
+      description: {
+        type: String,
       },
-      categories: [
-          {
-          type: String, // You can store image URLs here
-          },
-      ],
-      ingredients: [
-          {
-          type: String, // You can store image URLs here
-          },
-      ],
     },
   createdAt:
     {
@@ -57,15 +53,23 @@ const productSchema = new mongoose.Schema({
       },
       text: {
         type: String,
+        /*
         required: function() {
           return !this.review; // Comment is required if review is not provided
         },
+        */
       },
       review: {
-        type: String,
+        type: Number,
+        /*
         required: function() {
           return !this.text; // Review is required if comment is not provided
         },
+        */
+      },
+      createdAt: {
+        type: Date,
+        default: Date.now
       },
     },
   ],
@@ -86,15 +90,15 @@ function validateProduct(product) {
 
     productDetails: Joi.object({
       name: Joi.string().allow(''),
-      brands: Joi.array().items(Joi.string()),
-      categories: Joi.array().items(Joi.string()),
-      ingredients: Joi.array().items(Joi.string()),
+      brands: Joi.array().items(Joi.string().hex().length(24).required()),
+      description: Joi.string().allow(''),
     }),
 
     comments: Joi.array().items(
       Joi.object({
         userId: Joi.string().hex().length(24).required(), // You can validate the user ID here
-        text: Joi.string().required(),
+        text: Joi.string()/* .required() */,
+        review: Joi.number().integer()/* .required() */,
       })
     ),
   });
