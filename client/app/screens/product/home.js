@@ -40,7 +40,7 @@ function ProductHome({ route }) {
 
   const { product } = route.params;
 
-  const [rating, setRating] = useState(0);
+  const [productRating, setProductRating] = useState(0);
 
   const [comments, setComments] = useState([]);
 
@@ -55,6 +55,19 @@ function ProductHome({ route }) {
   const [commentRating, setCommentRating] = useState(0);
 
   const [brands, setBrands] = useState([]);
+
+  function calculateProductRating(comments) {
+    if (!comments || comments.length === 0) {
+        return 0; // Default average rating if there are no comments or comments is empty
+    }
+
+    const totalRating = comments.reduce((accumulator, comment) => {
+        return accumulator + comment.review;
+    }, 0);
+
+    const averageRating = totalRating / comments.length;
+    setProductRating(averageRating.toFixed(1)); // Return average rating with 2 decimal places
+  }
 
 
   const getProductComments = async () => {
@@ -79,32 +92,14 @@ function ProductHome({ route }) {
               userName: user ? user.userName : 'Unknown User' // Handle the case if user is not found
           };
         });
-        
+        calculateProductRating(comments);
+        console.log(productRating);
         setComments(comments);
       }
     } catch (error) {
       console.error("Error fetching data: ", error);
     } finally {
       setIsRefreshing(false); // Set refreshing state to false after data fetch is completed
-    }
-  };
-
-  const getBrandById = async (_id) => {
-    try {
-      const result = await brandActionsApi.getBrandById(_id);
-      if (!result.ok) {
-        //toast.show(result.data, { type: "danger" });
-      } else {
-        //toast.show(result.data.message, { type: "success" });
-        /* const brandName = result.data.brands.map(brand => ({
-          value: brand._id, // Use _id as the key
-          label: brand.name // Use name as the value
-        })); */
-        //const brandName = result.data.brand;
-        //setBrandsNames(brandsNames);
-      }
-    } catch (error) {
-      console.error("Error fetching data: ", error);
     }
   };
 
@@ -174,14 +169,13 @@ function ProductHome({ route }) {
         <View style={{ flex: 1, flexDirection:"column" }}>
           <Label>{item.userName}</Label>
           <StarRating
-            style={{ marginRight: 10}}
             rating={item.review}
             onChange={() => {}}
             animationConfig={{scale: 1}}
             starSize={18}
             starStyle={{marginHorizontal: 0}}
           />
-          {item.text !== "" ? <Paragraph>{item.text}</Paragraph> : null}
+          {item.text !== "" ? <Paragraph style={{marginLeft: 4}}>{item.text}</Paragraph> : null}
         </View>
         <View style={{ padding: 5 }}>
           <TouchableOpacity
@@ -207,6 +201,7 @@ function ProductHome({ route }) {
     React.useCallback(() => {
       setIsRefreshing(true); // Set refreshing state to true when the screen comes into focus
       getProductComments();
+      getBrandsByIds(product.productDetails.brands);
     }, [])
   );
 
@@ -254,37 +249,36 @@ function ProductHome({ route }) {
       </View>
       
       <View style={{ flexDirection: "row" }}>
-          <View style={{ width: 100, height: 100, borderRadius: 10, backgroundColor: "gray", justifyContent: 'center', alignItems: 'center' }}>
-            <Icon
-            name="image-outline"
-            width={24} // Set the width of the icon
-            height={24} // Set the height of the icon
-            fill={theme["color-basic-600"]} // Set the color of the icon
+        <View style={{ width: 80, height: 80, borderRadius: 10, backgroundColor: "gray", justifyContent: 'center', alignItems: 'center' }}>
+          <Icon
+          name="image-outline"
+          width={24} // Set the width of the icon
+          height={24} // Set the height of the icon
+          fill={theme["color-basic-600"]} // Set the color of the icon
+          />
+        </View>
+        <View style={{ flex: 1, marginBottom: "auto", flexDirection: "row", marginLeft: 5 }}>
+          <View style={{ flex: 2, flexDirection: "column"}}>
+            <SubHeading>{product.productDetails.name}</SubHeading>
+            <Paragraph>
+              {brands.length > 0
+                ? brands.map(item => item.name).join(', ')
+                : 'No brands available'}
+            </Paragraph>
+          </View>  
+          <View style={{ flexDirection: "column", justifyContent: "center"}}>
+            <Paragraph style={{alignSelf: "center"}}>{productRating}</Paragraph>
+            <StarRating
+              rating={productRating}
+              onChange={() => {}}
+              animationConfig={{scale: 1}}
+              starSize={20}
+              starStyle={{marginHorizontal: 0}}
             />
           </View>
-          <View style={{ flex: 1, marginBottom: "auto", marginHorizontal: 5, flexDirection: "row", justifyContent: 'space-between', alignItems: 'center' }}>
-            <View style={{ flex: 2, flexDirection: "column", alignItems: "center"}}>
-              <SubHeading>{product.productDetails.name}</SubHeading>
-              <TextLink>
-                {brands.length > 0
-                  ? brands.map(item => item.name).join(', ')
-                  : 'No brands available'}
-              </TextLink>
-            </View>  
-            <View style={{ flex: 1, flexDirection: "column", alignItems: "center"}}>
-              <Text>{rating}</Text>
-              <StarRating
-                rating={rating}
-                onChange={() => {}}
-                style={{marginLeft: 20}}
-                animationConfig={{scale: 1}}
-                starSize={20}
-                starStyle={{marginHorizontal: 0}}
-              />
-            </View>
-          </View>
+        </View>
       </View>
-      <View style={{ flexDirection: "row", alignItems: "center" }}>
+      <View style={{ marginVertical: 5, flexDirection: "row", alignItems: "center" }}>
         <TouchableOpacity activeOpacity={0.5} onPress={()=>{}} style={{ borderRadius: 5, flexDirection: "row", marginRight: 5 }}>
           <Icon
             name="eye-outline"
@@ -292,7 +286,7 @@ function ProductHome({ route }) {
             height={24} // Set the height of the icon
             fill={theme["color-basic-600"]} // Set the color of the icon
           />
-          <Text>5450</Text>
+          <Paragraph>5450</Paragraph>
         </TouchableOpacity>
         <TouchableOpacity activeOpacity={0.5} onPress={()=>{}} style={{ borderRadius: 5, flexDirection: "row", marginRight: 5 }}>
           <Icon
@@ -301,7 +295,7 @@ function ProductHome({ route }) {
             height={24} // Set the height of the icon
             fill={theme["color-basic-600"]} // Set the color of the icon
           />
-          <Text>5450</Text>
+          <Paragraph>5450</Paragraph>
         </TouchableOpacity>
         <TouchableOpacity activeOpacity={0.5} onPress={()=>{}} style={{ borderRadius: 5, flexDirection: "row", marginRight: 5 }}>
           <Icon
@@ -310,7 +304,7 @@ function ProductHome({ route }) {
             height={24} // Set the height of the icon
             fill={theme["color-basic-600"]} // Set the color of the icon
           />
-          <Text>Filter</Text>
+          <Paragraph>Filter</Paragraph>
         </TouchableOpacity>
         <TouchableOpacity activeOpacity={0.5} onPress={()=>{}} style={{ borderRadius: 5, flexDirection: "row", marginLeft: 'auto' }}>
           <MaterialCommunityIcons
@@ -318,7 +312,7 @@ function ProductHome({ route }) {
             size={24}
             color={theme["color-basic-600"]}
           />
-          <Text>123</Text>
+          <Paragraph>5450</Paragraph>
         </TouchableOpacity>
       </View>
       <View style={{ flex: 1 }}>
@@ -358,7 +352,6 @@ function ProductHome({ route }) {
           <TouchableOpacity
             onPress={()=>{
               addCommentToProduct();
-              getBrandsByIds(product.productDetails.brands);
             }} 
             style={styles.button}
             activeOpacity={0.7} // Customize the opacity when pressed
