@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { StyleSheet, View, Image, Pressable } from "react-native";
+import { StyleSheet, View, Image, Pressable, ScrollView, TouchableOpacity } from "react-native";
 import { useTheme, Text, Icon } from "@ui-kitten/components";
 import Page from "../../components/Page";
 import AuthContext from "../../contexts/auth";
@@ -20,6 +20,14 @@ import useApi from "../../hooks/useApi";
 
 import { encode, decode } from 'base-64';
 
+import Heading from "../../components/Heading";
+import TextInput from "../../components/TextInput";
+import TextLink from "../../components/TextLink";
+import Label from "../../components/Label";
+import Caption from "../../components/Caption";
+import SubHeading from "../../components/SubHeading";
+import Paragraph from "../../components/Paragraph";
+
 function ProfileHome({ navigation }) {
   const authContext = useContext(AuthContext);
   const { user } = useContext(AuthContext);
@@ -33,6 +41,8 @@ function ProfileHome({ navigation }) {
 
   const updateProfileImageApi = useApi(authApi.updateProfileImage);
   const getProfileImageApi = useApi(authApi.getProfileImage);
+
+
 
   const updateProfileImage = async () => {
     //toast.show("Logout Successful", { type: "success" });
@@ -66,6 +76,38 @@ function ProfileHome({ navigation }) {
     lastName: user ? user.lastName : null,
     userName: user ? user.userName : null,
   };
+
+  const menuItems = [
+    {
+      id: 1,
+      icon: "bookmark-outline",
+      text: "Saved",
+      iconColor: theme["color-primary-default"],
+      onPress: () => navigation.navigate("Saved"),
+    },
+    {
+      id: 3,
+      icon: "info-outline",
+      text: "About",
+      iconColor: theme["color-primary-default"],
+      onPress: () => navigation.navigate("About"),
+    },
+    {
+      id: 4,
+      icon: "settings-outline",
+      text: "Settings",
+      iconColor: theme["color-primary-default"],
+      onPress: () => navigation.navigate("Settings"),
+    },
+    {
+      id: 5,
+      icon: "log-out",
+      text: "Log Out",
+      iconColor: theme["notification-error"],
+      onPress: handleLogOut,
+    },
+  ];
+  
 
   async function modifyProfileImage() {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -106,30 +148,37 @@ function ProfileHome({ navigation }) {
           </View>
           {/* Floating button for uploading profile picture */}
           
-          <Pressable
+          <TouchableOpacity
             onPress={updateProfileImage}
             style={[styles.actionButtonIcon, { borderColor: "white", borderWidth: 3, borderRadius: 5, bottom: -10, right: -15, position: "absolute", margin: 5, padding: 8, borderRadius: 100,width: 40, height: 40, backgroundColor: theme["color-primary-disabled"] }]}>
               <Icon name="edit-outline" fill={theme["color-primary-default"]} style={styles.actionButtonIcon} />
-          </Pressable>
+          </TouchableOpacity>
         </View>
 
-        <Text style={styles.profileName}>
-          {userProfile.firstName} {userProfile.lastName}
-        </Text>
-        <Text style={[styles.profileUserName, { color: theme["color-primary-unfocus"] }]}>
+        <View style={{flexDirection: "row"}}>
+          <Paragraph style={styles.profileName}>
+            {userProfile.firstName} 
+          </Paragraph>
+          <Paragraph style={styles.profileName}>  </Paragraph>
+          <Paragraph style={styles.profileName}>
+            {userProfile.lastName}
+          </Paragraph>
+        </View>
+
+        <Paragraph style={[styles.profileUserName, { color: theme["color-primary-unfocus"] }]}>
           {userProfile.userName}
-        </Text>
+        </Paragraph>
 
         <View style={styles.followersContainer}>
-          <Pressable style={styles.followersContainerButton}>
+          <TouchableOpacity style={styles.followersContainerButton}>
             <Text style={styles.followersNumber}>10,4m</Text>
             <Text style={[styles.followersText, { color: theme["color-primary-unfocus"] }]}>Followers</Text>
-          </Pressable>
+          </TouchableOpacity>
 
-          <Pressable style={styles.followersContainerButton}>
+          <TouchableOpacity style={styles.followersContainerButton}>
             <Text style={styles.followersNumber}>543</Text>
             <Text style={[styles.followersText, { color: theme["color-primary-unfocus"] }]}>Following</Text>
-          </Pressable>
+          </TouchableOpacity>
         </View>
         
         <Button style={styles.editProfileButton}>Edit Profile</Button>
@@ -137,57 +186,19 @@ function ProfileHome({ navigation }) {
 
       <View style={[styles.separator, { backgroundColor: theme["color-primary-disabled"] }]}></View>
 
-      <Pressable style={styles.logoutButton}>
-        <View style={[styles.primaryIconWrapper, { backgroundColor: theme["color-primary-disabled"] }]}>
-          <Icon name="bookmark-outline" fill={theme["color-primary-default"]} style={styles.logoutIcon} />
-        </View>
-        <Text style={styles.logoutText}>Saved</Text>
-        <View style={[styles.secondaryIconWrapper, { backgroundColor: theme["color-primary-disabled"] }]}>
-          <Icon name="arrow-ios-forward-outline" fill={theme["color-primary-unfocus"]} style={styles.logoutIcon} />
-        </View>
-      </Pressable>
-
-      <Pressable style={styles.logoutButton}>
-        <View style={[styles.primaryIconWrapper, { backgroundColor: theme["color-primary-disabled"] }]}>
-          <Icon name="clock-outline" fill={theme["color-primary-default"]} style={styles.logoutIcon} />
-        </View>
-        <Text style={styles.logoutText}>Activity Feed</Text>
-        <View style={[styles.secondaryIconWrapper, { backgroundColor: theme["color-primary-disabled"] }]}>
-          <Icon name="arrow-ios-forward-outline" fill={theme["color-primary-unfocus"]} style={styles.logoutIcon} />
-        </View>
-      </Pressable>
-
-      <View style={[styles.separator, { backgroundColor: theme["color-primary-disabled"] }]}></View>
-
-      <Pressable style={styles.logoutButton}>
-        <View style={[styles.primaryIconWrapper, { backgroundColor: theme["color-primary-disabled"] }]}>
-          <Icon name="info-outline" fill={theme["color-primary-default"]} style={styles.logoutIcon} />
-        </View>
-        <Text style={styles.logoutText}>About</Text>
-        <View style={[styles.secondaryIconWrapper, { backgroundColor: theme["color-primary-disabled"] }]}>
-          <Icon name="arrow-ios-forward-outline" fill={theme["color-primary-unfocus"]} style={styles.logoutIcon} />
-        </View>
-      </Pressable>
-
-      <Pressable onPress={() => {navigation.navigate('Product')}} style={styles.logoutButton}>
-        <View style={[styles.primaryIconWrapper, { backgroundColor: theme["color-primary-disabled"] }]}>
-          <Icon name="settings-outline" fill={theme["color-primary-default"]} style={styles.logoutIcon} />
-        </View>
-        <Text style={styles.logoutText}>Settings</Text>
-        <View style={[styles.secondaryIconWrapper, { backgroundColor: theme["color-primary-disabled"] }]}>
-          <Icon name="arrow-ios-forward-outline" fill={theme["color-primary-unfocus"]} style={styles.logoutIcon} />
-        </View>
-      </Pressable>
-
-      <Pressable onPress={handleLogOut} style={styles.logoutButton}>
-        <View style={[styles.primaryIconWrapper, { backgroundColor: theme["color-primary-disabled"] }]}>
-          <Icon name="log-out" fill={theme["notification-error"]} style={styles.logoutIcon} />
-        </View>
-        <Text style={styles.logoutText}>Log Out</Text>
-        <View style={[styles.secondaryIconWrapper, { backgroundColor: theme["color-primary-disabled"] }]}>
-          <Icon name="arrow-ios-forward-outline" fill={theme["color-primary-unfocus"]} style={styles.logoutIcon} />
-        </View>
-      </Pressable>
+      <ScrollView style={styles.menuContainer}>
+        {menuItems.map((item) => (
+          <TouchableOpacity key={item.id} style={styles.logoutButton} onPress={item.onPress}>
+            <View style={[styles.primaryIconWrapper, { backgroundColor: theme["color-primary-disabled"] }]}>
+              <Icon name={item.icon} fill={item.iconColor} style={styles.logoutIcon} />
+            </View>
+            <Text style={styles.menuItemText}>{item.text}</Text>
+            <View style={styles.secondaryIconWrapper}>
+              <Icon name="arrow-ios-forward-outline" fill={theme["color-primary-unfocus"]} style={styles.logoutIcon} />
+            </View>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
     </Page>
   );
 }
@@ -212,11 +223,11 @@ const styles = StyleSheet.create({
   profilePicture: {
   },
   profileName: {
-    fontSize: 24,
+    fontSize: 18,
     fontWeight: "bold",
   },
   profileUserName: {
-    fontSize: 14,
+    fontSize: 18,
   },
   followersContainer: {
     flexDirection: "row",
