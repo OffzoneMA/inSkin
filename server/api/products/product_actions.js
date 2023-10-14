@@ -203,13 +203,14 @@ router.get("/all-comments", asyncMiddleware(async (req, res) => {
           product.comments.forEach(comment => {
               if (comment.userId && comment.userId.userName) {
                   const formattedComment = {
+                      _id: comment._id,
                       productId: product._id,
                       productName: product.productDetails.name,
                       userId: comment.userId._id,
                       text: comment.text,
                       review: comment.review,
                       createdAt: comment.createdAt,
-                      username: comment.userId.userName // Add the username field directly to the comment object
+                      userName: comment.userId.userName // Add the username field directly to the comment object
                   };
                   allComments.push(formattedComment);
               }
