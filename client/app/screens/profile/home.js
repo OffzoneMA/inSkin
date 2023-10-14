@@ -41,22 +41,20 @@ function ProfileHome({ navigation }) {
 
   const updateProfileImageApi = useApi(authApi.updateProfileImage);
   const getProfileImageApi = useApi(authApi.getProfileImage);
-
-
-
-  const updateProfileImage = async () => {
-    //toast.show("Logout Successful", { type: "success" });
-    const profileImage = await getProfileImageApi.request(user.userName);
   
+  const getProfileImage = async () => {
+    //toast.show("Logout Successful", { type: "success" });
+    const profileImage = await getProfileImageApi.request(user._id);
+
     // Extract the image data from the response
     const imageData = profileImage.data.data.data;
-  
+
     // Convert the image data from bytes to a base64 string
     const base64ImageData = imageData.map(byte => String.fromCharCode(byte)).join('');
     const imageUrl = 'data:' + profileImage.data.contentType + ';base64,' + encode(base64ImageData);
-  
-    //console.log(imageUrl);
-  
+    
+    console.log(imageData)
+
     setSelectedImageUri(imageUrl);
   };
 
@@ -69,46 +67,6 @@ function ProfileHome({ navigation }) {
     }, 300);
   };
 
-  // Placeholder for user profile data
-  const userProfile = {
-    profilePicture:"person-outline",
-    firstName: user ? user.firstName : null,
-    lastName: user ? user.lastName : null,
-    userName: user ? user.userName : null,
-  };
-
-  const menuItems = [
-    {
-      id: 1,
-      icon: "bookmark-outline",
-      text: "Saved",
-      iconColor: theme["color-primary-default"],
-      onPress: () => navigation.navigate("Saved"),
-    },
-    {
-      id: 3,
-      icon: "info-outline",
-      text: "About",
-      iconColor: theme["color-primary-default"],
-      onPress: () => navigation.navigate("About"),
-    },
-    {
-      id: 4,
-      icon: "settings-outline",
-      text: "Settings",
-      iconColor: theme["color-primary-default"],
-      onPress: () => navigation.navigate("Settings"),
-    },
-    {
-      id: 5,
-      icon: "log-out",
-      text: "Log Out",
-      iconColor: theme["notification-error"],
-      onPress: handleLogOut,
-    },
-  ];
-  
-
   async function modifyProfileImage() {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status === "granted") {
@@ -117,17 +75,58 @@ function ProfileHome({ navigation }) {
       });
       if (!result.canceled) {
         setSelectedImageUri(result.assets[0].uri); // Step 2: Update selected image URI
-        console.log(result.assets[0].uri);
+        console.log(result.assets[0].base64);
         //toast.show("Logout Successful", { type: "success" });
+
+        const uploadResult = await updateProfileImageApi.request(user._id, selectedImageUri);
       }
     }
     if (status !== "granted") {
-      setAlertBox("File permission is required to scan qr-code from photo.");
+      setAlertBox("File permission is required to upoad photo.");
     }
     setTimeout(() => {
       setAlertBox(null);
     }, 5000);
   }
+
+    // Placeholder for user profile data
+    const userProfile = {
+      profilePicture:"person-outline",
+      firstName: user ? user.firstName : null,
+      lastName: user ? user.lastName : null,
+      userName: user ? user.userName : null,
+    };
+  
+    const menuItems = [
+      {
+        id: 1,
+        icon: "bookmark-outline",
+        text: "Saved",
+        iconColor: theme["color-primary-default"],
+        onPress: () => navigation.navigate("Saved"),
+      },
+      {
+        id: 3,
+        icon: "info-outline",
+        text: "About",
+        iconColor: theme["color-primary-default"],
+        onPress: () => navigation.navigate("About"),
+      },
+      {
+        id: 4,
+        icon: "settings-outline",
+        text: "Settings",
+        iconColor: theme["color-primary-default"],
+        onPress: () => navigation.navigate("Settings"),
+      },
+      {
+        id: 5,
+        icon: "log-out",
+        text: "Log Out",
+        iconColor: theme["notification-error"],
+        onPress: handleLogOut,
+      },
+    ];
 
   return (
     <Page>
@@ -149,25 +148,25 @@ function ProfileHome({ navigation }) {
           {/* Floating button for uploading profile picture */}
           
           <TouchableOpacity
-            onPress={updateProfileImage}
+            onPress={modifyProfileImage}
             style={[styles.actionButtonIcon, { borderColor: "white", borderWidth: 3, borderRadius: 5, bottom: -10, right: -15, position: "absolute", margin: 5, padding: 8, borderRadius: 100,width: 40, height: 40, backgroundColor: theme["color-primary-disabled"] }]}>
               <Icon name="edit-outline" fill={theme["color-primary-default"]} style={styles.actionButtonIcon} />
           </TouchableOpacity>
         </View>
 
         <View style={{flexDirection: "row"}}>
-          <Paragraph style={styles.profileName}>
+          <Text style={styles.profileName}>
             {userProfile.firstName} 
-          </Paragraph>
-          <Paragraph style={styles.profileName}>  </Paragraph>
-          <Paragraph style={styles.profileName}>
+          </Text>
+          <Text style={styles.profileName}>  </Text>
+          <Text style={styles.profileName}>
             {userProfile.lastName}
-          </Paragraph>
+          </Text>
         </View>
 
-        <Paragraph style={[styles.profileUserName, { color: theme["color-primary-unfocus"] }]}>
+        <Text style={[styles.profileUserName, { color: theme["color-primary-unfocus"] }]}>
           {userProfile.userName}
-        </Paragraph>
+        </Text>
 
         <View style={styles.followersContainer}>
           <TouchableOpacity style={styles.followersContainerButton}>

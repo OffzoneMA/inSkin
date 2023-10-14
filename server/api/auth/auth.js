@@ -115,7 +115,8 @@ router.put(
   upload.single('image'),
   asyncMiddleware(async (req, res) => {
     const userId = req.body._id; // Assuming you have the user ID in the request object
-
+    
+    console.log(req.file.buffer);
     const updatedUser = await User.findOneAndUpdate(
       { _id: userId },
       {

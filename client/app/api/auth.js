@@ -29,6 +29,7 @@ const updateProfileImage = (userId, image) => {
   formData.append("userId", userId); // Include userId in the FormData
   formData.append("image", image);
 
+  
   return client.put("/auth/update-profile-image", formData, {
     headers: {
       "Content-Type": "multipart/form-data",
@@ -37,7 +38,7 @@ const updateProfileImage = (userId, image) => {
 };
 
 const getProfileImage = (userId) => {
-  return client.get(`/auth/profile-image/6517645e1776a81824a64e4a`);
+  return client.get(`/auth/profile-image/${userId}`);
 };
 
 const getUsersByIds = async (ids) => {
