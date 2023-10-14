@@ -12,6 +12,11 @@ import {
 import Page from "../../components/Page";
 import Heading from "../../components/Heading";
 import TextInput from "../../components/TextInput";
+import TextLink from "../../components/TextLink";
+import Label from "../../components/Label";
+import Caption from "../../components/Caption";
+import SubHeading from "../../components/SubHeading";
+import Paragraph from "../../components/Paragraph";
 
 import { useTheme, Icon, Text } from "@ui-kitten/components";
 
@@ -35,7 +40,7 @@ function ProductHome({ route }) {
 
   const { product } = route.params;
 
-  const [rating, setRating] = useState(0);
+  const [productRating, setProductRating] = useState(0);
 
   const [comments, setComments] = useState([]);
 
@@ -50,6 +55,19 @@ function ProductHome({ route }) {
   const [commentRating, setCommentRating] = useState(0);
 
   const [brands, setBrands] = useState([]);
+
+  function calculateProductRating(comments) {
+    if (!comments || comments.length === 0) {
+        return 0; // Default average rating if there are no comments or comments is empty
+    }
+
+    const totalRating = comments.reduce((accumulator, comment) => {
+        return accumulator + comment.review;
+    }, 0);
+
+    const averageRating = totalRating / comments.length;
+    setProductRating(averageRating.toFixed(1)); // Return average rating with 2 decimal places
+  }
 
 
   const getProductComments = async () => {
@@ -74,9 +92,7 @@ function ProductHome({ route }) {
               userName: user ? user.userName : 'Unknown User' // Handle the case if user is not found
           };
         });
-
-        console.log(comments);
-        
+        calculateProductRating(comments);
         setComments(comments);
       }
     } catch (error) {
@@ -86,30 +102,9 @@ function ProductHome({ route }) {
     }
   };
 
-  const getBrandById = async (_id) => {
-    try {
-      const result = await brandActionsApi.getBrandById(_id);
-      if (!result.ok) {
-        //toast.show(result.data, { type: "danger" });
-      } else {
-        //toast.show(result.data.message, { type: "success" });
-        /* const brandName = result.data.brands.map(brand => ({
-          value: brand._id, // Use _id as the key
-          label: brand.name // Use name as the value
-        })); */
-        //const brandName = result.data.brand;
-        //setBrandsNames(brandsNames);
-      }
-    } catch (error) {
-      console.error("Error fetching data: ", error);
-    }
-  };
-
   const getBrandsByIds = async (_id) => {
     try {
       const result = await brandActionsApi.getBrandsByIds(_id);
-
-      console.log(result);
 
       setBrands(result);
 
@@ -169,33 +164,35 @@ function ProductHome({ route }) {
   };
 
   const Item = ({ item }) => (
-    <Pressable style={styles.item}>
-      <View style={{ flexDirection: "row", alignItems: "center" }}>
-        <View style={{ marginTop: 10, flex: 1, flexDirection:"column"}}>
-          <View style={{ flexDirection: "row", alignItems: "center"}}>
-            <Text>{item.userName}</Text>
-            <StarRating
-              style={{marginLeft: 20}}
-              rating={item.review}
-              onChange={() => {}}
-              animationConfig={{scale: 1}}
-              starSize={20}
-              starStyle={{marginHorizontal: 0}}
-            />
-          </View>
-          
-          <Text>{item.text}</Text>
-        </View>
-        <View>
-          <Icon
-            name="heart-outline"
-            width={24} // Set the width of the icon
-            height={24} // Set the height of the icon
-            fill={theme["color-basic-600"]} // Set the color of the icon
+      <View style={{ marginVertical: 5, flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
+        <View style={{ flex: 1, flexDirection:"column" }}>
+          <Label>{item.userName}</Label>
+          <StarRating
+            rating={item.review}
+            onChange={() => {}}
+            animationConfig={{scale: 1}}
+            starSize={18}
+            starStyle={{marginHorizontal: 0}}
           />
+          {item.text !== "" ? <Paragraph style={{marginLeft: 4}}>{item.text}</Paragraph> : null}
         </View>
+        <View style={{ padding: 5 }}>
+          <TouchableOpacity
+              onPress={()=>{
+              }}
+              style={{ borderRadius: 5}}
+              activeOpacity={0.5} // Customize the opacity when pressed
+            >
+            <Icon
+              name="heart-outline"
+              width={20} // Set the width of the icon
+              height={20} // Set the height of the icon
+              fill={theme["color-basic-600"]} // Set the color of the icon
+            />
+          </TouchableOpacity>
+        </View>
+        
       </View>
-    </Pressable>
   );
 
   // Fetch products when the component mounts and when the screen comes into focus
@@ -203,6 +200,7 @@ function ProductHome({ route }) {
     React.useCallback(() => {
       setIsRefreshing(true); // Set refreshing state to true when the screen comes into focus
       getProductComments();
+      getBrandsByIds(product.productDetails.brands);
     }, [])
   );
 
@@ -216,89 +214,105 @@ function ProductHome({ route }) {
       <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
       <Heading>{product.barcode}</Heading>
       <View style={{flexDirection: "row"}}>
-        <Icon
-          name="share-outline"
-          width={24} // Set the width of the icon
-          height={24} // Set the height of the icon
-          fill={theme["color-basic-600"]} // Set the color of the icon
-        />
-        <View style={{ marginRight: 10 }} />
-        <Icon
-          name="bookmark-outline"
-          width={24} // Set the width of the icon
-          height={24} // Set the height of the icon
-          fill={theme["color-basic-600"]} // Set the color of the icon
-        />
-        </View>
-      </View>
-      
-      <View style={{ flexDirection: "row" }}>
-          <View style={{ width: 100, height: 100, borderRadius: 10, backgroundColor: "gray", justifyContent: 'center', alignItems: 'center' }}>
-            <Icon
-            name="image-outline"
-            width={24} // Set the width of the icon
-            height={24} // Set the height of the icon
-            fill={theme["color-basic-600"]} // Set the color of the icon
-            />
-          </View>
-          <View style={{ flex: 1, marginHorizontal: 5, flexDirection: "row", justifyContent: 'space-between', alignItems: 'center' }}>
-            <View style={{ flex: 2, flexDirection: "column", alignItems: "center"}}>
-              <Text>{product.productDetails.name}</Text>
-              <Text>
-                {brands.length > 0
-                  ? brands.map(item => item.name).join(', ')
-                  : 'No brands available'}
-              </Text>
-            </View>  
-            <View style={{ flex: 1, flexDirection: "column", alignItems: "center"}}>
-              <Text>{rating}</Text>
-              <StarRating
-                rating={rating}
-                onChange={setRating}
-                style={{marginLeft: 20}}
-                animationConfig={{scale: 1}}
-                starSize={20}
-                starStyle={{marginHorizontal: 0}}
-              />
-            </View>
-          </View>
-      </View>
-      <View style={{ flexDirection: "row", alignItems: "center" }}>
-        <View style={{ flexDirection: "row", marginRight: 5 }}>
-          <Icon
-            name="eye-outline"
-            width={24} // Set the width of the icon
-            height={24} // Set the height of the icon
-            fill={theme["color-basic-600"]} // Set the color of the icon
-          />
-          <Text>5450</Text>
-        </View>
-        <View style={{ flexDirection: "row", marginRight: 5 }}>
+        <TouchableOpacity
+            onPress={()=>{
+            }}
+            style={{ borderRadius: 5}}
+            activeOpacity={0.5} // Customize the opacity when pressed
+          >
           <Icon
             name="share-outline"
             width={24} // Set the width of the icon
             height={24} // Set the height of the icon
             fill={theme["color-basic-600"]} // Set the color of the icon
           />
-          <Text>5450</Text>
+        </TouchableOpacity>
+
+        
+        <View style={{ marginRight: 10 }} />
+        <TouchableOpacity
+            onPress={()=>{
+            }}
+            style={{ borderRadius: 5}}
+            activeOpacity={0.5} // Customize the opacity when pressed
+          >
+          <Icon
+            name="bookmark-outline"
+            width={24} // Set the width of the icon
+            height={24} // Set the height of the icon
+            fill={theme["color-basic-600"]} // Set the color of the icon
+          />
+        </TouchableOpacity>
+        
         </View>
-        <View style={{ flexDirection: "row", marginRight: 5 }}>
+      </View>
+      
+      <View style={{ flexDirection: "row" }}>
+        <View style={{ width: 80, height: 80, borderRadius: 5, backgroundColor: "gray", justifyContent: 'center', alignItems: 'center' }}>
+          <Icon
+          name="image-outline"
+          width={24} // Set the width of the icon
+          height={24} // Set the height of the icon
+          fill={theme["color-basic-600"]} // Set the color of the icon
+          />
+        </View>
+        <View style={{ flex: 1, marginBottom: "auto", flexDirection: "row", marginLeft: 5 }}>
+          <View style={{ flex: 2, flexDirection: "column"}}>
+            <SubHeading>{product.productDetails.name}</SubHeading>
+            <Paragraph>
+              {brands.length > 0
+                ? brands.map(item => item.name).join(', ')
+                : 'No brands available'}
+            </Paragraph>
+          </View>  
+          <View style={{ flexDirection: "column", justifyContent: "center"}}>
+            <Paragraph style={{alignSelf: "center"}}>{productRating}</Paragraph>
+            <StarRating
+              rating={productRating}
+              onChange={() => {}}
+              animationConfig={{scale: 1}}
+              starSize={20}
+              starStyle={{marginHorizontal: 0}}
+            />
+          </View>
+        </View>
+      </View>
+      <View style={{ marginVertical: 5, flexDirection: "row", alignItems: "center" }}>
+        <TouchableOpacity activeOpacity={0.5} onPress={()=>{}} style={{ borderRadius: 5, flexDirection: "row", marginRight: 5 }}>
+          <Icon
+            name="eye-outline"
+            width={24} // Set the width of the icon
+            height={24} // Set the height of the icon
+            fill={theme["color-basic-600"]} // Set the color of the icon
+          />
+          <Paragraph>5450</Paragraph>
+        </TouchableOpacity>
+        <TouchableOpacity activeOpacity={0.5} onPress={()=>{}} style={{ borderRadius: 5, flexDirection: "row", marginRight: 5 }}>
+          <Icon
+            name="share-outline"
+            width={24} // Set the width of the icon
+            height={24} // Set the height of the icon
+            fill={theme["color-basic-600"]} // Set the color of the icon
+          />
+          <Paragraph>5450</Paragraph>
+        </TouchableOpacity>
+        <TouchableOpacity activeOpacity={0.5} onPress={()=>{}} style={{ borderRadius: 5, flexDirection: "row", marginRight: 5 }}>
           <Icon
             name="funnel-outline"
             width={24} // Set the width of the icon
             height={24} // Set the height of the icon
             fill={theme["color-basic-600"]} // Set the color of the icon
           />
-          <Text>Filter</Text>
-        </View>
-        <View style={{ flexDirection: "row", marginLeft: 'auto' }}>
+          <Paragraph>Filter</Paragraph>
+        </TouchableOpacity>
+        <TouchableOpacity activeOpacity={0.5} onPress={()=>{}} style={{ borderRadius: 5, flexDirection: "row", marginLeft: 'auto' }}>
           <MaterialCommunityIcons
             name={"cube-scan"}
             size={24}
             color={theme["color-basic-600"]}
           />
-          <Text>123</Text>
-        </View>
+          <Paragraph>5450</Paragraph>
+        </TouchableOpacity>
       </View>
       <View style={{ flex: 1 }}>
           <FlatList
@@ -337,7 +351,6 @@ function ProductHome({ route }) {
           <TouchableOpacity
             onPress={()=>{
               addCommentToProduct();
-              getBrandsByIds(product.productDetails.brands);
             }} 
             style={styles.button}
             activeOpacity={0.7} // Customize the opacity when pressed
@@ -371,7 +384,7 @@ const styles = StyleSheet.create({
   },
   commentContainer: {
     borderColor: "red",
-    borderRadius: 4,
+    borderRadius: 5,
     marginBottom: 10,
     padding: 12,
     shadowColor: '#000',

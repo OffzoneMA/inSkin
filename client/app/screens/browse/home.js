@@ -9,11 +9,18 @@ import {
   RefreshControl,
   Pressable,
   Image,
+  TouchableOpacity,
 } from "react-native";
 
 import Page from "../../components/Page";
 import Heading from "../../components/Heading";
 import Button from "../../components/Button";
+import TextInput from "../../components/TextInput";
+import TextLink from "../../components/TextLink";
+import Label from "../../components/Label";
+import Caption from "../../components/Caption";
+import SubHeading from "../../components/SubHeading";
+import Paragraph from "../../components/Paragraph";
 
 import productActionsApi from "../../api/product_actions";
 
@@ -36,6 +43,8 @@ function DiscoverHome({ navigation }) {
 
   const [showCustomPopup, setShowCustomPopup] = useState(false); // State to control custom pop-up visibility
 
+  const [ scannedProduct, setScannedProduct ] = useState(null);
+
   const getAllProducts = async () => {
     try {
       const result = await productActionsApi.getAllComments();
@@ -45,7 +54,6 @@ function DiscoverHome({ navigation }) {
       } else {
         //toast.show(result.data.message, { type: "success" });
         setComments(result.data);
-        console.log(comments);
       }
     } catch (error) {
       console.error("Error fetching data: ", error);
@@ -71,10 +79,29 @@ function DiscoverHome({ navigation }) {
     setShowCustomPopup(false);
   };
 
-  const Item = ({ item }) => (
-    <Pressable style={styles.item} onPress={() => { setShowCustomPopup(true) }}>
-      <View style={{ backgroundColor: "gray", flex: 1/2, justifyContent: 'center', alignItems: 'center' }}>
+  const getProductById = async (_id) => {
+    try {
+      const result = await productActionsApi.getProductById(_id);
       
+      // Handle the case when result is ok
+      setScannedProduct(result);
+      navigation.navigate('Product', { product: result });
+  
+    } catch (error) {
+      console.error("Error getting product data: ", error);
+    }
+  }
+  
+  const Item = ({ item }) => (
+    <TouchableOpacity activeOpacity={0.7} style={styles.item} onPress={() => 
+      { 
+        getProductById(item.productId);
+      }}
+    >
+      <View style={{ borderRadius: 5, flex: 1/4, justifyContent: 'center', alignItems: 'center' }}>
+        <View style={{width: '100%', borderRadius: 100, marginBottom: "auto", backgroundColor: "gray", aspectRatio: 1}}>
+
+        </View>
       {/* {item.images.length > 0 ? (
         <Image 
           source={{ uri: item.images[0].imageUrl }} // Use the correct property for the image URL
@@ -92,33 +119,20 @@ function DiscoverHome({ navigation }) {
         
       </View>
       <View style={{ flex: 1, flexDirection:"column"}}>
-        <Text>{item.userName}</Text>
-        <Text>{item.productName}</Text>
-        <Text>{item.text}</Text>
+
+        <Label style={{marginLeft: 4}}>{item.userName}</Label>
+        <SubHeading style={{marginLeft: 4}}>{item.productName}</SubHeading>
         <StarRating
-              style={{marginLeft: 20}}
-              rating={item.review}
-              onChange={() => {}}
-              animationConfig={{scale: 1}}
-              starSize={20}
-              starStyle={{marginHorizontal: 0}}
-            />
-      </View>
-      <View style={{ flex: 1/10, flexDirection:"column", justifyContent: "space-between"}}>
-        <Icon
-          name="share-outline"
-          width={24} // Set the width of the icon
-          height={24} // Set the height of the icon
-          fill={theme["color-basic-600"]} // Set the color of the icon
+          rating={item.review}
+          onChange={() => {}}
+          animationConfig={{scale: 1}}
+          starSize={20}
+          starStyle={{marginHorizontal: 0}}
         />
-        <Icon
-          name="bookmark-outline"
-          width={24} // Set the width of the icon
-          height={24} // Set the height of the icon
-          fill={theme["color-basic-600"]} // Set the color of the icon
-        />
+        {item.text !== "" ? <Paragraph style={{marginLeft: 4}}>{item.text}</Paragraph> : null}
+        
       </View>
-    </Pressable>
+    </TouchableOpacity>
   );
 
   return (
@@ -154,9 +168,9 @@ const styles = StyleSheet.create({
   item: {
     flexDirection: "row",
     backgroundColor: "white",
-    padding: 3,
-    marginVertical: 2,
-    borderRadius: 10,
+    padding: 8,
+    marginVertical: 3,
+    borderRadius: 5,
     shadowColor: "black",
     shadowOffset: {
       width: 0,
@@ -166,6 +180,7 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
     height: 100,
+    margin: 5,
   },
   title: {
     fontSize: 32,
