@@ -93,6 +93,7 @@ function DiscoverHome({ navigation }) {
       </View>
       <View style={{ flex: 1, flexDirection:"column"}}>
         <Text>{item.userName}</Text>
+        <Text>{item.productName}</Text>
         <Text>{item.text}</Text>
         <StarRating
               style={{marginLeft: 20}}
