@@ -12,6 +12,11 @@ import {
 import Page from "../../components/Page";
 import Heading from "../../components/Heading";
 import TextInput from "../../components/TextInput";
+import TextLink from "../../components/TextLink";
+import Label from "../../components/Label";
+import Caption from "../../components/Caption";
+import SubHeading from "../../components/SubHeading";
+import Paragraph from "../../components/Paragraph";
 
 import { useTheme, Icon, Text } from "@ui-kitten/components";
 
@@ -165,33 +170,36 @@ function ProductHome({ route }) {
   };
 
   const Item = ({ item }) => (
-    <Pressable style={styles.item}>
-      <View style={{ flexDirection: "row", alignItems: "center" }}>
-        <View style={{ marginTop: 10, flex: 1, flexDirection:"column"}}>
-          <View style={{ flexDirection: "row", alignItems: "center"}}>
-            <Text>{item.userName}</Text>
-            <StarRating
-              style={{marginLeft: 20}}
-              rating={item.review}
-              onChange={() => {}}
-              animationConfig={{scale: 1}}
-              starSize={20}
-              starStyle={{marginHorizontal: 0}}
-            />
-          </View>
-          
-          <Text>{item.text}</Text>
-        </View>
-        <View>
-          <Icon
-            name="heart-outline"
-            width={24} // Set the width of the icon
-            height={24} // Set the height of the icon
-            fill={theme["color-basic-600"]} // Set the color of the icon
+      <View style={{ marginVertical: 5, flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
+        <View style={{ flex: 1, flexDirection:"column" }}>
+          <Label>{item.userName}</Label>
+          <StarRating
+            style={{ marginRight: 10}}
+            rating={item.review}
+            onChange={() => {}}
+            animationConfig={{scale: 1}}
+            starSize={18}
+            starStyle={{marginHorizontal: 0}}
           />
+          {item.text !== "" ? <Paragraph>{item.text}</Paragraph> : null}
         </View>
+        <View style={{ padding: 5 }}>
+          <TouchableOpacity
+              onPress={()=>{
+              }}
+              style={{ borderRadius: 5}}
+              activeOpacity={0.5} // Customize the opacity when pressed
+            >
+            <Icon
+              name="heart-outline"
+              width={20} // Set the width of the icon
+              height={20} // Set the height of the icon
+              fill={theme["color-basic-600"]} // Set the color of the icon
+            />
+          </TouchableOpacity>
+        </View>
+        
       </View>
-    </Pressable>
   );
 
   // Fetch products when the component mounts and when the screen comes into focus
@@ -212,19 +220,36 @@ function ProductHome({ route }) {
       <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
       <Heading>{product.barcode}</Heading>
       <View style={{flexDirection: "row"}}>
-        <Icon
-          name="share-outline"
-          width={24} // Set the width of the icon
-          height={24} // Set the height of the icon
-          fill={theme["color-basic-600"]} // Set the color of the icon
-        />
+        <TouchableOpacity
+            onPress={()=>{
+            }}
+            style={{ borderRadius: 5}}
+            activeOpacity={0.5} // Customize the opacity when pressed
+          >
+          <Icon
+            name="share-outline"
+            width={24} // Set the width of the icon
+            height={24} // Set the height of the icon
+            fill={theme["color-basic-600"]} // Set the color of the icon
+          />
+        </TouchableOpacity>
+
+        
         <View style={{ marginRight: 10 }} />
-        <Icon
-          name="bookmark-outline"
-          width={24} // Set the width of the icon
-          height={24} // Set the height of the icon
-          fill={theme["color-basic-600"]} // Set the color of the icon
-        />
+        <TouchableOpacity
+            onPress={()=>{
+            }}
+            style={{ borderRadius: 5}}
+            activeOpacity={0.5} // Customize the opacity when pressed
+          >
+          <Icon
+            name="bookmark-outline"
+            width={24} // Set the width of the icon
+            height={24} // Set the height of the icon
+            fill={theme["color-basic-600"]} // Set the color of the icon
+          />
+        </TouchableOpacity>
+        
         </View>
       </View>
       
@@ -237,20 +262,20 @@ function ProductHome({ route }) {
             fill={theme["color-basic-600"]} // Set the color of the icon
             />
           </View>
-          <View style={{ flex: 1, marginHorizontal: 5, flexDirection: "row", justifyContent: 'space-between', alignItems: 'center' }}>
+          <View style={{ flex: 1, marginBottom: "auto", marginHorizontal: 5, flexDirection: "row", justifyContent: 'space-between', alignItems: 'center' }}>
             <View style={{ flex: 2, flexDirection: "column", alignItems: "center"}}>
-              <Text>{product.productDetails.name}</Text>
-              <Text>
+              <SubHeading>{product.productDetails.name}</SubHeading>
+              <TextLink>
                 {brands.length > 0
                   ? brands.map(item => item.name).join(', ')
                   : 'No brands available'}
-              </Text>
+              </TextLink>
             </View>  
             <View style={{ flex: 1, flexDirection: "column", alignItems: "center"}}>
               <Text>{rating}</Text>
               <StarRating
                 rating={rating}
-                onChange={setRating}
+                onChange={() => {}}
                 style={{marginLeft: 20}}
                 animationConfig={{scale: 1}}
                 starSize={20}
@@ -260,7 +285,7 @@ function ProductHome({ route }) {
           </View>
       </View>
       <View style={{ flexDirection: "row", alignItems: "center" }}>
-        <View style={{ flexDirection: "row", marginRight: 5 }}>
+        <TouchableOpacity activeOpacity={0.5} onPress={()=>{}} style={{ borderRadius: 5, flexDirection: "row", marginRight: 5 }}>
           <Icon
             name="eye-outline"
             width={24} // Set the width of the icon
@@ -268,8 +293,8 @@ function ProductHome({ route }) {
             fill={theme["color-basic-600"]} // Set the color of the icon
           />
           <Text>5450</Text>
-        </View>
-        <View style={{ flexDirection: "row", marginRight: 5 }}>
+        </TouchableOpacity>
+        <TouchableOpacity activeOpacity={0.5} onPress={()=>{}} style={{ borderRadius: 5, flexDirection: "row", marginRight: 5 }}>
           <Icon
             name="share-outline"
             width={24} // Set the width of the icon
@@ -277,8 +302,8 @@ function ProductHome({ route }) {
             fill={theme["color-basic-600"]} // Set the color of the icon
           />
           <Text>5450</Text>
-        </View>
-        <View style={{ flexDirection: "row", marginRight: 5 }}>
+        </TouchableOpacity>
+        <TouchableOpacity activeOpacity={0.5} onPress={()=>{}} style={{ borderRadius: 5, flexDirection: "row", marginRight: 5 }}>
           <Icon
             name="funnel-outline"
             width={24} // Set the width of the icon
@@ -286,15 +311,15 @@ function ProductHome({ route }) {
             fill={theme["color-basic-600"]} // Set the color of the icon
           />
           <Text>Filter</Text>
-        </View>
-        <View style={{ flexDirection: "row", marginLeft: 'auto' }}>
+        </TouchableOpacity>
+        <TouchableOpacity activeOpacity={0.5} onPress={()=>{}} style={{ borderRadius: 5, flexDirection: "row", marginLeft: 'auto' }}>
           <MaterialCommunityIcons
             name={"cube-scan"}
             size={24}
             color={theme["color-basic-600"]}
           />
           <Text>123</Text>
-        </View>
+        </TouchableOpacity>
       </View>
       <View style={{ flex: 1 }}>
           <FlatList
