@@ -22,6 +22,13 @@ TODO: handle null error in scan home response.data
 TODO: implement new behaviour in camera scan
 TODO: implement add product manually button in scan screen typing the barcode manually
 TODO: improve add product screen U.I
+TODO: handle show brand image
+TODO: add server routes: get brands by id, get users username by id, get first brand image, get product comments, put comments and review
+TODO: filter comment by most recent or most liked
+TODO: increment product views, product shared, and product scanned
+TODO: share and save product
+TODO: remove commented auth parameter in server routes
+TODO: add a working toast library
 DONE: my create account button doesn't work when i logout
 DONE: make add product pop up isolated from Camera.js File
 DONE: implement product pop up in gallery import

@@ -1,94 +1,237 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   FlatList,
   SafeAreaView,
   StyleSheet,
   View,
   Pressable,
+  RefreshControl,
+  TouchableOpacity,
 } from "react-native";
 
 import Page from "../../components/Page";
 import Heading from "../../components/Heading";
+import TextInput from "../../components/TextInput";
 
 import { useTheme, Icon, Text } from "@ui-kitten/components";
 
-
 import StarRating from 'react-native-star-rating-widget';
+
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+
+import productActionsApi from "../../api/product_actions";
+
+import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEffect from React Navigation
+
+import brandActionsApi from "../../api/brand_actions";
+
+import authApi from "../../api/auth";
+
+import AuthContext from "../../contexts/auth";
 
 function ProductHome({ route }) {
 
   const theme = useTheme();
 
   const { product } = route.params;
-  
-  const mockComments = [
-    {
-      userId: "1",
-      text: 'Nice',
-      review: 5,
-    },
-    {
-      userId: "2",
-      text: 'Great product!',
-      review: 4,
-    },
-    {
-      userId: "3",
-      text: 'Not bad',
-      review: 3,
-    },
-    {
-      userId: "4",
-      text: 'Amazing!',
-      review: 5,
-    },
-    {
-      userId: "5",
-      text: 'Could be better',
-      review: 2,
-    },
-    {
-      userId: "6",
-      text: 'Impressive quality',
-      review: 4,
-    },
-    {
-      userId: "7",
-      text: 'Decent',
-      review: 3,
-    },
-    {
-      userId: "8",
-      text: 'Top-notch!',
-      review: 5,
-    },
-    {
-      userId: "9",
-      text: 'Satisfactory',
-      review: 3,
-    },
-    {
-      userId: "10",
-      text: 'Excellent service',
-      review: 5,
-    },
-  ];
-  
+
+  const [rating, setRating] = useState(0);
+
+  const [comments, setComments] = useState([]);
+
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const authContext = useContext(AuthContext);
+
+  const { user } = useContext(AuthContext);
+
+  const [commentText, setCommentText] = useState("");
+
+  const [commentRating, setCommentRating] = useState(0);
+
+  const [brands, setBrands] = useState([]);
+
+
+  const getProductComments = async () => {
+    try {
+      const result = await productActionsApi.getProductComments(product._id);
+
+      if (!result.ok) {
+        //toast.show(result.data, { type: "danger" });
+      } else {
+        //toast.show(result.data.message, { type: "success" });
+
+        // Extract user IDs from comments
+        const userIds = result.data.map(comment => comment.userId);
+        
+        const usernamesIds = await authApi.getUsersByIds(userIds);
+
+        // Create a list of comments with usernames
+        const comments = result.data.map(comment => {
+          const user = usernamesIds.find(u => u._id === comment.userId);
+          return {
+              ...comment,
+              userName: user ? user.userName : 'Unknown User' // Handle the case if user is not found
+          };
+        });
+
+        console.log(comments);
+        
+        setComments(comments);
+      }
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+    } finally {
+      setIsRefreshing(false); // Set refreshing state to false after data fetch is completed
+    }
+  };
+
+  const getBrandById = async (_id) => {
+    try {
+      const result = await brandActionsApi.getBrandById(_id);
+      if (!result.ok) {
+        //toast.show(result.data, { type: "danger" });
+      } else {
+        //toast.show(result.data.message, { type: "success" });
+        /* const brandName = result.data.brands.map(brand => ({
+          value: brand._id, // Use _id as the key
+          label: brand.name // Use name as the value
+        })); */
+        //const brandName = result.data.brand;
+        //setBrandsNames(brandsNames);
+      }
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+    }
+  };
+
+  const getBrandsByIds = async (_id) => {
+    try {
+      const result = await brandActionsApi.getBrandsByIds(_id);
+
+      console.log(result);
+
+      setBrands(result);
+
+      if (!result.ok) {
+        //toast.show(result.data, { type: "danger" });
+      } else {
+        //toast.show(result.data.message, { type: "success" });
+        /* const brandName = result.data.brands.map(brand => ({
+          value: brand._id, // Use _id as the key
+          label: brand.name // Use name as the value
+        })); */
+        //const brandName = result.data.brand;
+        //setBrandsNames(brandsNames);
+      }
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+    }
+  };
+
+
+
+  const addCommentToProduct = async () => {
+    try {
+
+      if(commentText == "" && commentRating == 0) {
+        console.log("Comment is empty !")
+        return;
+      }
+
+      const result = await productActionsApi
+      .addCommentToProduct(
+        product._id,
+        user._id,
+        commentText,
+        commentRating
+      );
+      
+
+      setCommentRating(0);
+      setCommentText("");
+
+      //console.log(result);
+      if (!result.ok) {
+        //toast.show(result.data, { type: "danger" });
+      } else {
+        //toast.show(result.data.message, { type: "success" });
+        /* const brandName = result.data.brands.map(brand => ({
+          value: brand._id, // Use _id as the key
+          label: brand.name // Use name as the value
+        })); */
+        //const brandName = result.data.brand;
+        //setBrandsNames(brandsNames);
+      }
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+    }
+  };
 
   const Item = ({ item }) => (
     <Pressable style={styles.item}>
-      <View style={{ marginVertical: 20, flex: 1, flexDirection:"column"}}>
-        <Text>{item.text}</Text>
-        <Text>{item.review}</Text>
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <View style={{ marginTop: 10, flex: 1, flexDirection:"column"}}>
+          <View style={{ flexDirection: "row", alignItems: "center"}}>
+            <Text>{item.userName}</Text>
+            <StarRating
+              style={{marginLeft: 20}}
+              rating={item.review}
+              onChange={() => {}}
+              animationConfig={{scale: 1}}
+              starSize={20}
+              starStyle={{marginHorizontal: 0}}
+            />
+          </View>
+          
+          <Text>{item.text}</Text>
+        </View>
+        <View>
+          <Icon
+            name="heart-outline"
+            width={24} // Set the width of the icon
+            height={24} // Set the height of the icon
+            fill={theme["color-basic-600"]} // Set the color of the icon
+          />
+        </View>
       </View>
     </Pressable>
   );
 
-  const [rating, setRating] = useState(0);
+  // Fetch products when the component mounts and when the screen comes into focus
+  useFocusEffect(
+    React.useCallback(() => {
+      setIsRefreshing(true); // Set refreshing state to true when the screen comes into focus
+      getProductComments();
+    }, [])
+  );
+
+  const onRefresh = () => {
+    setIsRefreshing(true); // Set refreshing state to true when the user pulls down to refresh
+    getProductComments();
+  };
   
   return (
     <Page>
+      <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
       <Heading>{product.barcode}</Heading>
+      <View style={{flexDirection: "row"}}>
+        <Icon
+          name="share-outline"
+          width={24} // Set the width of the icon
+          height={24} // Set the height of the icon
+          fill={theme["color-basic-600"]} // Set the color of the icon
+        />
+        <View style={{ marginRight: 10 }} />
+        <Icon
+          name="bookmark-outline"
+          width={24} // Set the width of the icon
+          height={24} // Set the height of the icon
+          fill={theme["color-basic-600"]} // Set the color of the icon
+        />
+        </View>
+      </View>
+      
       <View style={{ flexDirection: "row" }}>
           <View style={{ width: 100, height: 100, borderRadius: 10, backgroundColor: "gray", justifyContent: 'center', alignItems: 'center' }}>
             <Icon
@@ -98,28 +241,149 @@ function ProductHome({ route }) {
             fill={theme["color-basic-600"]} // Set the color of the icon
             />
           </View>
-          <View style={{ marginLeft: 10, flexDirection: "column", justifyContent: 'center', alignItems: 'center' }}>
-            <Text>{product.productDetails.name}</Text>
-            <View style={{ justifyContent: "center"}}>
+          <View style={{ flex: 1, marginHorizontal: 5, flexDirection: "row", justifyContent: 'space-between', alignItems: 'center' }}>
+            <View style={{ flex: 2, flexDirection: "column", alignItems: "center"}}>
+              <Text>{product.productDetails.name}</Text>
+              <Text>
+                {brands.length > 0
+                  ? brands.map(item => item.name).join(', ')
+                  : 'No brands available'}
+              </Text>
+            </View>  
+            <View style={{ flex: 1, flexDirection: "column", alignItems: "center"}}>
+              <Text>{rating}</Text>
               <StarRating
                 rating={rating}
                 onChange={setRating}
+                style={{marginLeft: 20}}
+                animationConfig={{scale: 1}}
+                starSize={20}
+                starStyle={{marginHorizontal: 0}}
               />
             </View>
           </View>
       </View>
-      <SafeAreaView style={styles.container}>
-        <FlatList
-          data={mockComments}
-          renderItem={({ item }) => <Item item={item} />}
-          keyExtractor={(item, index) => {return item.userId}}
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <View style={{ flexDirection: "row", marginRight: 5 }}>
+          <Icon
+            name="eye-outline"
+            width={24} // Set the width of the icon
+            height={24} // Set the height of the icon
+            fill={theme["color-basic-600"]} // Set the color of the icon
+          />
+          <Text>5450</Text>
+        </View>
+        <View style={{ flexDirection: "row", marginRight: 5 }}>
+          <Icon
+            name="share-outline"
+            width={24} // Set the width of the icon
+            height={24} // Set the height of the icon
+            fill={theme["color-basic-600"]} // Set the color of the icon
+          />
+          <Text>5450</Text>
+        </View>
+        <View style={{ flexDirection: "row", marginRight: 5 }}>
+          <Icon
+            name="funnel-outline"
+            width={24} // Set the width of the icon
+            height={24} // Set the height of the icon
+            fill={theme["color-basic-600"]} // Set the color of the icon
+          />
+          <Text>Filter</Text>
+        </View>
+        <View style={{ flexDirection: "row", marginLeft: 'auto' }}>
+          <MaterialCommunityIcons
+            name={"cube-scan"}
+            size={24}
+            color={theme["color-basic-600"]}
+          />
+          <Text>123</Text>
+        </View>
+      </View>
+      <View style={{ flex: 1 }}>
+          <FlatList
+            data={comments}
+            renderItem={({ item }) => <Item item={item} />}
+            keyExtractor={(item, index) => {return item._id}}
+            refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={onRefresh}
+            />
+          }
+          />
+      </View>
+      <View style={[styles.commentContainer, { paddingTop: 10, flexDirection: "column", alignItems: "center" }]}>
+        <StarRating
+          rating={commentRating}
+          onChange={setCommentRating}
+          style={{marginLeft: 20}}
+          animationConfig={{scale: 1}}
+          starSize={35}
+          starStyle={{marginHorizontal: 0}}
         />
-      </SafeAreaView>
+        <View style={{ paddingHorizontal: 5, flexDirection: "row", alignItems: "center" }}>
+          <View style={{flex: 1, marginTop: 10, marginHorizontal: 10}}>
+            <TextInput
+              placeholder="Comment..."
+              keyboardType="default"
+              returnKeyType="next"
+              autoCapitalize="none"
+              value={commentText}
+              onChangeText={setCommentText}
+            />
+          </View>
+          
+          <TouchableOpacity
+            onPress={()=>{
+              addCommentToProduct();
+              getBrandsByIds(product.productDetails.brands);
+            }} 
+            style={styles.button}
+            activeOpacity={0.7} // Customize the opacity when pressed
+          >
+            <MaterialCommunityIcons
+              name={"send"}
+              size={24}
+              color={theme["color-basic-600"]}
+            />
+          </TouchableOpacity>
+          
+        </View>
+      </View>
+      
     </Page>
   );
 }
 
 const styles = StyleSheet.create({
+  button: {
+    justifyContent: "center",
+    marginVertical: 10,
+    paddingHorizontal: 10,
+    backgroundColor: 'lightgray', // Customize the background color
+    borderRadius: 5, // Optional: Customize the border radius
+    alignSelf: 'stretch',
+  },
+  text: {
+    fontSize: 16,
+    color: 'black', // Customize the text color
+  },
+  commentContainer: {
+    borderColor: "red",
+    borderRadius: 4,
+    marginBottom: 10,
+    padding: 12,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+
+    elevation: 2,
+  },
 });
 
 export default ProductHome;

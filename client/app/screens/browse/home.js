@@ -25,9 +25,11 @@ import { useTheme, Icon } from "@ui-kitten/components";
 
 import ShowProductModal from '../../components/ShowProductModal';
 
+import StarRating from 'react-native-star-rating-widget';
+
 function DiscoverHome({ navigation }) {
   //const toast = useToast();
-  const [products, setProducts] = useState([]);
+  const [comments, setComments] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const theme = useTheme();
@@ -36,12 +38,14 @@ function DiscoverHome({ navigation }) {
 
   const getAllProducts = async () => {
     try {
-      const result = await productActionsApi.getAllProducts();
+      const result = await productActionsApi.getAllComments();
+      
       if (!result.ok) {
         //toast.show(result.data, { type: "danger" });
       } else {
         //toast.show(result.data.message, { type: "success" });
-        setProducts(result.data.products);
+        setComments(result.data);
+        console.log(comments);
       }
     } catch (error) {
       console.error("Error fetching data: ", error);
@@ -70,8 +74,8 @@ function DiscoverHome({ navigation }) {
   const Item = ({ item }) => (
     <Pressable style={styles.item} onPress={() => { setShowCustomPopup(true) }}>
       <View style={{ backgroundColor: "gray", flex: 1/2, justifyContent: 'center', alignItems: 'center' }}>
-        
-      {item.images.length > 0 ? (
+      
+      {/* {item.images.length > 0 ? (
         <Image 
           source={{ uri: item.images[0].imageUrl }} // Use the correct property for the image URL
           style={[styles.profilePicture, {  flex: 1 }]}
@@ -83,13 +87,22 @@ function DiscoverHome({ navigation }) {
           height={24} // Set the height of the icon
           fill={theme["color-basic-600"]} // Set the color of the icon
         />
-      )}
+      )} */}
 
         
       </View>
       <View style={{ flex: 1, flexDirection:"column"}}>
-        <Text>{item.name}</Text>
-        <Text>{item.barcode}</Text>
+        <Text>{item.userName}</Text>
+        <Text>{item.productName}</Text>
+        <Text>{item.text}</Text>
+        <StarRating
+              style={{marginLeft: 20}}
+              rating={item.review}
+              onChange={() => {}}
+              animationConfig={{scale: 1}}
+              starSize={20}
+              starStyle={{marginHorizontal: 0}}
+            />
       </View>
       <View style={{ flex: 1/10, flexDirection:"column", justifyContent: "space-between"}}>
         <Icon
@@ -113,7 +126,7 @@ function DiscoverHome({ navigation }) {
       <Heading>Browse</Heading>
       <SafeAreaView style={styles.container}>
         <FlatList
-          data={products}
+          data={comments}
           renderItem={({ item }) => <Item item={item} />}
           keyExtractor={(item) => item._id}
           refreshControl={
