@@ -26,10 +26,9 @@ const checkUserStatus = () => client.get("/auth/status");
 
 const updateProfileImage = (userId, image) => {
   const formData = new FormData();
-  formData.append("userId", userId); // Include userId in the FormData
+  formData.append("_id", userId); // Include userId in the FormData
   formData.append("image", image);
 
-  
   return client.put("/auth/update-profile-image", formData, {
     headers: {
       "Content-Type": "multipart/form-data",

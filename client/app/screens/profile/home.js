@@ -28,6 +28,8 @@ import Caption from "../../components/Caption";
 import SubHeading from "../../components/SubHeading";
 import Paragraph from "../../components/Paragraph";
 
+import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEffect from React Navigation
+
 function ProfileHome({ navigation }) {
   const authContext = useContext(AuthContext);
   const { user } = useContext(AuthContext);
@@ -52,8 +54,6 @@ function ProfileHome({ navigation }) {
     // Convert the image data from bytes to a base64 string
     const base64ImageData = imageData.map(byte => String.fromCharCode(byte)).join('');
     const imageUrl = 'data:' + profileImage.data.contentType + ';base64,' + encode(base64ImageData);
-    
-    console.log(imageData)
 
     setSelectedImageUri(imageUrl);
   };
@@ -72,13 +72,25 @@ function ProfileHome({ navigation }) {
     if (status === "granted") {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        base64: true,
       });
       if (!result.canceled) {
         setSelectedImageUri(result.assets[0].uri); // Step 2: Update selected image URI
-        console.log(result.assets[0].base64);
+        //console.log(result.assets[0]);
         //toast.show("Logout Successful", { type: "success" });
 
-        const uploadResult = await updateProfileImageApi.request(user._id, selectedImageUri);
+        // Extract file extension from the URI
+        const uriParts = result.assets[0].uri.split('.');
+        const fileExtension = uriParts[uriParts.length - 1];
+
+        const image = {
+          uri: result.assets[0].uri,
+          type: 'image/' + fileExtension, // Dynamically set the image type based on the file extension
+          name: 'image.' + fileExtension, // Dynamically set the file name with the extracted extension
+        };
+
+        const uploadResult = await updateProfileImageApi.request(user._id, image);
+        //console.log(uploadResult.message)
       }
     }
     if (status !== "granted") {
@@ -89,44 +101,51 @@ function ProfileHome({ navigation }) {
     }, 5000);
   }
 
-    // Placeholder for user profile data
-    const userProfile = {
-      profilePicture:"person-outline",
-      firstName: user ? user.firstName : null,
-      lastName: user ? user.lastName : null,
-      userName: user ? user.userName : null,
-    };
-  
-    const menuItems = [
-      {
-        id: 1,
-        icon: "bookmark-outline",
-        text: "Saved",
-        iconColor: theme["color-primary-default"],
-        onPress: () => navigation.navigate("Saved"),
-      },
-      {
-        id: 3,
-        icon: "info-outline",
-        text: "About",
-        iconColor: theme["color-primary-default"],
-        onPress: () => navigation.navigate("About"),
-      },
-      {
-        id: 4,
-        icon: "settings-outline",
-        text: "Settings",
-        iconColor: theme["color-primary-default"],
-        onPress: () => navigation.navigate("Settings"),
-      },
-      {
-        id: 5,
-        icon: "log-out",
-        text: "Log Out",
-        iconColor: theme["notification-error"],
-        onPress: handleLogOut,
-      },
-    ];
+  // Fetch products when the component mounts and when the screen comes into focus
+  useFocusEffect(
+    React.useCallback(() => {
+      getProfileImage();
+    }, [])
+  );
+
+  // Placeholder for user profile data
+  const userProfile = {
+    profilePicture:"person-outline",
+    firstName: user ? user.firstName : null,
+    lastName: user ? user.lastName : null,
+    userName: user ? user.userName : null,
+  };
+
+  const menuItems = [
+    {
+      id: 1,
+      icon: "bookmark-outline",
+      text: "Saved",
+      iconColor: theme["color-primary-default"],
+      onPress: () => navigation.navigate("ProfileSaved"),
+    },
+    {
+      id: 3,
+      icon: "info-outline",
+      text: "About",
+      iconColor: theme["color-primary-default"],
+      onPress: () => navigation.navigate("ProfileAbout"),
+    },
+    {
+      id: 4,
+      icon: "settings-outline",
+      text: "Settings",
+      iconColor: theme["color-primary-default"],
+      onPress: () => navigation.navigate("ProfileSettings"),
+    },
+    {
+      id: 5,
+      icon: "log-out",
+      text: "Log Out",
+      iconColor: theme["notification-error"],
+      onPress: handleLogOut,
+    },
+  ];
 
   return (
     <Page>
@@ -180,7 +199,7 @@ function ProfileHome({ navigation }) {
           </TouchableOpacity>
         </View>
         
-        <Button style={styles.editProfileButton}>Edit Profile</Button>
+        <Button onPress={getProfileImage} style={styles.editProfileButton}>Edit Profile</Button>
       </View>
 
       <View style={[styles.separator, { backgroundColor: theme["color-primary-disabled"] }]}></View>

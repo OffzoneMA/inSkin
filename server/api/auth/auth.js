@@ -116,7 +116,6 @@ router.put(
   asyncMiddleware(async (req, res) => {
     const userId = req.body._id; // Assuming you have the user ID in the request object
     
-    console.log(req.file.buffer);
     const updatedUser = await User.findOneAndUpdate(
       { _id: userId },
       {
@@ -169,11 +168,8 @@ router.get("/get-users-byids", async (req, res) => {
       // Retrieve an array of brand IDs from the request query parameters
       const userIds = req.query.ids.split(',');
 
-      console.log(userIds);
-
       // Query the database to find brands by IDs
       const users = await User.find({ _id: { $in: userIds } });
-      console.log(users);
 
       // Check if any brands exist
       if (users.length === 0) {
