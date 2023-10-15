@@ -34,6 +34,8 @@ import ShowProductModal from '../../components/ShowProductModal';
 
 import StarRating from 'react-native-star-rating-widget';
 
+import { encode, decode } from 'base-64';
+
 function DiscoverHome({ navigation }) {
   //const toast = useToast();
   const [comments, setComments] = useState([]);
@@ -45,7 +47,7 @@ function DiscoverHome({ navigation }) {
 
   const [ scannedProduct, setScannedProduct ] = useState(null);
 
-  const getAllProducts = async () => {
+  const getAllComments = async () => {
     try {
       const result = await productActionsApi.getAllComments();
       
@@ -66,13 +68,13 @@ function DiscoverHome({ navigation }) {
   useFocusEffect(
     React.useCallback(() => {
       setIsRefreshing(true); // Set refreshing state to true when the screen comes into focus
-      getAllProducts();
+      getAllComments();
     }, [])
   );
 
   const onRefresh = () => {
     setIsRefreshing(true); // Set refreshing state to true when the user pulls down to refresh
-    getAllProducts();
+    getAllComments();
   };
 
   const closeCustomPopup = () => {
@@ -99,23 +101,22 @@ function DiscoverHome({ navigation }) {
       }}
     >
       <View style={{ borderRadius: 5, flex: 1/4, justifyContent: 'center', alignItems: 'center' }}>
-        <View style={{width: '100%', borderRadius: 100, marginBottom: "auto", backgroundColor: "gray", aspectRatio: 1}}>
-
+        <View style={[styles.profileIconWrapper, {width: '100%', borderRadius: 100, marginBottom: "auto", backgroundColor: "gray", aspectRatio: 1, overflow: 'hidden', justifyContent: "center"}]}>
+          {item.profileImage && item.profileImage.data && item.profileImage.data.data ? (
+            <Image 
+                source={{ uri: 'data:' + item.profileImage.contentType + ';base64,' + encode(item.profileImage.data.data.map(byte => String.fromCharCode(byte)).join('')) }}
+                style={[styles.profilePicture, { flex: 1 }]}
+            />
+          ) : (
+            <Icon
+                name="image-outline"
+                width={24}
+                height={24}
+                fill={theme["color-basic-600"]}
+                style={{alignSelf: "center"}}
+            />
+          )}
         </View>
-      {/* {item.images.length > 0 ? (
-        <Image 
-          source={{ uri: item.images[0].imageUrl }} // Use the correct property for the image URL
-          style={[styles.profilePicture, {  flex: 1 }]}
-        />
-      ) : (
-        <Icon
-          name="image-outline"
-          width={24} // Set the width of the icon
-          height={24} // Set the height of the icon
-          fill={theme["color-basic-600"]} // Set the color of the icon
-        />
-      )} */}
-
         
       </View>
       <View style={{ flex: 1, flexDirection:"column"}}>
@@ -184,6 +185,9 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 32,
+  },
+  profileIconWrapper: {
+    borderRadius: 98,
   },
 });
 
