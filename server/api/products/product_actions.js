@@ -190,7 +190,7 @@ router.get("/all-comments", asyncMiddleware(async (req, res) => {
   try {
       const products = await Product.find().populate({
           path: 'comments.userId',
-          select: 'userName', // Assuming the username is a field in your User model
+          select: 'userName profileImage', // Assuming the username is a field in your User model
       }).exec();
 
       if (!products || products.length === 0) {
@@ -210,7 +210,8 @@ router.get("/all-comments", asyncMiddleware(async (req, res) => {
                       text: comment.text,
                       review: comment.review,
                       createdAt: comment.createdAt,
-                      userName: comment.userId.userName // Add the username field directly to the comment object
+                      userName: comment.userId.userName, // Add the username field directly to the comment object
+                      profileImage: comment.userId.profileImage
                   };
                   allComments.push(formattedComment);
               }
