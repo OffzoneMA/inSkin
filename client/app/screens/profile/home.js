@@ -72,7 +72,9 @@ function ProfileHome({ navigation }) {
     if (status === "granted") {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        base64: true,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 1,
       });
       if (!result.canceled) {
         setSelectedImageUri(result.assets[0].uri); // Step 2: Update selected image URI
@@ -199,7 +201,7 @@ function ProfileHome({ navigation }) {
           </TouchableOpacity>
         </View>
         
-        <Button onPress={getProfileImage} style={styles.editProfileButton}>Edit Profile</Button>
+        <Button style={styles.editProfileButton}>Edit Profile</Button>
       </View>
 
       <View style={[styles.separator, { backgroundColor: theme["color-primary-disabled"] }]}></View>
