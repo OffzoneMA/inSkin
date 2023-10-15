@@ -28,6 +28,8 @@ import Caption from "../../components/Caption";
 import SubHeading from "../../components/SubHeading";
 import Paragraph from "../../components/Paragraph";
 
+import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEffect from React Navigation
+
 function ProfileHome({ navigation }) {
   const authContext = useContext(AuthContext);
   const { user } = useContext(AuthContext);
@@ -41,22 +43,18 @@ function ProfileHome({ navigation }) {
 
   const updateProfileImageApi = useApi(authApi.updateProfileImage);
   const getProfileImageApi = useApi(authApi.getProfileImage);
-
-
-
-  const updateProfileImage = async () => {
-    //toast.show("Logout Successful", { type: "success" });
-    const profileImage = await getProfileImageApi.request(user.userName);
   
+  const getProfileImage = async () => {
+    //toast.show("Logout Successful", { type: "success" });
+    const profileImage = await getProfileImageApi.request(user._id);
+
     // Extract the image data from the response
     const imageData = profileImage.data.data.data;
-  
+
     // Convert the image data from bytes to a base64 string
     const base64ImageData = imageData.map(byte => String.fromCharCode(byte)).join('');
     const imageUrl = 'data:' + profileImage.data.contentType + ';base64,' + encode(base64ImageData);
-  
-    //console.log(imageUrl);
-  
+
     setSelectedImageUri(imageUrl);
   };
 
@@ -68,6 +66,49 @@ function ProfileHome({ navigation }) {
       authStorage.removeToken();
     }, 300);
   };
+
+  async function modifyProfileImage() {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status === "granted") {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 1,
+      });
+      if (!result.canceled) {
+        setSelectedImageUri(result.assets[0].uri); // Step 2: Update selected image URI
+        //console.log(result.assets[0]);
+        //toast.show("Logout Successful", { type: "success" });
+
+        // Extract file extension from the URI
+        const uriParts = result.assets[0].uri.split('.');
+        const fileExtension = uriParts[uriParts.length - 1];
+
+        const image = {
+          uri: result.assets[0].uri,
+          type: 'image/' + fileExtension, // Dynamically set the image type based on the file extension
+          name: 'image.' + fileExtension, // Dynamically set the file name with the extracted extension
+        };
+
+        const uploadResult = await updateProfileImageApi.request(user._id, image);
+        //console.log(uploadResult.message)
+      }
+    }
+    if (status !== "granted") {
+      setAlertBox("File permission is required to upoad photo.");
+    }
+    setTimeout(() => {
+      setAlertBox(null);
+    }, 5000);
+  }
+
+  // Fetch products when the component mounts and when the screen comes into focus
+  useFocusEffect(
+    React.useCallback(() => {
+      getProfileImage();
+    }, [])
+  );
 
   // Placeholder for user profile data
   const userProfile = {
@@ -83,21 +124,21 @@ function ProfileHome({ navigation }) {
       icon: "bookmark-outline",
       text: "Saved",
       iconColor: theme["color-primary-default"],
-      onPress: () => navigation.navigate("Saved"),
+      onPress: () => navigation.navigate("ProfileSaved"),
     },
     {
       id: 3,
       icon: "info-outline",
       text: "About",
       iconColor: theme["color-primary-default"],
-      onPress: () => navigation.navigate("About"),
+      onPress: () => navigation.navigate("ProfileAbout"),
     },
     {
       id: 4,
       icon: "settings-outline",
       text: "Settings",
       iconColor: theme["color-primary-default"],
-      onPress: () => navigation.navigate("Settings"),
+      onPress: () => navigation.navigate("ProfileSettings"),
     },
     {
       id: 5,
@@ -107,27 +148,6 @@ function ProfileHome({ navigation }) {
       onPress: handleLogOut,
     },
   ];
-  
-
-  async function modifyProfileImage() {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status === "granted") {
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      });
-      if (!result.canceled) {
-        setSelectedImageUri(result.assets[0].uri); // Step 2: Update selected image URI
-        console.log(result.assets[0].uri);
-        //toast.show("Logout Successful", { type: "success" });
-      }
-    }
-    if (status !== "granted") {
-      setAlertBox("File permission is required to scan qr-code from photo.");
-    }
-    setTimeout(() => {
-      setAlertBox(null);
-    }, 5000);
-  }
 
   return (
     <Page>
@@ -149,25 +169,25 @@ function ProfileHome({ navigation }) {
           {/* Floating button for uploading profile picture */}
           
           <TouchableOpacity
-            onPress={updateProfileImage}
+            onPress={modifyProfileImage}
             style={[styles.actionButtonIcon, { borderColor: "white", borderWidth: 3, borderRadius: 5, bottom: -10, right: -15, position: "absolute", margin: 5, padding: 8, borderRadius: 100,width: 40, height: 40, backgroundColor: theme["color-primary-disabled"] }]}>
               <Icon name="edit-outline" fill={theme["color-primary-default"]} style={styles.actionButtonIcon} />
           </TouchableOpacity>
         </View>
 
         <View style={{flexDirection: "row"}}>
-          <Paragraph style={styles.profileName}>
+          <Text style={styles.profileName}>
             {userProfile.firstName} 
-          </Paragraph>
-          <Paragraph style={styles.profileName}>  </Paragraph>
-          <Paragraph style={styles.profileName}>
+          </Text>
+          <Text style={styles.profileName}>  </Text>
+          <Text style={styles.profileName}>
             {userProfile.lastName}
-          </Paragraph>
+          </Text>
         </View>
 
-        <Paragraph style={[styles.profileUserName, { color: theme["color-primary-unfocus"] }]}>
+        <Text style={[styles.profileUserName, { color: theme["color-primary-unfocus"] }]}>
           {userProfile.userName}
-        </Paragraph>
+        </Text>
 
         <View style={styles.followersContainer}>
           <TouchableOpacity style={styles.followersContainerButton}>
