@@ -45,7 +45,7 @@ function AddProduct({ navigation, route }) {
 
   const addProductApi = useApi(productActionsApi.add_product);
 
-  const { setScanned } = useContext(ScanContext);
+  const { scanned, setScanned } = useContext(ScanContext);
   
   const [selected, setSelected] = useState([]);
 

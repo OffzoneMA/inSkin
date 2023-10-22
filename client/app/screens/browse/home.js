@@ -38,8 +38,8 @@ function DiscoverHome({ navigation }) {
   const theme = useTheme();
 
   const [showCustomPopup, setShowCustomPopup] = useState(false); // State to control custom pop-up visibility
-
-  const [ setScannedProduct ] = useState(null);
+  
+  const [ scannedProduct, setScannedProduct ] = useState(null);
 
   const getAllComments = async () => {
     try {

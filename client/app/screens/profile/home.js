@@ -24,8 +24,8 @@ function ProfileHome({ navigation }) {
   //const toast = useToast();
 
   const theme = useTheme();
-
-  const [ setAlertBox] = useState(null);
+  
+  const [alertBox, setAlertBox] = useState(null);
 
   const [selectedImageUri, setSelectedImageUri] = useState(null); // Step 1: State for selected image URI
 
