@@ -46,7 +46,7 @@ function ProfileHome({ navigation }) {
   
   const getProfileImage = async () => {
     //toast.show("Logout Successful", { type: "success" });
-    const profileImage = await getProfileImageApi.request(user._id);Z
+    const profileImage = await getProfileImageApi.request(user._id);
 
     // Extract the image data from the response
     const imageData = profileImage.data.data.data;
