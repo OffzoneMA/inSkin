@@ -111,10 +111,8 @@ router.post(
     }
 
     // Fetch image from the URL and convert it to a buffer
-    const imageURL = faker.image.avatar();; // Replace with the actual URL to your image
+    const imageURL = faker.image.avatar(); // Replace with the actual URL to your image
     const imageBuffer = await getImageBufferFromURL(imageURL);
-
-    console.log(imageBuffer);
 
     const newUser = new User({
       firstName: req.body.firstName,
