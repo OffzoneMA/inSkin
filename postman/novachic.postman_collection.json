@@ -7,6 +7,59 @@
 	},
 	"item": [
 		{
+			"name": "post product images",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "barcode",
+							"value": "45654",
+							"type": "text"
+						},
+						{
+							"key": "images",
+							"type": "file",
+							"src": [
+								"mario.png",
+								"spider.png"
+							]
+						},
+						{
+							"key": "userId",
+							"value": "6517645e1776a81824a64e4a",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{API_URL}}/products/add-product",
+					"protocol": "http",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"products",
+						"add-product"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "get profile image and visualize it",
 			"event": [
 				{
@@ -50,7 +103,7 @@
 					"formdata": []
 				},
 				"url": {
-					"raw": "http://{{API_URL}}/auth/profile-image/6517645e1776a81824a64e4a",
+					"raw": "http://{{API_URL}}/auth/profile-image/6527dfd779335935f822fd8f",
 					"protocol": "http",
 					"host": [
 						"{{API_URL}}"
@@ -58,7 +111,7 @@
 					"path": [
 						"auth",
 						"profile-image",
-						"6517645e1776a81824a64e4a"
+						"6527dfd779335935f822fd8f"
 					]
 				}
 			},
@@ -75,11 +128,11 @@
 						{
 							"key": "image",
 							"type": "file",
-							"src": "mario.png"
+							"src": "taxes_codes.jpg"
 						},
 						{
 							"key": "_id",
-							"value": "6517645e1776a81824a64e4a",
+							"value": "6527dfd779335935f822fd8f",
 							"type": "text"
 						}
 					]
@@ -272,12 +325,170 @@
 			"response": []
 		},
 		{
-			"name": "post profile picture",
+			"name": "get product by barcode",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{API_URL}}/products/get-product-bybarcode/30070349",
+					"protocol": "http",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"products",
+						"get-product-bybarcode",
+						"30070349"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get brands",
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": ""
+					"raw": "http://{{API_URL}}/brands/",
+					"protocol": "http",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"brands",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "put product comment",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{   \"_id\": \"65202b3f43ca1636e8db1386\",\r\n    \"userId\": \"65202b3e43ca1636e8db1382\",\r\n    \"text\": \"Awesome\",\r\n    \"review\": \"5\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{API_URL}}/products/add-comment/",
+					"protocol": "http",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"products",
+						"add-comment",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get product comments",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{API_URL}}/products/product-comments/65202b3f43ca1636e8db1386",
+					"protocol": "http",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"products",
+						"product-comments",
+						"65202b3f43ca1636e8db1386"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get brands by ids",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{API_URL}}/brands/get-brands-byids?ids=6527dfd779335935f822fd92,6527dfd779335935f822fd91,6527dfd779335935f822fd92,6527dfd779335935f822fd91",
+					"protocol": "http",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"brands",
+						"get-brands-byids"
+					],
+					"query": [
+						{
+							"key": "ids",
+							"value": "6527dfd779335935f822fd92,6527dfd779335935f822fd91,6527dfd779335935f822fd92,6527dfd779335935f822fd91"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get users by ids",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{API_URL}}/auth/get-users-byids?ids=6527dfd779335935f822fd8f,6527dfd779335935f822fd90,6527dfd779335935f822fd90",
+					"protocol": "http",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"auth",
+						"get-users-byids"
+					],
+					"query": [
+						{
+							"key": "ids",
+							"value": "6527dfd779335935f822fd8f,6527dfd779335935f822fd90,6527dfd779335935f822fd90"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get all comments",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{API_URL}}/products/all-comments",
+					"protocol": "http",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"products",
+						"all-comments"
+					]
 				}
 			},
 			"response": []
