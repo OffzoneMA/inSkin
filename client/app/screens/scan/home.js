@@ -14,8 +14,6 @@ import Slider from "@react-native-community/slider";
 import AlertBox from "../../components/AlertBox";
 import Cam from "../../components/Camera";
 
-import AddProductModal from '../../components/AddProductModal';
-
 import Modal from "react-native-modal";
 
 import Button from "../../components/Button";

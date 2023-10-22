@@ -1,24 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   SafeAreaView,
   View,
   StyleSheet,
-  Text,
   FlatList,
   StatusBar,
   RefreshControl,
-  Pressable,
   Image,
   TouchableOpacity,
 } from "react-native";
 
 import Page from "../../components/Page";
 import Heading from "../../components/Heading";
-import Button from "../../components/Button";
-import TextInput from "../../components/TextInput";
-import TextLink from "../../components/TextLink";
 import Label from "../../components/Label";
-import Caption from "../../components/Caption";
 import SubHeading from "../../components/SubHeading";
 import Paragraph from "../../components/Paragraph";
 
@@ -34,7 +28,7 @@ import ShowProductModal from '../../components/ShowProductModal';
 
 import StarRating from 'react-native-star-rating-widget';
 
-import { encode, decode } from 'base-64';
+import { encode } from 'base-64';
 
 function DiscoverHome({ navigation }) {
   //const toast = useToast();
@@ -45,7 +39,7 @@ function DiscoverHome({ navigation }) {
 
   const [showCustomPopup, setShowCustomPopup] = useState(false); // State to control custom pop-up visibility
 
-  const [ scannedProduct, setScannedProduct ] = useState(null);
+  const [ setScannedProduct ] = useState(null);
 
   const getAllComments = async () => {
     try {

@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { StyleSheet, View, Image, Pressable, ScrollView, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Image, ScrollView, TouchableOpacity } from "react-native";
 import { useTheme, Text, Icon } from "@ui-kitten/components";
 import Page from "../../components/Page";
 import AuthContext from "../../contexts/auth";
@@ -9,24 +9,12 @@ import Button from "../../components/Button";
 
 import * as ImagePicker from "expo-image-picker";
 
-import { useState, useCallback } from "react";
-
-import AlertBox from "../../components/AlertBox";
-
-import { Dimensions } from "react-native";
+import { useState } from "react";
 
 import authApi from "../../api/auth";
 import useApi from "../../hooks/useApi";
 
-import { encode, decode } from 'base-64';
-
-import Heading from "../../components/Heading";
-import TextInput from "../../components/TextInput";
-import TextLink from "../../components/TextLink";
-import Label from "../../components/Label";
-import Caption from "../../components/Caption";
-import SubHeading from "../../components/SubHeading";
-import Paragraph from "../../components/Paragraph";
+import { encode } from 'base-64';
 
 import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEffect from React Navigation
 
@@ -37,7 +25,7 @@ function ProfileHome({ navigation }) {
 
   const theme = useTheme();
 
-  const [alertBox, setAlertBox] = useState(null);
+  const [ setAlertBox] = useState(null);
 
   const [selectedImageUri, setSelectedImageUri] = useState(null); // Step 1: State for selected image URI
 

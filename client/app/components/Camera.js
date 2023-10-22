@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text, Pressable, Alert, ScrollView } from "react-native";
+import { StyleSheet, View, Text } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useState, useContext, useEffect } from "react";
 import { BarCodeScanner } from "expo-barcode-scanner";
@@ -7,28 +7,11 @@ import { Camera } from "expo-camera";
 
 import { TouchableNativeFeedback } from "react-native";
 
-import AuthContext from "../contexts/auth";
-
-import * as Yup from "yup";
-
-import { useTheme } from '@ui-kitten/components';
-
 import productActionsApi from "../api/product_actions";
-import useApi from "../hooks/useApi";
-
-import AddProductModal from './AddProductModal';
 
 import Modal from "react-native-modal";
 
 import Button from "./Button";
-
-const validationSchema = Yup.object({
-  barcode: Yup.string().required().label("Barcode"),
-  name: Yup.string().label("Name"),
-  brands: Yup.string().label("Brands"),
-  categories: Yup.string().label("Categories"),
-  ingredients: Yup.string().label("Ingredients"),
-});
 
 export default function Cam({ flash, zoom }) {
 
@@ -41,9 +24,7 @@ export default function Cam({ flash, zoom }) {
 
   const [showCustomPopup, setShowCustomPopup] = useState(false); // State to control custom pop-up visibility
 
-  const [value, setValue] = useState(0);
-
-  const [ scannedProduct, setScannedProduct ] = useState(null);
+  const [ setScannedProduct ] = useState(null);
 
   const getProductByBarcode = async (barcode) => {
     try {
