@@ -24,21 +24,15 @@ export default function AppTabNavigator() {
           fontWeight: "bold", // Make the tab labels bold
           marginVertical: 0,
         },
-        tabBarStyle: {
-          backgroundColor: theme["color-basic-100"], // Background color of the tab bar
-        },
         tabBarIndicatorStyle: {
           backgroundColor: theme["color-primary-default"], // Color of the active tab indicator
         },
         tabBarIconStyle: {
           marginVertical: 0, // Remove vertical margin
         },
-        tabBarStyle: [
-          {
-            display: "flex"
-          },
-          null
-        ],
+        tabBarStyle: {
+          backgroundColor: theme["background-basic-color-1"],
+        },
         tabBarIcon: ({ color }) => 
         screenOptions(route, color),
       })}
