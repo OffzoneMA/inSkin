@@ -99,7 +99,7 @@ function DiscoverHome({ navigation }) {
           {item.profileImage && item.profileImage.data && item.profileImage.data.data ? (
             <Image 
                 source={{ uri: 'data:' + item.profileImage.contentType + ';base64,' + encode(item.profileImage.data.data.map(byte => String.fromCharCode(byte)).join('')) }}
-                style={[styles.profilePicture, { flex: 1 }]}
+                style={[styles.profilePicture, { flex: 1, width: null, height: null }]}
             />
           ) : (
             <Icon

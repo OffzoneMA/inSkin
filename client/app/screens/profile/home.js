@@ -145,7 +145,7 @@ function ProfileHome({ navigation }) {
             {selectedImageUri ? ( // Step 3: Conditionally render selected image or default icon
               <Image 
                 source={{ uri: selectedImageUri }} /* style={styles.profilePicture} */ 
-                style={[styles.profilePicture, {  flex: 1 }]} // Use flex to fit the parent container
+                style={[styles.profilePicture, {  flex: 1, width: null, height: null }]} // Use flex to fit the parent container
               />
             ) : (
               <Icon
