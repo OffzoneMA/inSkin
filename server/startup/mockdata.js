@@ -9,6 +9,28 @@ const { resolve } = require('path');
 
 const bcrypt = require("bcrypt");
 
+const { faker } = require('@faker-js/faker');
+
+const axios = require('axios');
+
+async function getImageBufferFromURL(imageURL) {
+    try {
+        const response = await axios.get(imageURL, {
+            responseType: 'arraybuffer' // Ensure response is treated as an array buffer
+        });
+
+        const imageBuffer = Buffer.from(response.data, 'binary');
+        return imageBuffer;
+    } catch (error) {
+        // Handle errors, e.g., URL not found, network issues, etc.
+        console.error('Error fetching and converting image:', error);
+        throw error; // Rethrow the error for the caller to handle
+    }
+}
+
+
+
+
 module.exports = async function () {
     // Check if users, products, and brands collections are empty
   const usersCount = await User.countDocuments();
@@ -20,15 +42,19 @@ module.exports = async function () {
   const imageData = fs.readFileSync(resolve(__dirname, imageFilePath));
   const imageBuffer = Buffer.from(imageData);
 
+  let user1ProfileImage = await getImageBufferFromURL(faker.image.avatar());
+  let user2ProfileImage = await getImageBufferFromURL(faker.image.avatar());
+
   let user1Id;
   let user2Id;
   let brand1Id;
 
   // If collections are empty, create mock data
   if (usersCount === 0) {
+    
     const users = await User.create([
-      { firstName: "user1FirstName", lastName: "user1LastName", userName: "user1UserName", email: "user1@example.com", password: await bcrypt.hash("user1Password", 10) },
-      { firstName: "user1FirstName", lastName: "user2LastName", userName: "user2UserName", email: "user2@example.com", password: await bcrypt.hash("user2Password", 10) },
+      { firstName: "user1FirstName", lastName: "user1LastName", userName: "user1UserName", email: "user1@example.com", password: await bcrypt.hash("user1Password", 10), profileImage: { data: user1ProfileImage, contentType: "image/jpg"} },
+      { firstName: "user1FirstName", lastName: "user2LastName", userName: "user2UserName", email: "user2@example.com", password: await bcrypt.hash("user2Password", 10), profileImage: { data: user2ProfileImage, contentType: "image/jpg"} },
     ]);
 
     // Get the userId of user1

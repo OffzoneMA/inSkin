@@ -14,6 +14,10 @@ router.use(bodyParser.json());
 
 const upload = multer();
 
+const { faker } = require('@faker-js/faker');
+
+const axios = require('axios');
+
 router.post(
   "/login",
   asyncMiddleware(async (req, res) => {
@@ -55,6 +59,21 @@ router.get(
   })
 );
 
+async function getImageBufferFromURL(imageURL) {
+  try {
+    const response = await axios.get(imageURL, {
+      responseType: 'arraybuffer' // Ensure response is treated as an array buffer
+    });
+
+    const imageBuffer = Buffer.from(response.data, 'binary');
+    return imageBuffer;
+  } catch (error) {
+    // Handle errors, e.g., URL not found, network issues, etc.
+    console.error('Error fetching and converting image:', error);
+    throw error; // Rethrow the error for the caller to handle
+  }
+}
+
 router.post(
   "/register",
   asyncMiddleware(async (req, res) => {
@@ -91,12 +110,20 @@ router.post(
       }
     }
 
+    // Fetch image from the URL and convert it to a buffer
+    const imageURL = faker.image.avatar(); // Replace with the actual URL to your image
+    const imageBuffer = await getImageBufferFromURL(imageURL);
+
     const newUser = new User({
       firstName: req.body.firstName,
       lastName: req.body.lastName,
       userName: userName,
       email: req.body.email,
       password: hashedPassword,
+      profileImage: {  // Include profile image data in newUser object
+        data: imageBuffer, // Assuming imageURL is a base64 encoded string
+        contentType: 'image/jpg' // Set the content type accordingly
+      }
     });
 
     await newUser.save();
