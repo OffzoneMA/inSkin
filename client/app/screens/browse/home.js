@@ -89,7 +89,7 @@ function DiscoverHome({ navigation }) {
   }
   
   const Item = ({ item }) => (
-    <TouchableOpacity activeOpacity={0.7} style={styles.item} onPress={() => 
+    <TouchableOpacity activeOpacity={0.7} style={[styles.item, {backgroundColor: theme["background-basic-color-3"]}]} onPress={() => 
       { 
         getProductById(item.productId);
       }}
@@ -162,9 +162,8 @@ const styles = StyleSheet.create({
   },
   item: {
     flexDirection: "row",
-    backgroundColor: "white",
     padding: 8,
-    marginVertical: 3,
+    marginVertical: 5,
     borderRadius: 5,
     shadowColor: "black",
     shadowOffset: {
