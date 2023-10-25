@@ -1,10 +1,8 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useContext } from "react";
 import {
   FlatList,
-  SafeAreaView,
   StyleSheet,
   View,
-  Pressable,
   RefreshControl,
   TouchableOpacity,
 } from "react-native";
@@ -12,13 +10,11 @@ import {
 import Page from "../../components/Page";
 import Heading from "../../components/Heading";
 import TextInput from "../../components/TextInput";
-import TextLink from "../../components/TextLink";
 import Label from "../../components/Label";
-import Caption from "../../components/Caption";
 import SubHeading from "../../components/SubHeading";
 import Paragraph from "../../components/Paragraph";
 
-import { useTheme, Icon, Text } from "@ui-kitten/components";
+import { useTheme, Icon } from "@ui-kitten/components";
 
 import StarRating from 'react-native-star-rating-widget';
 
@@ -45,8 +41,6 @@ function ProductHome({ route }) {
   const [comments, setComments] = useState([]);
 
   const [isRefreshing, setIsRefreshing] = useState(false);
-
-  const authContext = useContext(AuthContext);
 
   const { user } = useContext(AuthContext);
 

@@ -1,21 +1,14 @@
 import React, { useState, useEffect, useContext } from "react";
 import {
-  FlatList,
-  SafeAreaView,
   StyleSheet,
   View,
-  Pressable,
-  ScrollView,
   Text,
   TouchableOpacity,
 } from "react-native";
 
 import Page from "../../components/Page";
-import Heading from "../../components/Heading";
 
-import { useTheme, Icon, Input } from "@ui-kitten/components";
-
-import { MultipleSelectList } from 'react-native-dropdown-select-list'
+import { useTheme, Icon } from "@ui-kitten/components";
 
 import TextInput from "../../components/TextInput";
 import Button from "../../components/Button";
@@ -30,8 +23,6 @@ import { ScanContext } from "../../contexts/scan-context";
 
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-
-//import MultiSelect from 'react-native-multiple-select';
 
 import { MultiSelect } from 'react-native-element-dropdown';
 
@@ -48,8 +39,6 @@ function AddProduct({ navigation, route }) {
 
   const { barcode } = route.params;
 
-  const [selectedBrandsIds, setSelectedBrandsIds] = useState("");
-
   const { user } = useContext(AuthContext);
 
   const [brandsNames, setBrandsNames] = useState([]);
@@ -57,43 +46,8 @@ function AddProduct({ navigation, route }) {
   const addProductApi = useApi(productActionsApi.add_product);
 
   const { scanned, setScanned } = useContext(ScanContext);
-
-  const [selectedItems, setselectedItems] = useState(["1", "2"]);
-
-  const [value, setValue] = useState(null);
   
   const [selected, setSelected] = useState([]);
-
-  /* const data = [
-    {key:'1', value:'Mobiles', disabled:true},
-    {key:'2', value:'Appliances'},
-    {key:'3', value:'Cameras'},
-    {key:'4', value:'Computers', disabled:true},
-    {key:'5', value:'Vegetables'},
-    {key:'6', value:'Diary Products'},
-    {key:'7', value:'Drinks'},
-  ] */
-
-  const items = [
-    {id:'1', name:'Mobiles'},
-    {id:'2', name:'Appliances'},
-    {id:'3', name:'Cameras'},
-    {id:'4', name:'Computers'},
-    {id:'5', name:'Vegetables'},
-    {id:'6', name:'Diary Products'},
-    {id:'7', name:'Drinks'},
-  ];
-
-  const data = [
-    { label: 'Item 1', value: '1' },
-    { label: 'Item 2', value: '2' },
-    { label: 'Item 3', value: '3' },
-    { label: 'Item 4', value: '4' },
-    { label: 'Item 5', value: '5' },
-    { label: 'Item 6', value: '6' },
-    { label: 'Item 7', value: '7' },
-    { label: 'Item 8', value: '8' },
-  ];
 
   const getAllBrands = async () => {
     try {
@@ -250,27 +204,6 @@ const handleOKPress = ({
                     onBlur={() => setFieldTouched("name")}
                     errorVisible={touched.name}
                 />
-{/* 
-                <MultipleSelectList
-                  defaultOption={{ key:'1', value:'Jammu & Kashmir' }}
-                  placeholder="Brands"
-                  setSelected={(val) => setSelectedBrandsIds(val)} 
-                  data={brandsNames} 
-                  save="key"
-                  label="Brands"
-                  boxStyles={{ backgroundColor: "#F7F9FC", borderColor: "#E4E9F2", borderRadius: 4}}
-                  fontFamily='Jost-Regular'
-                  inputStyles={{ color: "#8F9BB3", fontSize: 17}}
-                  dropdownTextStyles={{color: "#222B45"}}
-                  dropdownStyles={{marginBottom: 10, backgroundColor: "#F7F9FC", borderColor: "#E4E9F2", borderRadius: 4}}
-                  checkBoxStyles={{borderColor: '#8F9BB3'}}
-                  badgeStyles={{backgroundColor: "#8F9BB3", borderRadius: 4}}
-                  onChangeText={handleChange("brands")}
-                  errorMessage={errors.brands}
-                  onBlur={() => setFieldTouched("brands")}
-                  errorVisible={touched.brands}
-                />
- */}
                 <MultiSelect
                   style={styles.dropdown}
                   placeholderStyle={styles.placeholderStyle}
