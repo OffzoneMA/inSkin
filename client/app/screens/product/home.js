@@ -5,6 +5,7 @@ import {
   View,
   RefreshControl,
   TouchableOpacity,
+  Image,
 } from "react-native";
 
 import Page from "../../components/Page";
@@ -242,14 +243,12 @@ function ProductHome({ route }) {
       </View>
       
       <View style={{ flexDirection: "row" }}>
-        <View style={{ width: 80, height: 80, borderRadius: 5, backgroundColor: "gray", justifyContent: 'center', alignItems: 'center' }}>
-          <Icon
-          name="image-outline"
-          width={24} // Set the width of the icon
-          height={24} // Set the height of the icon
-          fill={theme["color-basic-600"]} // Set the color of the icon
-          />
+        <View style={{ height: 100, width: 100 }}>
+          <View style={{ flex: 1, borderRadius: 5, overflow: "hidden", backgroundColor: "blue" }}>
+            <Image source={require('./1.png')} style={{flex: 1, width: null, height: null}} />
+          </View>
         </View>
+        
         <View style={{ flex: 1, marginBottom: "auto", flexDirection: "row", marginLeft: 5 }}>
           <View style={{ flex: 2, flexDirection: "column"}}>
             <SubHeading>{product.productDetails.name}</SubHeading>
