@@ -46,13 +46,12 @@ export default function Cam({ flash, zoom }) {
   };  
 
   const handleBarcodeScanned = (qr) => {
-    setScanned(true);
     setQrcode({ date: new Date(), qr });
     getProductByBarcode(qr.data);
   };
 
   // Function to close the custom pop-up
-  const closeCustomPopup = () => {
+  const toggleCustomPopup = () => {
     setScanned(false);
     setShowCustomPopup(false);
   };
@@ -102,7 +101,7 @@ export default function Cam({ flash, zoom }) {
         animationType="slide"
         transparent={true}
         visible={showCustomPopup}
-        onRequestClose={closeCustomPopup}
+        onRequestClose={toggleCustomPopup}
       >
         <View style={{flexDirection: "column", justifyContent: "center", alignItems: "center", padding: 10, backgroundColor: "white", borderRadius: 10, height: 100}}>
           <Text>This product doesn't exist!</Text>
@@ -110,13 +109,13 @@ export default function Cam({ flash, zoom }) {
           <View style={{flexDirection: "row"}}>
             <Button style={{flex: 1, marginRight: 2}}title="Close"
               onPress={() => {
-                closeCustomPopup();
+                toggleCustomPopup();
                 navigation.navigate("AddProduct", {barcode: qrcode.qr.data})
               }}
             >
               Yes
             </Button>
-            <Button style={{flex: 1, marginLeft: 2}}title="Close" onPress={closeCustomPopup}>
+            <Button style={{flex: 1, marginLeft: 2}}title="Close" onPress={toggleCustomPopup}>
               No
             </Button>
           </View>
