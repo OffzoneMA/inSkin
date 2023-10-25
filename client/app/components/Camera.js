@@ -7,53 +7,16 @@ import { Camera } from "expo-camera";
 
 import { TouchableNativeFeedback } from "react-native";
 
-import productActionsApi from "../api/product_actions";
-
-import Modal from "react-native-modal";
-
-import Button from "./Button";
-
 export default function Cam({ flash, zoom }) {
 
   const [permission, requestPermission] = Camera.useCameraPermissions();
   const {scanned, setScanned} = useContext(ScanContext);
 
-  const { qrcode, setQrcode } = useContext(ScanContext);
-
-  const navigation = useNavigation();
-
-  const [showCustomPopup, setShowCustomPopup] = useState(false); // State to control custom pop-up visibility
-
-  const [ scannedProduct, setScannedProduct ] = useState(null);
-
-  const getProductByBarcode = async (barcode) => {
-    try {
-      const result = await productActionsApi.getProductByBarcode(barcode);
-  
-      if (result.ok) {
-        // Handle the case when result is ok
-        setScannedProduct(result.data);
-        navigation.navigate('Product', { product: result.data });
-        setScanned(false);
-      } else {
-        // Handle the case when result is not ok
-        setShowCustomPopup(true);
-      }
-  
-    } catch (error) {
-      console.error("Error getting product data: ", error);
-    }
-  };  
+  const { setQrcode } = useContext(ScanContext);
 
   const handleBarcodeScanned = (qr) => {
     setQrcode({ date: new Date(), qr });
-    getProductByBarcode(qr.data);
-  };
-
-  // Function to close the custom pop-up
-  const toggleCustomPopup = () => {
-    setScanned(false);
-    setShowCustomPopup(false);
+    setScanned(true);
   };
 
   // Camera permissions are still loading
@@ -96,31 +59,6 @@ export default function Cam({ flash, zoom }) {
       >
         <View />
       </Camera>
-
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={showCustomPopup}
-        onRequestClose={toggleCustomPopup}
-      >
-        <View style={{flexDirection: "column", justifyContent: "center", alignItems: "center", padding: 10, backgroundColor: "white", borderRadius: 10, height: 100}}>
-          <Text>This product doesn't exist!</Text>
-          <Text>Would you like to add it?</Text>
-          <View style={{flexDirection: "row"}}>
-            <Button style={{flex: 1, marginRight: 2}}title="Close"
-              onPress={() => {
-                toggleCustomPopup();
-                navigation.navigate("AddProduct", {barcode: qrcode.qr.data})
-              }}
-            >
-              Yes
-            </Button>
-            <Button style={{flex: 1, marginLeft: 2}}title="Close" onPress={toggleCustomPopup}>
-              No
-            </Button>
-          </View>
-        </View>
-      </Modal>
     </View>
   );
 }

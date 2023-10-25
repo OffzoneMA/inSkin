@@ -1,7 +1,7 @@
 import * as ImagePicker from "expo-image-picker";
 
 import { View, StyleSheet, Pressable, Text } from "react-native";
-import { useState, useCallback, useContext } from "react";
+import { useState, useEffect, useCallback, useContext } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import { ScanContext } from "../../contexts/scan-context";
@@ -28,15 +28,15 @@ export default function Home({ navigation }) {
 
   const { qrcode, setQrcode } = useContext(ScanContext);
 
-  const [showCustomPopup, setShowCustomPopup] = useState(false); // State to control custom pop-up visibility
+  const [isCustomPopupVisible, setIsCustomPopupVisible] = useState(false); // State to control custom pop-up visibility
   const { scanned, setScanned } = useContext(ScanContext);
 
   const [ scannedProduct, setScannedProduct ] = useState(null);
 
   // Function to close the custom pop-up
-  const closeCustomPopup = () => {
-    //setScanned(!scanned);
-    setShowCustomPopup(!showCustomPopup);
+  const toggleCustomPopup = () => {
+    setScanned(false);
+    setIsCustomPopupVisible(!isCustomPopupVisible);
   };
 
   const toggleFlashlight = async () => {
@@ -53,7 +53,7 @@ export default function Home({ navigation }) {
         navigation.navigate('Product', { product: result.data });
       } else {
         // Handle the case when result is not ok
-        closeCustomPopup();
+        toggleCustomPopup();
       }
   
     } catch (error) {
@@ -74,8 +74,7 @@ export default function Home({ navigation }) {
         );
         if (scanResult.length > 0) {
           setQrcode({ date: new Date(), qr: scanResult[0] });
-          getProductByBarcode(scanResult[0].data); // Show the custom pop-up
-          //navigation.navigate("Details");
+          setScanned(true);
         } else {
           setAlertBox("No qr-code found");
         }
@@ -89,7 +88,14 @@ export default function Home({ navigation }) {
     }, 5000);
   }
 
-  
+  // useEffect to watch changes in the scanned state
+  useEffect(() => {
+    // Check if scanned is true
+    if (scanned) {
+      // Call getProductByBarcode function with the appropriate barcode value
+      getProductByBarcode(qrcode.qr.data);
+    }
+  }, [scanned]); // Add scanned to the dependency array
 
   useFocusEffect(
     useCallback(() => {
@@ -151,8 +157,8 @@ export default function Home({ navigation }) {
       <Modal
         animationType="slide"
         transparent={true}
-        visible={showCustomPopup}
-        onRequestClose={closeCustomPopup}
+        visible={isCustomPopupVisible}
+        onRequestClose={toggleCustomPopup}
       >
         <View style={{flexDirection: "column", justifyContent: "center", alignItems: "center", padding: 10, backgroundColor: "white", borderRadius: 10, height: 100}}>
           <Text>This product doesn't exist!</Text>
@@ -160,13 +166,13 @@ export default function Home({ navigation }) {
           <View style={{flexDirection: "row"}}>
             <Button style={{flex: 1, marginRight: 2}}title="Close"
               onPress={() => {
-                closeCustomPopup();
+                toggleCustomPopup();
                 navigation.navigate("AddProduct", {barcode: qrcode.qr.data})
               }}
             >
               Yes
             </Button>
-            <Button style={{flex: 1, marginLeft: 2}}title="Close" onPress={closeCustomPopup}>
+            <Button style={{flex: 1, marginLeft: 2}}title="Close" onPress={toggleCustomPopup}>
               No
             </Button>
           </View>
