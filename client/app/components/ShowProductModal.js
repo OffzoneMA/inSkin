@@ -24,7 +24,7 @@ const validationSchema = Yup.object({
 
 const ShowProductModal = ({
   showCustomPopup,
-  closeCustomPopup,
+  toggleCustomPopup,
   setShowCustomPopup,
 }) => {
     const { user } = useContext(AuthContext);
@@ -96,7 +96,7 @@ const ShowProductModal = ({
         <Modal
         isVisible={showCustomPopup}
         swipeDirection={["down"]}
-        onSwipeComplete={closeCustomPopup}
+        onSwipeComplete={toggleCustomPopup}
         style={styles.modal}
         >
         <View style={styles.modalContent}>
@@ -181,7 +181,7 @@ const ShowProductModal = ({
                     <Button title="OK" style={styles.button} onPress={handleSubmit}>
                     Add Product
                     </Button>
-                    <Button title="Cancel" style={styles.cancelButton} onPress={closeCustomPopup}>
+                    <Button title="Cancel" style={styles.cancelButton} onPress={toggleCustomPopup}>
                     Cancel
                     </Button>
                 </View>
