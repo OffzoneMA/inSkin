@@ -201,8 +201,8 @@ function ProfileHome({ navigation }) {
               <Icon name={item.icon} fill={item.iconColor} style={styles.logoutIcon} />
             </View>
             <Text style={styles.menuItemText}>{item.text}</Text>
-            <View style={styles.secondaryIconWrapper}>
-              <Icon name="arrow-ios-forward-outline" fill={theme["text-basic-color"]} style={styles.logoutIcon} />
+            <View style={[styles.secondaryIconWrapper, { backgroundColor: theme["background-basic-color-1"] }]}>
+              <Icon name="arrow-ios-forward-outline" fill={item.iconColor} style={styles.logoutIcon} />
             </View>
           </TouchableOpacity>
         ))}
@@ -288,7 +288,7 @@ const styles = StyleSheet.create({
   secondaryIconWrapper: {
     width: 30,
     height: 30,
-    borderRadius: 100, // Make it a circle
+    borderRadius: 200, // Make it a circle
     justifyContent: "center",
     alignItems: "center",
     marginLeft: "auto",
