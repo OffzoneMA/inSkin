@@ -55,7 +55,7 @@ export default function Cam({ flash, zoom }) {
         barCodeScannerSettings={{
           barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr],
         }}
-        onBarCodeScanned={scanned ? undefined : handleBarcodeScanned}
+        onBarCodeScanned={scanned ? undefined : handleBarcodeScanned }
       >
         <View />
       </Camera>

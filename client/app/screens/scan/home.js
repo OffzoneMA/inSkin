@@ -14,11 +14,9 @@ import Slider from "@react-native-community/slider";
 import AlertBox from "../../components/AlertBox";
 import Cam from "../../components/Camera";
 
-import Modal from "react-native-modal";
-
-import Button from "../../components/Button";
-
 import productActionsApi from "../../api/product_actions";
+
+import AddProductModal from '../../components/AddProductModal'; // Import CustomModal component
 
 export default function Home({ navigation }) {
   const [flashlightOn, setFlashlightOn] = useState(false);
@@ -34,9 +32,14 @@ export default function Home({ navigation }) {
   const [ scannedProduct, setScannedProduct ] = useState(null);
 
   // Function to close the custom pop-up
-  const toggleCustomPopup = () => {
+  const closeCustomPopup = () => {
+    setIsCustomPopupVisible(false);
     setScanned(false);
-    setIsCustomPopupVisible(!isCustomPopupVisible);
+  };
+
+  const openCustomPopup = () => {
+    setIsCustomPopupVisible(true);
+    setScanned(true);
   };
 
   const toggleFlashlight = async () => {
@@ -53,7 +56,7 @@ export default function Home({ navigation }) {
         navigation.navigate('Product', { product: result.data });
       } else {
         // Handle the case when result is not ok
-        toggleCustomPopup();
+        openCustomPopup();
       }
   
     } catch (error) {
@@ -154,30 +157,13 @@ export default function Home({ navigation }) {
 
       </View>
       
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={isCustomPopupVisible}
-        onRequestClose={toggleCustomPopup}
-      >
-        <View style={{flexDirection: "column", justifyContent: "center", alignItems: "center", padding: 10, backgroundColor: "white", borderRadius: 10, height: 100}}>
-          <Text>This product doesn't exist!</Text>
-          <Text>Would you like to add it?</Text>
-          <View style={{flexDirection: "row"}}>
-            <Button style={{flex: 1, marginRight: 2}}title="Close"
-              onPress={() => {
-                toggleCustomPopup();
-                navigation.navigate("AddProduct", {barcode: qrcode.qr.data})
-              }}
-            >
-              Yes
-            </Button>
-            <Button style={{flex: 1, marginLeft: 2}}title="Close" onPress={toggleCustomPopup}>
-              No
-            </Button>
-          </View>
-        </View>
-      </Modal>
+      <AddProductModal
+        isVisible={isCustomPopupVisible}
+        onClose={closeCustomPopup}
+        onAddProduct={() => 
+          navigation.navigate("AddProduct", {barcode: qrcode.qr.data})
+        }
+      />
     </View>
   );
 }
