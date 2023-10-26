@@ -1,7 +1,7 @@
 import * as ImagePicker from "expo-image-picker";
 
 import { View, StyleSheet, Pressable, Text } from "react-native";
-import { useState, useCallback, useContext } from "react";
+import { useState, useEffect, useCallback, useContext } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import { ScanContext } from "../../contexts/scan-context";
@@ -14,11 +14,9 @@ import Slider from "@react-native-community/slider";
 import AlertBox from "../../components/AlertBox";
 import Cam from "../../components/Camera";
 
-import Modal from "react-native-modal";
-
-import Button from "../../components/Button";
-
 import productActionsApi from "../../api/product_actions";
+
+import AddProductModal from '../../components/AddProductModal'; // Import CustomModal component
 
 export default function Home({ navigation }) {
   const [flashlightOn, setFlashlightOn] = useState(false);
@@ -28,15 +26,20 @@ export default function Home({ navigation }) {
 
   const { qrcode, setQrcode } = useContext(ScanContext);
 
-  const [showCustomPopup, setShowCustomPopup] = useState(false); // State to control custom pop-up visibility
+  const [isCustomPopupVisible, setIsCustomPopupVisible] = useState(false); // State to control custom pop-up visibility
   const { scanned, setScanned } = useContext(ScanContext);
 
   const [ scannedProduct, setScannedProduct ] = useState(null);
 
   // Function to close the custom pop-up
   const closeCustomPopup = () => {
-    //setScanned(!scanned);
-    setShowCustomPopup(!showCustomPopup);
+    setIsCustomPopupVisible(false);
+    setScanned(false);
+  };
+
+  const openCustomPopup = () => {
+    setIsCustomPopupVisible(true);
+    setScanned(true);
   };
 
   const toggleFlashlight = async () => {
@@ -53,7 +56,7 @@ export default function Home({ navigation }) {
         navigation.navigate('Product', { product: result.data });
       } else {
         // Handle the case when result is not ok
-        closeCustomPopup();
+        openCustomPopup();
       }
   
     } catch (error) {
@@ -74,8 +77,7 @@ export default function Home({ navigation }) {
         );
         if (scanResult.length > 0) {
           setQrcode({ date: new Date(), qr: scanResult[0] });
-          getProductByBarcode(scanResult[0].data); // Show the custom pop-up
-          //navigation.navigate("Details");
+          setScanned(true);
         } else {
           setAlertBox("No qr-code found");
         }
@@ -89,7 +91,14 @@ export default function Home({ navigation }) {
     }, 5000);
   }
 
-  
+  // useEffect to watch changes in the scanned state
+  useEffect(() => {
+    // Check if scanned is true
+    if (scanned) {
+      // Call getProductByBarcode function with the appropriate barcode value
+      getProductByBarcode(qrcode.qr.data);
+    }
+  }, [scanned]); // Add scanned to the dependency array
 
   useFocusEffect(
     useCallback(() => {
@@ -148,30 +157,13 @@ export default function Home({ navigation }) {
 
       </View>
       
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={showCustomPopup}
-        onRequestClose={closeCustomPopup}
-      >
-        <View style={{flexDirection: "column", justifyContent: "center", alignItems: "center", padding: 10, backgroundColor: "white", borderRadius: 10, height: 100}}>
-          <Text>This product doesn't exist!</Text>
-          <Text>Would you like to add it?</Text>
-          <View style={{flexDirection: "row"}}>
-            <Button style={{flex: 1, marginRight: 2}}title="Close"
-              onPress={() => {
-                closeCustomPopup();
-                navigation.navigate("AddProduct", {barcode: qrcode.qr.data})
-              }}
-            >
-              Yes
-            </Button>
-            <Button style={{flex: 1, marginLeft: 2}}title="Close" onPress={closeCustomPopup}>
-              No
-            </Button>
-          </View>
-        </View>
-      </Modal>
+      <AddProductModal
+        isVisible={isCustomPopupVisible}
+        onClose={closeCustomPopup}
+        onAddProduct={() => 
+          navigation.navigate("AddProduct", {barcode: qrcode.qr.data})
+        }
+      />
     </View>
   );
 }
