@@ -262,7 +262,7 @@ const styles = StyleSheet.create({
   },
   editProfileButton: {
     marginTop: 25,
-    borderRadius: 100,
+    borderRadius: 20,
     paddingVertical: 12,
   },
   logoutButton: {
