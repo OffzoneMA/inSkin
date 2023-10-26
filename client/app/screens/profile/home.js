@@ -173,19 +173,19 @@ function ProfileHome({ navigation }) {
           </Text>
         </View>
 
-        <Text style={[styles.profileUserName, { color: theme["color-primary-unfocus"] }]}>
+        <Text style={[styles.profileUserName, { fontSize: 13, fontWeight: 'normal', color: theme["text-basic-color"] }]}>
           {userProfile.userName}
         </Text>
 
         <View style={styles.followersContainer}>
           <TouchableOpacity style={styles.followersContainerButton}>
             <Text style={styles.followersNumber}>10,4m</Text>
-            <Text style={[styles.followersText, { color: theme["color-primary-unfocus"] }]}>Followers</Text>
+            <Text style={[styles.followersText, { fontSize: 13, fontWeight: 'normal', color: theme["text-basic-color"] }]}>Followers</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.followersContainerButton}>
             <Text style={styles.followersNumber}>543</Text>
-            <Text style={[styles.followersText, { color: theme["color-primary-unfocus"] }]}>Following</Text>
+            <Text style={[styles.followersText, { fontSize: 13, fontWeight: 'normal', color: theme["text-basic-color"] }]}>Following</Text>
           </TouchableOpacity>
         </View>
         
@@ -197,12 +197,12 @@ function ProfileHome({ navigation }) {
       <ScrollView style={styles.menuContainer}>
         {menuItems.map((item) => (
           <TouchableOpacity key={item.id} style={styles.logoutButton} onPress={item.onPress}>
-            <View style={[styles.primaryIconWrapper, { backgroundColor: theme["color-primary-disabled"] }]}>
+            <View style={[styles.primaryIconWrapper, { backgroundColor: theme["background-basic-color-1"] }]}>
               <Icon name={item.icon} fill={item.iconColor} style={styles.logoutIcon} />
             </View>
             <Text style={styles.menuItemText}>{item.text}</Text>
-            <View style={styles.secondaryIconWrapper}>
-              <Icon name="arrow-ios-forward-outline" fill={theme["color-primary-unfocus"]} style={styles.logoutIcon} />
+            <View style={[styles.secondaryIconWrapper, { backgroundColor: theme["background-basic-color-1"] }]}>
+              <Icon name="arrow-ios-forward-outline" fill={item.iconColor} style={styles.logoutIcon} />
             </View>
           </TouchableOpacity>
         ))}
@@ -262,7 +262,7 @@ const styles = StyleSheet.create({
   },
   editProfileButton: {
     marginTop: 25,
-    borderRadius: 100,
+    borderRadius: 20,
     paddingVertical: 12,
   },
   logoutButton: {
@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
   primaryIconWrapper: {
     width: 30,
     height: 30,
-    borderRadius: 5, // Make it a circle
+    borderRadius: 10, // Make it a circle
     justifyContent: "center",
     alignItems: "center",
     marginRight: 10,
@@ -288,7 +288,7 @@ const styles = StyleSheet.create({
   secondaryIconWrapper: {
     width: 30,
     height: 30,
-    borderRadius: 100, // Make it a circle
+    borderRadius: 200, // Make it a circle
     justifyContent: "center",
     alignItems: "center",
     marginLeft: "auto",
@@ -296,7 +296,6 @@ const styles = StyleSheet.create({
   logoutIcon: {
     width: 18,
     height: 20,
-    color: "white",
   },
   separator: {
     height: 1, // Adjust the width of the white line as needed
