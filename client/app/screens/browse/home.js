@@ -89,7 +89,7 @@ function DiscoverHome({ navigation }) {
   }
   
   const Item = ({ item }) => (
-    <TouchableOpacity activeOpacity={0.7} style={[styles.item, {backgroundColor: theme["background-basic-color-3"]}]} onPress={() => 
+    <TouchableOpacity activeOpacity={0.7} style={[styles.item, {backgroundColor: theme["background-basic-color-1"]}]} onPress={() => 
       { 
         getProductById(item.productId);
       }}
@@ -131,7 +131,7 @@ function DiscoverHome({ navigation }) {
   );
 
   return (
-    <Page>
+    <Page style={{color: "red"}}>
       <Heading>Browse</Heading>
       <SafeAreaView style={styles.container}>
         <FlatList
@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     padding: 8,
     marginVertical: 5,
-    borderRadius: 5,
+    borderRadius: 10,
     shadowColor: "black",
     shadowOffset: {
       width: 0,
@@ -172,7 +172,6 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    elevation: 5,
     height: 100,
     margin: 5,
   },
