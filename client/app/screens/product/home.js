@@ -49,7 +49,7 @@ function ProductHome({ route }) {
 
   const [commentRating, setCommentRating] = useState(0);
 
-  const [brands, setBrands] = useState([]);
+  const [brand, setBrand] = useState(null);
 
   function calculateProductRating(comments) {
     if (!comments || comments.length === 0) {
@@ -97,11 +97,11 @@ function ProductHome({ route }) {
     }
   };
 
-  const getBrandsByIds = async (_id) => {
+  const getBrandById = async (_id) => {
     try {
-      const result = await brandActionsApi.getBrandsByIds(_id);
+      const result = await brandActionsApi.getBrandById(_id);
 
-      setBrands(result);
+      setBrand(result);
 
       if (!result.ok) {
         //toast.show(result.data, { type: "danger" });
@@ -195,7 +195,7 @@ function ProductHome({ route }) {
     React.useCallback(() => {
       setIsRefreshing(true); // Set refreshing state to true when the screen comes into focus
       getProductComments();
-      getBrandsByIds(product.productDetails.brands);
+      getBrandById(product.productDetails.brand);
     }, [])
   );
 
@@ -253,9 +253,9 @@ function ProductHome({ route }) {
           <View style={{ flex: 2, flexDirection: "column"}}>
             <SubHeading>{product.productDetails.name}</SubHeading>
             <Paragraph>
-              {brands.length > 0
-                ? brands.map(item => item.name).join(', ')
-                : 'No brands available'}
+              {brand
+                ? brand.name
+                : 'No brand available'}
             </Paragraph>
           </View>  
           <View style={{ flexDirection: "column", justifyContent: "center"}}>

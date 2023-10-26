@@ -24,12 +24,12 @@ import { ScanContext } from "../../contexts/scan-context";
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 
-import { MultiSelect } from 'react-native-element-dropdown';
+import { Dropdown } from 'react-native-element-dropdown';
 
 const validationSchema = Yup.object({
   barcode: Yup.string().required().label('Barcode'),
   name: Yup.string().label('Name'),
-  brands: Yup.array().of(Yup.string()).label('Brands'),
+  brand: Yup.string().label('Brand'),
   description: Yup.string().label('Description'),
 });
 
@@ -47,7 +47,7 @@ function AddProduct({ navigation, route }) {
 
   const { scanned, setScanned } = useContext(ScanContext);
   
-  const [selected, setSelected] = useState([]);
+  const [selected, setSelected] = useState("");
 
   const getAllBrands = async () => {
     try {
@@ -75,7 +75,7 @@ function AddProduct({ navigation, route }) {
     barcode, // Initialize with the scanned QR code data
     userId,
     name,
-    brands,
+    brand,
     description,
   }) => {
     var readerType;
@@ -95,13 +95,14 @@ function AddProduct({ navigation, route }) {
       barcode.trim(),
       userId,
       name.trim(),
-      brands,
+      brand,
       description,
     );
 
     if (!result.ok) {
       //toast.show(result.data, {type: "danger"});
       console.log("danger");
+      console.log(result);
       return;
     }
 
@@ -114,10 +115,12 @@ const handleOKPress = ({
     barcode,
     userId,
     name,
-    brands,
+    brand,
     description,
   }) => {
     //const brandsArray = brands.split(",").map((item) => item.trim()).filter((item) => item !== "");
+    
+    console.log(brand);
 
     setScanned(false); // Reset the scanned state
     
@@ -125,7 +128,7 @@ const handleOKPress = ({
         barcode: barcode,
         userId: userId,
         name: name,
-        brands: brands, // Use the arrays instead of strings
+        brand: brand, // Use the arrays instead of strings
         description: description,
       }); // Handle the barcode submission using the stored barcode
   };
@@ -166,11 +169,11 @@ const handleOKPress = ({
                 userId: user ? user._id : "",
                 //images: [],
                 name: "",
-                brands: selected,
+                brand: selected,
                 description: "",
             }}
             onSubmit={handleOKPress}
-            validationSchema={validationSchema}
+            //validationSchema={validationSchema}
             >
             {({
                 handleChange,
@@ -204,22 +207,22 @@ const handleOKPress = ({
                     onBlur={() => setFieldTouched("name")}
                     errorVisible={touched.name}
                 />
-                <MultiSelect
-                  style={styles.dropdown}
-                  placeholderStyle={styles.placeholderStyle}
-                  selectedTextStyle={styles.selectedTextStyle}
+                <Dropdown
+                  style={[styles.dropdown, {backgroundColor: theme["background-basic-color-2"]}]}
+                  placeholderStyle={[styles.placeholderStyle, {color: theme["color-basic-600"]}]}
+                  selectedTextStyle={[styles.selectedTextStyle, {color: theme["text-basic-color"]}]}
                   inputSearchStyle={styles.inputSearchStyle}
                   iconStyle={styles.iconStyle}
                   data={brandsNames}
                   labelField="label"
                   valueField="value"
-                  placeholder="Select item"
-                  value={values.brands}
+                  placeholder="Select brand"
+                  value={values.brand}
                   search
                   searchPlaceholder="Search..."
                   onChange={item => {
-                    setSelected(item);
-                    setFieldValue("brands", item);
+                    setSelected(item.value);
+                    setFieldValue("brand", item.value);
                   }}
                   renderLeftIcon={() => (
                     <Icon
@@ -264,7 +267,7 @@ const handleOKPress = ({
                   <Button title="OK" onPress={handleSubmit} style={{flex: 2, marginRight: 2}}>Add Product</Button>
                   <Button onPress={onCancelClick} style={{flex: 1, marginLeft: 2, backgroundColor: "#8F9BB3", borderColor: "#8F9BB3"}}>Cancel</Button>
                 </View>
-                <Button onPress={() => console.log(values.brands)} style={{flex: 1, margin: 20}}>test</Button>
+                <Button onPress={() => console.log(values.brand)} style={{flex: 1, margin: 20}}>test</Button>
               </View>
             )}
         </Formik>
@@ -277,7 +280,6 @@ const styles = StyleSheet.create({
   container: { padding: 16 },
   dropdown: {
     height: 50,
-    backgroundColor: 'white',
     borderRadius: 4,
     marginBottom: 10,
     padding: 12,
@@ -289,7 +291,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 1.41,
 
-    elevation: 2,
+    elevation: 6,
   },
   placeholderStyle: {
     fontSize: 16,

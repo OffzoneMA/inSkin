@@ -5,7 +5,7 @@ const add_product = (
   userId,
   //images,
   name,
-  brands,
+  brand,
   description,
   /* reader_type = null,
   reader_goals = [],
@@ -17,7 +17,7 @@ const add_product = (
   formData.append("userId", userId); // Include userId in the FormData
   //formData.append("images", images);
   formData.append("productDetails[name]", name);
-  brands.forEach((item) => formData.append("productDetails[brands][]", item));
+  formData.append("productDetails[brand]", brand);
   formData.append("productDetails[description]", description);
 
   return client.post("/products/add-product", formData, {
