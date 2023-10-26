@@ -31,6 +31,8 @@ import authApi from "../../api/auth";
 
 import AuthContext from "../../contexts/auth";
 
+import { encode } from 'base-64';
+
 function ProductHome({ route }) {
 
   const theme = useTheme();
@@ -245,7 +247,10 @@ function ProductHome({ route }) {
       <View style={{ flexDirection: "row" }}>
         <View style={{ height: 100, width: 100 }}>
           <View style={{ flex: 1, borderRadius: 5, overflow: "hidden", backgroundColor: "blue" }}>
-            <Image source={require('./1.png')} style={{flex: 1, width: null, height: null}} />
+            <Image 
+              source={{ uri: 'data:' + brand.image.contentType + ';base64,' + encode(brand.image.data.data.map(byte => String.fromCharCode(byte)).join('')) }}
+              style={{flex: 1, width: null, height: null}} 
+            />
           </View>
         </View>
         
