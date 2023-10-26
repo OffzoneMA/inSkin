@@ -142,6 +142,8 @@ function DiscoverHome({ navigation }) {
             <RefreshControl
               refreshing={isRefreshing}
               onRefresh={onRefresh}
+              colors={[theme['color-primary-500']]} // Array of colors
+              progressBackgroundColor={theme["background-basic-color-2"]} // Background color of the indicator
             />
           }
         />

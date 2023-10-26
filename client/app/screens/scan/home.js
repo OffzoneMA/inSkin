@@ -18,6 +18,8 @@ import productActionsApi from "../../api/product_actions";
 
 import AddProductModal from '../../components/AddProductModal'; // Import CustomModal component
 
+import { useTheme } from "@ui-kitten/components";
+
 export default function Home({ navigation }) {
   const [flashlightOn, setFlashlightOn] = useState(false);
   const [alertBox, setAlertBox] = useState(null);
@@ -30,6 +32,8 @@ export default function Home({ navigation }) {
   const { scanned, setScanned } = useContext(ScanContext);
 
   const [ scannedProduct, setScannedProduct ] = useState(null);
+
+  const theme = useTheme();
 
   // Function to close the custom pop-up
   const closeCustomPopup = () => {
@@ -135,7 +139,7 @@ export default function Home({ navigation }) {
         />
       </View>
 
-      <View style={styles.footer}>
+      <View style={[styles.footer, {backgroundColor: theme['color-basic-1100']}]}>
           <Pressable style={styles.iconContainer} onPress={toggleFlashlight}>
             <View>
               {flashlightOn ? (
@@ -177,12 +181,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: "60%",
     height: "9%",
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     position: "absolute",
     bottom: 30,
     borderRadius: 50,
     alignSelf: 'center',
     zIndex: 10,
+    opacity: 0.7,
   },
   actionsContainer: {
     backgroundColor: "#DBDCFF",
