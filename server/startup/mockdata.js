@@ -93,7 +93,7 @@ module.exports = async function () {
                 userId: user1Id,
                 productDetails: {
                 name: "nutritic lip balm",
-                brands: brand1Id,
+                brand: brand1Id,
                 },
                 comments: [
                 { userId: user1Id, text: "Awesome !", review: 5 },

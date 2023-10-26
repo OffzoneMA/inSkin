@@ -4,6 +4,8 @@ import Button from './Button';
 
 import { useTheme, Text } from "@ui-kitten/components";
 
+import Paragraph from "./Paragraph";
+
 const AddProductModal = ({ isVisible, onClose, onAddProduct }) => {
     
     const theme = useTheme();
@@ -17,8 +19,8 @@ const AddProductModal = ({ isVisible, onClose, onAddProduct }) => {
         >
             <View style={styles.modalBackground}>
                 <View style={[styles.modalContainer, {backgroundColor: theme["background-basic-color-3"]}]}>
-                    <Text>This product doesn't exist!</Text>
-                    <Text>Would you like to add it?</Text>
+                    <Paragraph>This product doesn't exist!</Paragraph>
+                    <Paragraph>Would you like to add it?</Paragraph>
                     <View style={styles.buttonContainer}>
                         <Button style={styles.button} title="Yes" onPress={() => {
                             onClose();
