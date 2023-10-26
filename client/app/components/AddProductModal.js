@@ -1,36 +1,62 @@
-// CustomModal.js
+import React from 'react';
+import { View, Modal, StyleSheet } from 'react-native';
+import Button from './Button';
 
-import { React, useContext}from 'react';
-import { View, Text, Modal } from 'react-native';
-import Button from './Button'; // Import Button component if it's in a separate file
+import { useTheme, Text } from "@ui-kitten/components";
 
 const AddProductModal = ({ isVisible, onClose, onAddProduct }) => {
+    
+    const theme = useTheme();
 
     return (
         <Modal
-        animationType="slide"
-        transparent={true}
-        visible={isVisible}
-        onRequestClose={onClose}
+            animationType="slide"
+            transparent={true}
+            visible={isVisible}
+            onRequestClose={onClose}
         >
-        <View style={{flexDirection: "column", justifyContent: "center", alignItems: "center", padding: 10, backgroundColor: "white", borderRadius: 10, height: 100}}>
-            <Text>This product doesn't exist!</Text>
-            <Text>Would you like to add it?</Text>
-            <View style={{flexDirection: "row"}}>
-            <Button style={{flex: 1, marginRight: 2}} title="Yes" 
-                onPress={() => {
-                    onClose();
-                    onAddProduct();
-                }}>
-                Yes
-            </Button>
-            <Button style={{flex: 1, marginLeft: 2}} title="No" onPress={onClose}>
-                No
-            </Button>
+            <View style={styles.modalBackground}>
+                <View style={[styles.modalContainer, {backgroundColor: theme["background-basic-color-3"]}]}>
+                    <Text>This product doesn't exist!</Text>
+                    <Text>Would you like to add it?</Text>
+                    <View style={styles.buttonContainer}>
+                        <Button style={styles.button} title="Yes" onPress={() => {
+                            onClose();
+                            onAddProduct();
+                        }}>
+                            Yes
+                        </Button>
+                        <Button style={styles.button} title="No" onPress={onClose}>
+                            No
+                        </Button>
+                    </View>
+                </View>
             </View>
-        </View>
         </Modal>
     );
 };
+
+const styles = StyleSheet.create({
+    modalBackground: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background
+    },
+    modalContainer: {
+        borderRadius: 10,
+        padding: 20,
+        width: "80%", // Adjust the width as needed
+        alignItems: "center",
+    },
+    buttonContainer: {
+        flexDirection: "row",
+        marginTop: 10,
+    },
+    button: {
+        flex: 1,
+        marginHorizontal: 5,
+    },
+});
 
 export default AddProductModal;
