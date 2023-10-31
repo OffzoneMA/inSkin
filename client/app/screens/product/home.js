@@ -31,6 +31,8 @@ import authApi from "../../api/auth";
 
 import AuthContext from "../../contexts/auth";
 
+import { encode } from 'base-64';
+
 function ProductHome({ route }) {
 
   const theme = useTheme();
@@ -49,7 +51,7 @@ function ProductHome({ route }) {
 
   const [commentRating, setCommentRating] = useState(0);
 
-  const [brands, setBrands] = useState([]);
+  const [brand, setBrand] = useState(null);
 
   function calculateProductRating(comments) {
     if (!comments || comments.length === 0) {
@@ -97,11 +99,11 @@ function ProductHome({ route }) {
     }
   };
 
-  const getBrandsByIds = async (_id) => {
+  const getBrandById = async (_id) => {
     try {
-      const result = await brandActionsApi.getBrandsByIds(_id);
+      const result = await brandActionsApi.getBrandById(_id);
 
-      setBrands(result);
+      setBrand(result);
 
       if (!result.ok) {
         //toast.show(result.data, { type: "danger" });
@@ -195,7 +197,7 @@ function ProductHome({ route }) {
     React.useCallback(() => {
       setIsRefreshing(true); // Set refreshing state to true when the screen comes into focus
       getProductComments();
-      getBrandsByIds(product.productDetails.brands);
+      getBrandById(product.productDetails.brand);
     }, [])
   );
 
@@ -245,7 +247,10 @@ function ProductHome({ route }) {
       <View style={{ flexDirection: "row" }}>
         <View style={{ height: 100, width: 100 }}>
           <View style={{ flex: 1, borderRadius: 5, overflow: "hidden", backgroundColor: "blue" }}>
-            <Image source={require('./1.png')} style={{flex: 1, width: null, height: null}} />
+            <Image 
+              source={{ uri: 'data:' + brand.image.contentType + ';base64,' + encode(brand.image.data.data.map(byte => String.fromCharCode(byte)).join('')) }}
+              style={{flex: 1, width: null, height: null}} 
+            />
           </View>
         </View>
         
@@ -253,9 +258,9 @@ function ProductHome({ route }) {
           <View style={{ flex: 2, flexDirection: "column"}}>
             <SubHeading>{product.productDetails.name}</SubHeading>
             <Paragraph>
-              {brands.length > 0
-                ? brands.map(item => item.name).join(', ')
-                : 'No brands available'}
+              {brand
+                ? brand.name
+                : 'No brand available'}
             </Paragraph>
           </View>  
           <View style={{ flexDirection: "column", justifyContent: "center"}}>
