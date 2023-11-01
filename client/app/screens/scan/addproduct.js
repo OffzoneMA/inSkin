@@ -81,6 +81,7 @@ function AddProduct({ navigation, route }) {
   const addScannedProduct = async ({
     barcode, // Initialize with the scanned QR code data
     userId,
+    images,
     name,
     brand,
     description,
@@ -101,8 +102,9 @@ function AddProduct({ navigation, route }) {
     const result = await addProductApi.request(
       barcode.trim(),
       userId,
+      images,
       name.trim(),
-      brand,
+      brand === "" ? null : brand,
       description,
     );
 
@@ -126,14 +128,13 @@ const handleOKPress = ({
     description,
   }) => {
     //const brandsArray = brands.split(",").map((item) => item.trim()).filter((item) => item !== "");
-    
-    console.log(brand);
 
     setScanned(false); // Reset the scanned state
     
     addScannedProduct({
         barcode: barcode,
         userId: userId,
+        images: selectedImages,
         name: name,
         brand: brand, // Use the arrays instead of strings
         description: description,
@@ -163,7 +164,16 @@ const handleOKPress = ({
     });
 
     if (!result.canceled) {
-      const newImages = [...selectedImages, result];
+      const uriParts = result.assets[0].uri.split('.');
+      const fileExtension = uriParts[uriParts.length - 1];
+
+      const image = {
+        uri: result.assets[0].uri,
+        type: 'image/' + fileExtension, // Dynamically set the image type based on the file extension
+        name: 'image.' + fileExtension, // Dynamically set the file name with the extracted extension
+      };
+
+      const newImages = [...selectedImages, image];
       setSelectedImages(newImages);
     }
   };
@@ -198,7 +208,7 @@ const handleOKPress = ({
         renderItem={({ item, index }) => (
           <View style={{ marginVertical: 5, marginRight: 10 }}>
             <View style={{ position: 'relative' }}>
-              <Image source={{ uri: item.assets[0].uri }} style={{ width: 100, height: 100, borderRadius: 10 }} />
+              <Image source={{ uri: item.uri }} style={{ width: 100, height: 100, borderRadius: 10 }} />
               <TouchableOpacity
                 onPress={() => removeImage(index)}
                 style={{
@@ -241,7 +251,6 @@ const handleOKPress = ({
           initialValues={{
               barcode: barcode,
               userId: user ? user._id : "",
-              //images: [],
               name: "",
               brand: selected,
               description: "",
@@ -341,7 +350,7 @@ const handleOKPress = ({
                 <Button title="OK" onPress={handleSubmit} style={{flex: 2, marginRight: 2}}>Add Product</Button>
                 <Button onPress={onCancelClick} style={{flex: 1, marginLeft: 2, backgroundColor: "#8F9BB3", borderColor: "#8F9BB3"}}>Cancel</Button>
               </View>
-              <Button onPress={() => console.log(values.brand)} style={{flex: 1, margin: 20}}>test</Button>
+              <Button onPress={() => console.log(selectedImages.length)} style={{flex: 1, margin: 20}}>test</Button>
             </View>
           )}
       </Formik>

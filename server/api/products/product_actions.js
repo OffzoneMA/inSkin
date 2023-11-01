@@ -24,12 +24,15 @@ router.post(
   upload.array('images'),
   asyncMiddleware(async (req, res) => {
 
+    console.log(req.body);
+
     // Validate the incoming request data
     const { error } = validate(req.body);
     if (error) {
       res.status(400).send(error.details[0].message);
       return;
     }
+    
 
     const foundProduct = await Product.findOne({
       barcode: req.body.barcode,
