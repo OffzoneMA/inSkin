@@ -291,13 +291,24 @@ function ProductHome({ route }) {
         <View style={{ height: 100, width: 100 }}>
           <View style={{ flex: 1, justifyContent: "center", borderRadius: 5, overflow: "hidden", backgroundColor: "gray" }}>
             {product && product.images && Array.isArray(product.images) && product.images.length > 0 ? (
-              <Icon
-                name="alert-circle-outline"
-                width={24}
-                height={24}
-                fill={theme["color-basic-600"]}
-                style={{alignSelf: "center"}}
+              <View style={{ maxHeight: 200 }}>
+              <FlatList
+                data={product.images}
+                keyExtractor={(item, index) => index.toString()}
+                horizontal={false}
+                numColumns={3}
+                renderItem={({ item, index }) => (
+                  <View style={{ marginVertical: 5, marginRight: 10 }}>
+                    <View style={{ position: 'relative' }}>
+                      <Image 
+                        source={{ uri: 'data:' + item.contentType + ';base64,' + encode(item.data.data.map(byte => String.fromCharCode(byte)).join('')) }}
+                        style={{ width: 100, height: 100, borderRadius: 10 }}
+                      />
+                    </View>
+                  </View>
+                )}
               />
+            </View>
             ) : brand && brand.image && brand.image.data && brand.image.data.data ? (
               <Image 
                 source={{ uri: 'data:' + brand.image.contentType + ';base64,' + encode(brand.image.data.data.map(byte => String.fromCharCode(byte)).join('')) }}
