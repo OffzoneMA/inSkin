@@ -3,7 +3,7 @@ import client from "./client";
 const add_product = (
   barcode,
   userId,
-  //images,
+  images,
   name,
   brand,
   description,
@@ -13,9 +13,11 @@ const add_product = (
 ) => {
   
   const formData = new FormData();
+  
   formData.append("barcode", barcode);
   formData.append("userId", userId); // Include userId in the FormData
-  //formData.append("images", images);
+  // Iterate over the images array and append each image object to the FormData
+  images.forEach((item) => formData.append("images", item));
   formData.append("productDetails[name]", name);
   formData.append("productDetails[brand]", brand);
   formData.append("productDetails[description]", description);
