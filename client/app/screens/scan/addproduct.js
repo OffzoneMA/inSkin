@@ -199,32 +199,35 @@ const handleOKPress = ({
           </View>
         </TouchableOpacity>
 
-        <FlatList
-  data={selectedImages}
-  keyExtractor={(item, index) => index.toString()}
-  horizontal={true}
-  renderItem={({ item, index }) => (
-    <View style={{ marginVertical: 5, marginRight: 10 }}>
-      <View style={{ position: 'relative' }}>
-        <Image source={{ uri: item.assets[0].uri }} style={{ width: 100, height: 100, borderRadius: 10 }} />
-        <TouchableOpacity
-          onPress={() => removeImage(index)}
-          style={{
-            position: 'absolute',
-            top: 5,  // Adjust the top position for the close button
-            right: 5, // Adjust the right position for the close button
-            backgroundColor: 'red', // Background color for visibility testing
-            padding: 5,
-            borderRadius: 50,
-            zIndex: 1,
-          }}
-        >
+        <View style={{ maxHeight: 200 }}>
+      <FlatList
+        data={selectedImages}
+        keyExtractor={(item, index) => index.toString()}
+        horizontal={false} 
+        numColumns={3} 
+        renderItem={({ item, index }) => (
+          <View style={{ marginVertical: 5, marginRight: 10 }}>
+            <View style={{ position: 'relative' }}>
+              <Image source={{ uri: item.assets[0].uri }} style={{ width: 100, height: 100, borderRadius: 10 }} />
+              <TouchableOpacity
+                onPress={() => removeImage(index)}
+                style={{
+                  position: 'absolute',
+                  top: 5,
+                  right: 5,
+                  backgroundColor: 'red',
+                  padding: 5,
+                  borderRadius: 50,
+                  zIndex: 1,
+                }}
+              >
                 <Text style={{ color: 'white' }}>X</Text>
               </TouchableOpacity>
             </View>
           </View>
         )}
       />
+    </View>
 
 
       </View>
