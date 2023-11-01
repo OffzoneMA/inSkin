@@ -17,12 +17,10 @@ const add_product = (
   formData.append("barcode", barcode);
   formData.append("userId", userId); // Include userId in the FormData
   // Iterate over the images array and append each image object to the FormData
-  console.log(images);
   images.forEach((item) => formData.append("images", item));
   formData.append("productDetails[name]", name);
   formData.append("productDetails[brand]", brand);
   formData.append("productDetails[description]", description);
-  console.log(formData["_parts"]);
 
   return client.post("/products/add-product", formData, {
     headers: {

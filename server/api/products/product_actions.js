@@ -24,8 +24,6 @@ router.post(
   upload.array('images'),
   asyncMiddleware(async (req, res) => {
 
-    console.log(req.body);
-
     // Validate the incoming request data
     const { error } = validate(req.body);
     if (error) {
