@@ -188,23 +188,13 @@ const handleOKPress = ({
   return (
     <Page>
         <View>
-        <TouchableOpacity onPress={handleImagePicker}>
-          <View style={{ marginVertical: 5, backgroundColor: "blue", width: 100, height: 100, borderRadius: 10, backgroundColor: "gray", justifyContent: 'center', alignItems: 'center', alignSelf: 'center' }}>
-            <Icon
-            name="image-outline"
-            width={24} // Set the width of the icon
-            height={24} // Set the height of the icon
-            fill={theme["color-basic-600"]} // Set the color of the icon
-            />
-          </View>
-        </TouchableOpacity>
-
-        <View style={{ maxHeight: 200 }}>
+        {selectedImages.length > 0 ? (
+    <View style={{ maxHeight: 200 }}>
       <FlatList
         data={selectedImages}
         keyExtractor={(item, index) => index.toString()}
-        horizontal={false} 
-        numColumns={3} 
+        horizontal={false}
+        numColumns={3}
         renderItem={({ item, index }) => (
           <View style={{ marginVertical: 5, marginRight: 10 }}>
             <View style={{ position: 'relative' }}>
@@ -226,11 +216,25 @@ const handleOKPress = ({
             </View>
           </View>
         )}
+        ListFooterComponent={
+          <TouchableOpacity onPress={handleImagePicker}>
+            <View style={{ marginVertical: 5, backgroundColor: 'blue', width: 100, height: 100, borderRadius: 10, backgroundColor: 'gray', justifyContent: 'center', alignItems: 'center', alignSelf: 'center' }}>
+              <Icon name="plus-circle-outline" width={24} height={24} fill={theme['color-basic-600']} />
+            </View>
+          </TouchableOpacity>
+        }
       />
     </View>
+  ) : null}
 
-
-      </View>
+      {selectedImages.length > 0 ? null : (
+        <TouchableOpacity onPress={handleImagePicker}>
+          <View style={{ marginVertical: 5, backgroundColor: 'blue', width: 100, height: 100, borderRadius: 10, backgroundColor: 'gray', justifyContent: 'center', alignItems: 'center', alignSelf: 'center' }}>
+            <Icon name="image-outline" width={24} height={24} fill={theme['color-basic-600']} />
+          </View>
+        </TouchableOpacity>
+      )}
+    </View>
         
         
       <Formik
