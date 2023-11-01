@@ -37,7 +37,7 @@ function ProductHome({ route }) {
 
   const theme = useTheme();
 
-  const { product } = route.params;
+  const { productId } = route.params;
 
   const [productRating, setProductRating] = useState(0);
 
@@ -52,6 +52,7 @@ function ProductHome({ route }) {
   const [commentRating, setCommentRating] = useState(0);
 
   const [brand, setBrand] = useState(null);
+  const [product, setProduct] = useState(null);
 
   function calculateProductRating(comments) {
     if (!comments || comments.length === 0) {
@@ -69,7 +70,7 @@ function ProductHome({ route }) {
 
   const getProductComments = async () => {
     try {
-      const result = await productActionsApi.getProductComments(product._id);
+      const result = await productActionsApi.getProductComments(productId);
 
       if (!result.ok) {
         //toast.show(result.data, { type: "danger" });
@@ -133,7 +134,7 @@ function ProductHome({ route }) {
 
       const result = await productActionsApi
       .addCommentToProduct(
-        product._id,
+        productId,
         user._id,
         commentText,
         commentRating
@@ -159,6 +160,43 @@ function ProductHome({ route }) {
       console.error("Error fetching data: ", error);
     }
   };
+
+  const getProductById = async (_id) => {
+    try {
+      const result = await productActionsApi.getProductById(_id);
+
+      setProduct(result);
+
+      if (!result.ok) {
+        //toast.show(result.data, { type: "danger" });
+      } else {
+        //toast.show(result.data.message, { type: "success" });
+        /* const brandName = result.data.brands.map(brand => ({
+          value: brand._id, // Use _id as the key
+          label: brand.name // Use name as the value
+        })); */
+        //const brandName = result.data.brand;
+        //setBrandsNames(brandsNames);
+      }
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+    }
+  };
+
+  const fetchData = React.useCallback(async () => {
+    setIsRefreshing(true); // Set refreshing state to true when the screen comes into focus
+    try {
+      await getProductById(productId);
+      getProductComments();
+      if (product && product.productDetails && product.productDetails.brand) {
+        await getBrandById(product.productDetails.brand);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, [productId, product]);
 
   const Item = ({ item }) => (
       <View style={{ marginVertical: 5, flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
@@ -196,8 +234,7 @@ function ProductHome({ route }) {
   useFocusEffect(
     React.useCallback(() => {
       setIsRefreshing(true); // Set refreshing state to true when the screen comes into focus
-      getProductComments();
-      getBrandById(product.productDetails.brand);
+      fetchData();
     }, [])
   );
 
@@ -209,7 +246,11 @@ function ProductHome({ route }) {
   return (
     <Page>
       <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
-      <Heading>{product.barcode}</Heading>
+      {product ? (
+          <Heading>{product.barcode}</Heading>
+      ) : (
+        <Heading>...</Heading>
+      )}
       <View style={{flexDirection: "row"}}>
         <TouchableOpacity
             onPress={()=>{
@@ -266,7 +307,12 @@ function ProductHome({ route }) {
         
         <View style={{ flex: 1, marginBottom: "auto", flexDirection: "row", marginLeft: 5 }}>
           <View style={{ flex: 2, flexDirection: "column"}}>
+            {product ? (
             <SubHeading>{product.productDetails.name}</SubHeading>
+            ) : (
+              <SubHeading>...</SubHeading>
+            )}
+            
             <Paragraph>
               {brand
                 ? brand.name
@@ -359,6 +405,20 @@ function ProductHome({ route }) {
           <TouchableOpacity
             onPress={()=>{
               addCommentToProduct();
+            }} 
+            style={styles.button}
+            activeOpacity={0.7} // Customize the opacity when pressed
+          >
+            <MaterialCommunityIcons
+              name={"send"}
+              size={24}
+              color={theme["color-basic-600"]}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={()=>{
+              console.log(brand);
             }} 
             style={styles.button}
             activeOpacity={0.7} // Customize the opacity when pressed
