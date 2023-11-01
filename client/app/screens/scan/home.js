@@ -58,6 +58,7 @@ export default function Home({ navigation }) {
         // Handle the case when result is ok
         setScannedProduct(result.data);
         navigation.navigate('Product', { productId: result.data._id });
+        setScanned(false);
       } else {
         // Handle the case when result is not ok
         openCustomPopup();

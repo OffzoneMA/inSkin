@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import {
   FlatList,
   StyleSheet,
@@ -102,6 +102,7 @@ function ProductHome({ route }) {
 
   const getBrandById = async (_id) => {
     try {
+      console.log(_id);
       const result = await brandActionsApi.getBrandById(_id);
 
       setBrand(result);
@@ -183,65 +184,66 @@ function ProductHome({ route }) {
     }
   };
 
-  const fetchData = React.useCallback(async () => {
-    setIsRefreshing(true); // Set refreshing state to true when the screen comes into focus
-    try {
-      await getProductById(productId);
-      getProductComments();
-      if (product && product.productDetails && product.productDetails.brand) {
-        await getBrandById(product.productDetails.brand);
-      }
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    } finally {
-      setIsRefreshing(false);
-    }
-  }, [productId, product]);
-
-  const Item = ({ item }) => (
-      <View style={{ marginVertical: 5, flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
-        <View style={{ flex: 1, flexDirection:"column" }}>
-          <Label>{item.userName}</Label>
-          <StarRating
-            rating={item.review}
-            onChange={() => {}}
-            animationConfig={{scale: 1}}
-            starSize={18}
-            starStyle={{marginHorizontal: 0}}
-          />
-          {item.text !== "" ? <Paragraph style={{marginLeft: 4}}>{item.text}</Paragraph> : null}
-        </View>
-        <View style={{ padding: 5 }}>
-          <TouchableOpacity
-              onPress={()=>{
-              }}
-              style={{ borderRadius: 5}}
-              activeOpacity={0.5} // Customize the opacity when pressed
-            >
-            <Icon
-              name="heart-outline"
-              width={20} // Set the width of the icon
-              height={20} // Set the height of the icon
-              fill={theme["color-basic-600"]} // Set the color of the icon
-            />
-          </TouchableOpacity>
-        </View>
-        
-      </View>
-  );
-
   // Fetch products when the component mounts and when the screen comes into focus
   useFocusEffect(
     React.useCallback(() => {
       setIsRefreshing(true); // Set refreshing state to true when the screen comes into focus
-      fetchData();
+      getProductById(productId);
+      getProductComments();
     }, [])
   );
+
+  // useEffect with dependency on the product state variable
+  useEffect(() => {
+    // Check if product is not null and its productDetails property is present
+    if (product && product.productDetails && product.productDetails.brand) {
+      // Call getBrandById when product is not null
+      getBrandById(product.productDetails.brand)
+        .then((brandData) => {
+          // Handle the retrieved brand data here if needed
+        })
+        .catch((error) => {
+          console.error('Error fetching brand data:', error);
+        });
+    }
+  }, [product]); // Dependency array with product as the dependency
 
   const onRefresh = () => {
     setIsRefreshing(true); // Set refreshing state to true when the user pulls down to refresh
     getProductComments();
   };
+
+  const Item = ({ item }) => (
+    <View style={{ marginVertical: 5, flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
+      <View style={{ flex: 1, flexDirection:"column" }}>
+        <Label>{item.userName}</Label>
+        <StarRating
+          rating={item.review}
+          onChange={() => {}}
+          animationConfig={{scale: 1}}
+          starSize={18}
+          starStyle={{marginHorizontal: 0}}
+        />
+        {item.text !== "" ? <Paragraph style={{marginLeft: 4}}>{item.text}</Paragraph> : null}
+      </View>
+      <View style={{ padding: 5 }}>
+        <TouchableOpacity
+            onPress={()=>{
+            }}
+            style={{ borderRadius: 5}}
+            activeOpacity={0.5} // Customize the opacity when pressed
+          >
+          <Icon
+            name="heart-outline"
+            width={20} // Set the width of the icon
+            height={20} // Set the height of the icon
+            fill={theme["color-basic-600"]} // Set the color of the icon
+          />
+        </TouchableOpacity>
+      </View>
+      
+    </View>
+  );
   
   return (
     <Page>
@@ -313,11 +315,13 @@ function ProductHome({ route }) {
               <SubHeading>...</SubHeading>
             )}
             
-            <Paragraph>
-              {brand
-                ? brand.name
-                : 'No brand available'}
-            </Paragraph>
+            
+              {brand ? (
+                <Paragraph>{brand.name}</Paragraph>
+              )  : (
+                <Paragraph>No brand available</Paragraph>
+            )}
+            
           </View>  
           <View style={{ flexDirection: "column", justifyContent: "center"}}>
             <Paragraph style={{alignSelf: "center"}}>{productRating}</Paragraph>
@@ -418,7 +422,7 @@ function ProductHome({ route }) {
 
           <TouchableOpacity
             onPress={()=>{
-              console.log(brand);
+              getBrandById();
             }} 
             style={styles.button}
             activeOpacity={0.7} // Customize the opacity when pressed
