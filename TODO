@@ -29,6 +29,9 @@ TODO: increment product views, product shared, and product scanned
 TODO: share and save product
 TODO: remove commented auth parameter in server routes
 TODO: add a working toast library
+TODO: add filters to comments on product and browse screen
+TODO: add save and save page, share option, legit scaning number and view number and share number
+TODO: fix finding property of undefined error
 DONE: my create account button doesn't work when i logout
 DONE: make add product pop up isolated from Camera.js File
 DONE: implement product pop up in gallery import

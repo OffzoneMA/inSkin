@@ -286,10 +286,20 @@ function ProductHome({ route }) {
         
         </View>
       </View>
+
+      <View style={{ flexDirection: "column", alignItems: "center",justifyContent: "center" }}>
+        <Paragraph>{productRating}</Paragraph>
+        <StarRating
+          rating={productRating}
+          onChange={() => {}}
+          animationConfig={{scale: 1}}
+          starSize={20}
+          starStyle={{marginHorizontal: 0}}
+        />
+      </View>
       
-      <View style={{ flexDirection: "row" }}>
-        <View style={{ height: 100, width: 100 }}>
-          <View style={{ flex: 1, justifyContent: "center", borderRadius: 5, overflow: "hidden", backgroundColor: "gray" }}>
+      <View style={{ flexDirection: "column" }}>
+        
             {product && product.images && Array.isArray(product.images) && product.images.length > 0 ? (
               <View style={{ maxHeight: 200 }}>
               <FlatList
@@ -310,11 +320,17 @@ function ProductHome({ route }) {
               />
             </View>
             ) : brand && brand.image && brand.image.data && brand.image.data.data ? (
+              <View style={{ height: 100, width: 100, alignSelf: "center" }}>
+              <View style={{ flex: 1, justifyContent: "center", borderRadius: 5, overflow: "hidden", backgroundColor: "gray" }}>
               <Image 
                 source={{ uri: 'data:' + brand.image.contentType + ';base64,' + encode(brand.image.data.data.map(byte => String.fromCharCode(byte)).join('')) }}
                 style={{flex: 1, width: null, height: null}} 
               />
+              </View>
+              </View>
             ) : (
+              <View style={{ height: 100, width: 100, alignSelf: "center" }}>
+              <View style={{ flex: 1, justifyContent: "center", borderRadius: 5, overflow: "hidden", backgroundColor: "gray" }}>
               <Icon
                 name="image-outline"
                 width={24}
@@ -322,12 +338,14 @@ function ProductHome({ route }) {
                 fill={theme["color-basic-600"]}
                 style={{alignSelf: "center"}}
               />
+              </View>
+              </View>
             )}
-          </View>
-        </View>
+
+      
+          
         
-        <View style={{ flex: 1, marginBottom: "auto", flexDirection: "row", marginLeft: 5 }}>
-          <View style={{ flex: 2, flexDirection: "column"}}>
+          <View style={{ flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
             {product ? (
             <SubHeading>{product.productDetails.name}</SubHeading>
             ) : (
@@ -335,25 +353,15 @@ function ProductHome({ route }) {
             )}
             
             
-              {brand ? (
-                <Paragraph>{brand.name}</Paragraph>
-              )  : (
-                <Paragraph>No brand available</Paragraph>
-            )}
-            
-          </View>  
-          <View style={{ flexDirection: "column", justifyContent: "center"}}>
-            <Paragraph style={{alignSelf: "center"}}>{productRating}</Paragraph>
-            <StarRating
-              rating={productRating}
-              onChange={() => {}}
-              animationConfig={{scale: 1}}
-              starSize={20}
-              starStyle={{marginHorizontal: 0}}
-            />
-          </View>
+            {brand ? (
+              <Paragraph>{brand.name}</Paragraph>
+            )  : (
+              <Paragraph>No brand available</Paragraph>
+            )} 
+          
         </View>
       </View>
+
       <View style={{ marginVertical: 5, flexDirection: "row", alignItems: "center" }}>
         <TouchableOpacity activeOpacity={0.5} onPress={()=>{}} style={{ borderRadius: 5, flexDirection: "row", marginRight: 5 }}>
           <Icon
@@ -391,6 +399,7 @@ function ProductHome({ route }) {
           <Paragraph>5450</Paragraph>
         </TouchableOpacity>
       </View>
+      
       <View style={{ flex: 1 }}>
           <FlatList
             data={comments}
@@ -404,17 +413,10 @@ function ProductHome({ route }) {
           }
           />
       </View>
-      <View style={[styles.commentContainer, { paddingTop: 10, flexDirection: "column", alignItems: "center" }]}>
-        <StarRating
-          rating={commentRating}
-          onChange={setCommentRating}
-          style={{marginLeft: 20}}
-          animationConfig={{scale: 1}}
-          starSize={35}
-          starStyle={{marginHorizontal: 0}}
-        />
-        <View style={{ paddingHorizontal: 5, flexDirection: "row", alignItems: "center" }}>
-          <View style={{flex: 1, marginTop: 10, marginHorizontal: 10}}>
+      <View style={[styles.commentContainer, { flexDirection: "column", height: 100, alignItems: "center", justifyContent: "center", marginTop: 10 }]}>
+        
+        <View style={{ paddingHorizontal: 10, paddingVertical: 0, flexDirection: "row", alignItems: "center", height: 48 }}>
+          <View style={{flex: 1, height: 48}}>
             <TextInput
               placeholder="Comment..."
               keyboardType="default"
@@ -436,24 +438,19 @@ function ProductHome({ route }) {
               name={"send"}
               size={24}
               color={theme["color-basic-600"]}
+              style={{marginLeft: 2}}
             />
           </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={()=>{
-              console.log(product);
-            }} 
-            style={styles.button}
-            activeOpacity={0.7} // Customize the opacity when pressed
-          >
-            <MaterialCommunityIcons
-              name={"send"}
-              size={24}
-              color={theme["color-basic-600"]}
-            />
-          </TouchableOpacity>
-          
         </View>
+
+        <StarRating
+          rating={commentRating}
+          onChange={setCommentRating}
+          style={{marginLeft: 20}}
+          animationConfig={{scale: 1}}
+          starSize={35}
+          starStyle={{marginHorizontal: 0, marginVertical: 0}}
+        />
       </View>
       
     </Page>
@@ -463,21 +460,22 @@ function ProductHome({ route }) {
 const styles = StyleSheet.create({
   button: {
     justifyContent: "center",
-    marginVertical: 10,
-    paddingHorizontal: 10,
+    alignItems: 'center',
+    height: "100%",
+    aspectRatio: 1,
+    marginLeft: 5,
+    backgroundColor: "blue",
     backgroundColor: 'lightgray', // Customize the background color
-    borderRadius: 5, // Optional: Customize the border radius
-    alignSelf: 'stretch',
+    borderRadius: 50, // Optional: Customize the border radius
   },
   text: {
     fontSize: 16,
     color: 'black', // Customize the text color
   },
   commentContainer: {
-    borderColor: "red",
-    borderRadius: 5,
-    marginBottom: 10,
-    padding: 12,
+    borderColor: "black",
+    borderWidth: 1,
+    borderRadius: 4,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -485,8 +483,6 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.2,
     shadowRadius: 1.41,
-
-    elevation: 2,
   },
 });
 
