@@ -163,6 +163,10 @@ function ProfileEdit({ navigation }) {
     }, 300);
   };
 
+  const onCancelClick = () => {
+    navigation.goBack();
+  }
+
   // Fetch products when the component mounts and when the screen comes into focus
   useFocusEffect(
     React.useCallback(() => {
@@ -219,8 +223,9 @@ function ProfileEdit({ navigation }) {
         <Text style={[styles.profileUserName, { fontSize: 13, fontWeight: 'normal', color: theme["text-basic-color"] }]}>
           {userProfile.userName}
         </Text>
+        </View>
 
-        
+        <KeyboardAwareScrollView contentContainerStyle={{ flex: 1, paddingHorizontal: 10 }}>
           <Formik
             initialValues={{
               firstName: "",
@@ -323,20 +328,27 @@ function ProfileEdit({ navigation }) {
                     onBlur={() => setFieldTouched("passwordConfirmation")}
                     errorVisible={touched.passwordConfirmation}
                   />
+
+                
+
                 </ScrollView>
-                <View style={{flexDirection: "row"}}>
-                    <Button loading={registerApi.loading} onPress={handleSubmit} style={{ marginTop: 20 }}>
-                    Save
+                <View style={{flexDirection: "row", justifyContent: "space-between"}}>
+                    <Button loading={registerApi.loading} title="OK" onPress={handleSubmit} style={{flex: 2, marginRight: 2}}>
+                        Save
                     </Button>
-                    <Button loading={registerApi.loading} onPress={handleSubmit} style={{ marginTop: 20 }}>
-                    Cancel
+                    <Button onPress={onCancelClick} style={{flex: 1, marginLeft: 2, backgroundColor: "#8F9BB3", borderColor: "#8F9BB3"}}>
+                        Cancel
                     </Button>
                 </View>
+                
+                
               </>
             )}
           </Formik>
+          </KeyboardAwareScrollView>
+           
         
-      </View>
+      
     </Page>
   );
 }

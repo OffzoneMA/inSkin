@@ -24,12 +24,9 @@ function ProfileHome({ navigation }) {
   //const toast = useToast();
 
   const theme = useTheme();
-  
-  const [alertBox, setAlertBox] = useState(null);
 
   const [selectedImageUri, setSelectedImageUri] = useState(null); // Step 1: State for selected image URI
 
-  const updateProfileImageApi = useApi(authApi.updateProfileImage);
   const getProfileImageApi = useApi(authApi.getProfileImage);
   
   const getProfileImage = async () => {
@@ -54,42 +51,6 @@ function ProfileHome({ navigation }) {
       authStorage.removeToken();
     }, 300);
   };
-
-  async function modifyProfileImage() {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status === "granted") {
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [1, 1],
-        quality: 1,
-      });
-      if (!result.canceled) {
-        setSelectedImageUri(result.assets[0].uri); // Step 2: Update selected image URI
-        //console.log(result.assets[0]);
-        //toast.show("Logout Successful", { type: "success" });
-
-        // Extract file extension from the URI
-        const uriParts = result.assets[0].uri.split('.');
-        const fileExtension = uriParts[uriParts.length - 1];
-
-        const image = {
-          uri: result.assets[0].uri,
-          type: 'image/' + fileExtension, // Dynamically set the image type based on the file extension
-          name: 'image.' + fileExtension, // Dynamically set the file name with the extracted extension
-        };
-
-        const uploadResult = await updateProfileImageApi.request(user._id, image);
-        //console.log(uploadResult.message)
-      }
-    }
-    if (status !== "granted") {
-      setAlertBox("File permission is required to upoad photo.");
-    }
-    setTimeout(() => {
-      setAlertBox(null);
-    }, 5000);
-  }
 
   // Fetch products when the component mounts and when the screen comes into focus
   useFocusEffect(
@@ -154,13 +115,6 @@ function ProfileHome({ navigation }) {
               />
             )}
           </View>
-          {/* Floating button for uploading profile picture */}
-          
-          <TouchableOpacity
-            onPress={modifyProfileImage}
-            style={[styles.actionButtonIcon, { borderColor: "white", borderWidth: 3, borderRadius: 5, bottom: -10, right: -15, position: "absolute", margin: 5, padding: 8, borderRadius: 100,width: 40, height: 40, backgroundColor: theme["color-primary-disabled"] }]}>
-              <Icon name="edit-outline" fill={theme["color-primary-default"]} style={styles.actionButtonIcon} />
-          </TouchableOpacity>
         </View>
 
         <View style={{flexDirection: "row"}}>
