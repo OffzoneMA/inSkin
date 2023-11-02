@@ -28,9 +28,8 @@ const updateUserInfo = async (
       reader_goals,
       reader_genres, */
     });
-    console.log("test2"); // Add your console.log statement here
-    console.log(response)
-    return response.data;
+    
+    return response;
   } catch (error) {
     console.error("Error updating user information:", error); // Handle the error
     throw error; // Rethrow the error for the caller to handle
