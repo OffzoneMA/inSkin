@@ -133,12 +133,12 @@ function ProfileHome({ navigation }) {
 
         <View style={styles.followersContainer}>
           <TouchableOpacity style={styles.followersContainerButton}>
-            <Text style={styles.followersNumber}>10,4m</Text>
+            <Text style={styles.followersNumber}>5</Text>
             <Text style={[styles.followersText, { fontSize: 13, fontWeight: 'normal', color: theme["text-basic-color"] }]}>Followers</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.followersContainerButton}>
-            <Text style={styles.followersNumber}>543</Text>
+            <Text style={styles.followersNumber}>2</Text>
             <Text style={[styles.followersText, { fontSize: 13, fontWeight: 'normal', color: theme["text-basic-color"] }]}>Following</Text>
           </TouchableOpacity>
         </View>

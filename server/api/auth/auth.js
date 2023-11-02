@@ -55,9 +55,8 @@ router.put(
   "/update-user-info",
   asyncMiddleware(async (req, res) => {
     try {
-      const foundUser = await User.findOne({
-        email: req.body.email,
-      });
+      const userId = req.body._id;
+      const foundUser = await User.findById(userId);
 
       // User doesn't exist
       if (!foundUser) {
@@ -66,17 +65,7 @@ router.put(
       }
 
       // Compare passwords if provided
-      if (req.body.password) {
-        const passwordMatch = await bcrypt.compare(
-          req.body.password,
-          foundUser.password
-        );
-
-        if (!passwordMatch) {
-          res.status(400).send("Incorrect password! Please try again");
-          return;
-        }
-      }
+      
 
       // Update user properties
       foundUser.firstName = req.body.firstName || foundUser.firstName;
@@ -86,6 +75,16 @@ router.put(
 
       // Update password if provided
       if (req.body.newPassword) {
+        const passwordMatch = await bcrypt.compare(
+          req.body.oldPassword,
+          foundUser.password
+        );
+
+        if (!passwordMatch) {
+          res.status(400).send("Incorrect password! Please try again");
+          return;
+        }
+
         foundUser.password = await bcrypt.hash(req.body.newPassword, 10);
       }
 

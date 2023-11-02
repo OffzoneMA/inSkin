@@ -29,6 +29,8 @@ import Button from "../../components/Button";
 import TextInput from "../../components/TextInput";
 import TextLink from "../../components/TextLink";
 
+import jwt_decode from "jwt-decode"
+
 const validationSchema = Yup.object({
     firstName: Yup.string().required().label("First name"),
     lastName: Yup.string().label("Last Name"),
@@ -40,7 +42,7 @@ const validationSchema = Yup.object({
   });
 
 function ProfileEdit({ navigation }) {
-  const registerApi = useApi(authApi.register);
+  const updateUserInfoApi = useApi(authApi.updateUserInfo);
 
   const authContext = useContext(AuthContext);
   const { user } = useContext(AuthContext);
@@ -67,15 +69,6 @@ function ProfileEdit({ navigation }) {
     const imageUrl = 'data:' + profileImage.data.contentType + ';base64,' + encode(base64ImageData);
 
     setSelectedImageUri(imageUrl);
-  };
-
-  const handleLogOut = () => {
-    //toast.show("Logout Successful", { type: "success" });
-
-    setTimeout(() => {
-      authContext.setUser(null);
-      authStorage.removeToken();
-    }, 300);
   };
 
   async function modifyProfileImage() {
@@ -115,10 +108,12 @@ function ProfileEdit({ navigation }) {
   }
 
   const registerHandler = async ({
+    _id,
     firstName,
     lastName,
     email,
-    password,
+    oldPassword,
+    newPassword,
   }) => {
     var readerType;
     var readerGoals;
@@ -133,11 +128,15 @@ function ProfileEdit({ navigation }) {
       readerGenres = [];
     }
 
-    const result = await registerApi.request(
+    
+
+    const result = await updateUserInfoApi.request(
+      _id,
       firstName.trim(),
       lastName.trim(),
       email,
-      password,
+      oldPassword,
+      newPassword,
       readerType,
       readerGoals,
       readerGenres
@@ -151,15 +150,12 @@ function ProfileEdit({ navigation }) {
     //toast.show(result.data.message, {type: "success"});
 
     setTimeout(() => {
-      AsyncStorage.setItem("hasOnboarded", "true");
       var { user } = jwt_decode(result.headers["bearer-token"]);
       authContext.setUser(user);
+      authStorage.removeToken();
       authStorage.storeToken(result.headers["bearer-token"]);
 
-      navigation.reset({
-        index: 0,
-        routes: [{ name: "Tab" }],
-      });
+      navigation.goBack();
     }, 300);
   };
 
@@ -177,6 +173,7 @@ function ProfileEdit({ navigation }) {
   // Placeholder for user profile data
   const userProfile = {
     profilePicture:"person-outline",
+    _id: user ? user._id : null,
     firstName: user ? user.firstName : null,
     lastName: user ? user.lastName : null,
     userName: user ? user.userName : null,
@@ -215,6 +212,7 @@ function ProfileEdit({ navigation }) {
         <KeyboardAwareScrollView contentContainerStyle={{ flex: 1, paddingHorizontal: 10 }}>
           <Formik
             initialValues={{
+              _id: userProfile._id,
               firstName: userProfile.firstName,
               lastName: userProfile.lastName,
               userName: userProfile.userName,
@@ -224,7 +222,7 @@ function ProfileEdit({ navigation }) {
               newPasswordConfirmation: "",
             }}
             onSubmit={registerHandler}
-            validationSchema={validationSchema}
+            //validationSchema={validationSchema}
           >
             {({
               handleChange,
@@ -335,7 +333,7 @@ function ProfileEdit({ navigation }) {
 
                 </ScrollView>
                 <View style={{flexDirection: "row", justifyContent: "space-between"}}>
-                    <Button loading={registerApi.loading} title="OK" onPress={handleSubmit} style={{flex: 2, marginRight: 2}}>
+                    <Button loading={updateUserInfoApi.loading} title="OK" onPress={handleSubmit} style={{flex: 2, marginRight: 2}}>
                         Save
                     </Button>
                     <Button onPress={onCancelClick} style={{flex: 1, marginLeft: 2, backgroundColor: "#8F9BB3", borderColor: "#8F9BB3"}}>

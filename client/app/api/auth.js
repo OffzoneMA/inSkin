@@ -3,6 +3,40 @@ import client from "./client";
 const login = (email, password) =>
   client.post("/auth/login", { email, password });
 
+const updateUserInfo = async (
+  _id,
+  firstName,
+  lastName,
+  userName,
+  email,
+  oldPassword,
+  newPassword,
+  /* reader_type = null,
+  reader_goals = [],
+  reader_genres = [] */
+) => {
+  try {
+    const response = await client.put("/auth/update-user-info", {
+      _id,
+      firstName,
+      lastName,
+      userName,
+      email,
+      oldPassword,
+      newPassword,
+      /* reader_type,
+      reader_goals,
+      reader_genres, */
+    });
+    console.log("test2"); // Add your console.log statement here
+    console.log(response)
+    return response.data;
+  } catch (error) {
+    console.error("Error updating user information:", error); // Handle the error
+    throw error; // Rethrow the error for the caller to handle
+  }
+};
+
 const register = (
   firstName,
   lastName,
@@ -64,4 +98,5 @@ export default {
   updateProfileImage,
   getProfileImage,
   getUsersByIds,
+  updateUserInfo,
 };
