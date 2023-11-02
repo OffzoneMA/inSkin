@@ -210,20 +210,6 @@ function ProfileEdit({ navigation }) {
               <Icon name="edit-outline" fill={theme["color-primary-default"]} style={styles.actionButtonIcon} />
           </TouchableOpacity>
         </View>
-
-        <View style={{flexDirection: "row"}}>
-          <Text style={styles.profileName}>
-            {userProfile.firstName} 
-          </Text>
-          <Text style={styles.profileName}>  </Text>
-          <Text style={styles.profileName}>
-            {userProfile.lastName}
-          </Text>
-        </View>
-
-        <Text style={[styles.profileUserName, { fontSize: 13, fontWeight: 'normal', color: theme["text-basic-color"] }]}>
-          {userProfile.userName}
-        </Text>
         </View>
 
         <KeyboardAwareScrollView contentContainerStyle={{ flex: 1, paddingHorizontal: 10 }}>
