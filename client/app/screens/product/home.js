@@ -237,7 +237,7 @@ function ProductHome({ route }) {
             name="heart-outline"
             width={20} // Set the width of the icon
             height={20} // Set the height of the icon
-            fill={theme["color-basic-600"]} // Set the color of the icon
+            fill={theme["color-primary-disabled-border"]} // Set the color of the icon
           />
         </TouchableOpacity>
       </View>
@@ -249,7 +249,7 @@ function ProductHome({ route }) {
     <Page>
       <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
       {product ? (
-          <Heading>{product.barcode}</Heading>
+          <Heading style={{color: theme["color-primary-default"]}}>{product.barcode}</Heading>
       ) : (
         <Heading>...</Heading>
       )}
@@ -264,7 +264,7 @@ function ProductHome({ route }) {
             name="share-outline"
             width={24} // Set the width of the icon
             height={24} // Set the height of the icon
-            fill={theme["color-basic-600"]} // Set the color of the icon
+            fill={theme["color-primary-active-border"]} // Set the color of the icon
           />
         </TouchableOpacity>
 
@@ -280,7 +280,7 @@ function ProductHome({ route }) {
             name="bookmark-outline"
             width={24} // Set the width of the icon
             height={24} // Set the height of the icon
-            fill={theme["color-basic-600"]} // Set the color of the icon
+            fill={theme["color-primary-disabled-border"]} // Set the color of the icon
           />
         </TouchableOpacity>
         
@@ -363,40 +363,42 @@ function ProductHome({ route }) {
       </View>
 
       <View style={{ marginVertical: 5, flexDirection: "row", alignItems: "center" }}>
-        <TouchableOpacity activeOpacity={0.5} onPress={()=>{}} style={{ borderRadius: 5, flexDirection: "row", marginRight: 5 }}>
+        <View style={{ borderRadius: 5, flexDirection: "row", marginRight: 5 }}>
           <Icon
             name="eye-outline"
             width={24} // Set the width of the icon
             height={24} // Set the height of the icon
-            fill={theme["color-basic-600"]} // Set the color of the icon
+            fill={theme["color-primary-disabled-border"]} // Set the color of the icon
           />
-          <Paragraph>5450</Paragraph>
-        </TouchableOpacity>
-        <TouchableOpacity activeOpacity={0.5} onPress={()=>{}} style={{ borderRadius: 5, flexDirection: "row", marginRight: 5 }}>
+          <Paragraph style={{color: theme["color-primary-disabled-border"]}}>5450</Paragraph>
+        </View>
+        <View  style={{ borderRadius: 5, flexDirection: "row", marginRight: 5 }}>
           <Icon
             name="share-outline"
             width={24} // Set the width of the icon
             height={24} // Set the height of the icon
-            fill={theme["color-basic-600"]} // Set the color of the icon
+            fill={theme["color-primary-disabled-border"]} // Set the color of the icon
           />
-          <Paragraph>5450</Paragraph>
-        </TouchableOpacity>
-        <TouchableOpacity activeOpacity={0.5} onPress={()=>{}} style={{ borderRadius: 5, flexDirection: "row", marginRight: 5 }}>
+          <Paragraph style={{color: theme["color-primary-disabled-border"]}}>5450</Paragraph>
+        </View>
+        <View style={{ borderRadius: 5, flexDirection: "row", marginRight: 5 }}>
+
+          <MaterialCommunityIcons
+            name={"cube-scan"}
+            size={24}
+            color={theme["color-primary-disabled-border"]}
+          />
+          <Paragraph style={{color: theme["color-primary-disabled-border"]}}>5450</Paragraph>
+        </View>
+        <TouchableOpacity activeOpacity={0.5} onPress={()=>{}} style={{ borderRadius: 5, flexDirection: "row", marginLeft: 'auto' }}>
+
+          
           <Icon
             name="funnel-outline"
             width={24} // Set the width of the icon
             height={24} // Set the height of the icon
-            fill={theme["color-basic-600"]} // Set the color of the icon
+            fill={theme["color-primary-active-border"]} // Set the color of the icon
           />
-          <Paragraph>Filter</Paragraph>
-        </TouchableOpacity>
-        <TouchableOpacity activeOpacity={0.5} onPress={()=>{}} style={{ borderRadius: 5, flexDirection: "row", marginLeft: 'auto' }}>
-          <MaterialCommunityIcons
-            name={"cube-scan"}
-            size={24}
-            color={theme["color-basic-600"]}
-          />
-          <Paragraph>5450</Paragraph>
         </TouchableOpacity>
       </View>
       
@@ -409,13 +411,15 @@ function ProductHome({ route }) {
             <RefreshControl
               refreshing={isRefreshing}
               onRefresh={onRefresh}
+              colors={[theme['color-primary-default']]} // Array of colors
+              progressBackgroundColor={theme["background-basic-color-2"]} // Background color of the indicator
             />
           }
           />
       </View>
-      <View style={[styles.commentContainer, { flexDirection: "column", height: 100, alignItems: "center", justifyContent: "center", marginTop: 10 }]}>
+      <View style={[styles.commentContainer, { flexDirection: "column", height: 100, alignItems: "center", justifyContent: "center", marginTop: 10, backgroundColor: theme["background-basic-color-1"] }]}>
         
-        <View style={{ paddingHorizontal: 10, paddingVertical: 0, flexDirection: "row", alignItems: "center", height: 48 }}>
+        <View style={{ paddingHorizontal: 7, paddingVertical: 0, flexDirection: "row", alignItems: "center", height: 48 }}>
           <View style={{flex: 1, height: 48}}>
             <TextInput
               placeholder="Comment..."
@@ -426,27 +430,27 @@ function ProductHome({ route }) {
               onChangeText={setCommentText}
             />
           </View>
-          
-          <TouchableOpacity
-            onPress={()=>{
-              addCommentToProduct();
-            }} 
-            style={styles.button}
-            activeOpacity={0.7} // Customize the opacity when pressed
-          >
-            <MaterialCommunityIcons
-              name={"send"}
-              size={24}
-              color={theme["color-basic-600"]}
-              style={{marginLeft: 2}}
-            />
-          </TouchableOpacity>
+          <View style={{padding: 3}}>
+            <TouchableOpacity
+              onPress={()=>{
+                addCommentToProduct();
+              }} 
+              style={[styles.button, {backgroundColor: theme["color-primary-default"]}]}
+              activeOpacity={0.7} // Customize the opacity when pressed
+            >
+              <MaterialCommunityIcons
+                name={"send"}
+                size={24}
+                style={{marginLeft: 2, color: theme["background-basic-color-2"]}}
+              />
+            </TouchableOpacity>
+          </View>
         </View>
 
         <StarRating
           rating={commentRating}
           onChange={setCommentRating}
-          style={{marginLeft: 20}}
+          style={{marginTop: 5}}
           animationConfig={{scale: 1}}
           starSize={35}
           starStyle={{marginHorizontal: 0, marginVertical: 0}}
@@ -464,8 +468,6 @@ const styles = StyleSheet.create({
     height: "100%",
     aspectRatio: 1,
     marginLeft: 5,
-    backgroundColor: "blue",
-    backgroundColor: 'lightgray', // Customize the background color
     borderRadius: 50, // Optional: Customize the border radius
   },
   text: {
@@ -473,16 +475,14 @@ const styles = StyleSheet.create({
     color: 'black', // Customize the text color
   },
   commentContainer: {
-    borderColor: "black",
-    borderWidth: 1,
-    borderRadius: 4,
-    shadowColor: '#000',
+    borderRadius: 10,
+    shadowColor: "black",
     shadowOffset: {
       width: 0,
-      height: 1,
+      height: 2,
     },
-    shadowOpacity: 0.2,
-    shadowRadius: 1.41,
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
 });
 

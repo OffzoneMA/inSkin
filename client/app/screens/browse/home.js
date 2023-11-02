@@ -38,8 +38,6 @@ function DiscoverHome({ navigation }) {
   const theme = useTheme();
 
   const [showCustomPopup, setShowCustomPopup] = useState(false); // State to control custom pop-up visibility
-  
-  const [ scannedProduct, setScannedProduct ] = useState(null);
 
   const getAllComments = async () => {
     try {
@@ -80,8 +78,8 @@ function DiscoverHome({ navigation }) {
       const result = await productActionsApi.getProductById(_id);
       
       // Handle the case when result is ok
-      setScannedProduct(result);
-      navigation.navigate('Product', { product: result });
+      console.log(result._id);
+      navigation.navigate('Product', { productId: result._id });
   
     } catch (error) {
       console.error("Error getting product data: ", error);
@@ -142,7 +140,7 @@ function DiscoverHome({ navigation }) {
             <RefreshControl
               refreshing={isRefreshing}
               onRefresh={onRefresh}
-              colors={[theme['color-primary-500']]} // Array of colors
+              colors={[theme['color-primary-default']]} // Array of colors
               progressBackgroundColor={theme["background-basic-color-2"]} // Background color of the indicator
             />
           }
