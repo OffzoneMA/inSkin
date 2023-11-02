@@ -1,11 +1,9 @@
 import React, { useContext } from "react";
 import { StyleSheet, View, Image, ScrollView, TouchableOpacity } from "react-native";
 import { useTheme, Text, Icon } from "@ui-kitten/components";
-import Page from "../../components/Page";
 import AuthContext from "../../contexts/auth";
 import authStorage from "../../utilities/authStorage";
 //import { useToast } from "react-native-toast-notifications";
-import Button from "../../components/Button";
 
 import * as ImagePicker from "expo-image-picker";
 
@@ -18,7 +16,32 @@ import { encode } from 'base-64';
 
 import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEffect from React Navigation
 
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+
+import { Formik } from "formik";
+import * as Yup from "yup";
+
+// Components
+import Page from "../../components/Page";
+import Heading from "../../components/Heading";
+import Paragraph from "../../components/Paragraph";
+import Button from "../../components/Button";
+import TextInput from "../../components/TextInput";
+import TextLink from "../../components/TextLink";
+
+const validationSchema = Yup.object({
+    firstName: Yup.string().required().label("First name"),
+    lastName: Yup.string().label("Last Name"),
+    email: Yup.string().required().email().label("Email"),
+    password: Yup.string().required().min(4).label("Password"),
+    passwordConfirmation: Yup.string()
+      .required("Password needs to be confirmed")
+      .oneOf([Yup.ref("password"), null], "Passwords must match"),
+  });
+
 function ProfileEdit({ navigation }) {
+  const registerApi = useApi(authApi.register);
+
   const authContext = useContext(AuthContext);
   const { user } = useContext(AuthContext);
   //const toast = useToast();
@@ -91,6 +114,55 @@ function ProfileEdit({ navigation }) {
     }, 5000);
   }
 
+  const registerHandler = async ({
+    firstName,
+    lastName,
+    email,
+    password,
+  }) => {
+    var readerType;
+    var readerGoals;
+    var readerGenres;
+    try {
+      readerType = route.params.readerType;
+      readerGoals = route.params.readerGoals;
+      readerGenres = route.params.readerGenres;
+    } catch (e) {
+      readerType = null;
+      readerGoals = [];
+      readerGenres = [];
+    }
+
+    const result = await registerApi.request(
+      firstName.trim(),
+      lastName.trim(),
+      email,
+      password,
+      readerType,
+      readerGoals,
+      readerGenres
+    );
+
+    if (!result.ok) {
+      //toast.show(result.data, {type: "danger"});
+      return;
+    }
+
+    //toast.show(result.data.message, {type: "success"});
+
+    setTimeout(() => {
+      AsyncStorage.setItem("hasOnboarded", "true");
+      var { user } = jwt_decode(result.headers["bearer-token"]);
+      authContext.setUser(user);
+      authStorage.storeToken(result.headers["bearer-token"]);
+
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Tab" }],
+      });
+    }, 300);
+  };
+
   // Fetch products when the component mounts and when the screen comes into focus
   useFocusEffect(
     React.useCallback(() => {
@@ -147,6 +219,122 @@ function ProfileEdit({ navigation }) {
         <Text style={[styles.profileUserName, { fontSize: 13, fontWeight: 'normal', color: theme["text-basic-color"] }]}>
           {userProfile.userName}
         </Text>
+
+        
+          <Formik
+            initialValues={{
+              firstName: "",
+              lastName: "",
+              email: "",
+              password: "",
+              passwordConfirmation: "",
+            }}
+            onSubmit={registerHandler}
+            validationSchema={validationSchema}
+          >
+            {({
+              handleChange,
+              handleSubmit,
+              errors,
+              setFieldTouched,
+              touched,
+              values,
+            }) => (
+              <>
+                <ScrollView>
+                    <TextInput
+                    placeholder="First Name"
+                    autoCompleteType="name"
+                    keyboardType="default"
+                    returnKeyType="next"
+                    textContentType="givenName"
+                    autoCapitalize="none"
+                    value={values.firstName}
+                    onChangeText={handleChange("firstName")}
+                    errorMessage={errors.firstName}
+                    onBlur={() => setFieldTouched("firstName")}
+                    errorVisible={touched.firstName}
+                    />
+                    <TextInput
+                    placeholder="Last Name"
+                    autoCompleteType="name"
+                    keyboardType="default"
+                    returnKeyType="next"
+                    textContentType="familyName"
+                    autoCapitalize="none"
+                    value={values.lastName}
+                    onChangeText={handleChange("lastName")}
+                    errorMessage={errors.lastName}
+                    onBlur={() => setFieldTouched("lastName")}
+                    errorVisible={touched.lastName}
+                    />
+                  <TextInput
+                    placeholder="Email"
+                    autoCompleteType="email"
+                    keyboardType="email-address"
+                    returnKeyType="next"
+                    textContentType="emailAddress"
+                    autoCapitalize="none"
+                    value={values.email}
+                    onChangeText={handleChange("email")}
+                    errorMessage={errors.email}
+                    onBlur={() => setFieldTouched("email")}
+                    errorVisible={touched.email}
+                  />
+                  <TextInput
+                    placeholder="Old Password"
+                    autoCompleteType="password"
+                    keyboardType="default"
+                    returnKeyType="next"
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    secureTextEntry={true}
+                    value={values.password}
+                    onChangeText={handleChange("password")}
+                    errorMessage={errors.password}
+                    onBlur={() => setFieldTouched("password")}
+                    errorVisible={touched.password}
+                  />
+                  <TextInput
+                    placeholder="New Password"
+                    autoCompleteType="password"
+                    keyboardType="default"
+                    returnKeyType="done"
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    secureTextEntry={true}
+                    value={values.passwordConfirmation}
+                    onChangeText={handleChange("passwordConfirmation")}
+                    errorMessage={errors.passwordConfirmation}
+                    onBlur={() => setFieldTouched("passwordConfirmation")}
+                    errorVisible={touched.passwordConfirmation}
+                  />
+                  <TextInput
+                    placeholder="Confirm New Password"
+                    autoCompleteType="password"
+                    keyboardType="default"
+                    returnKeyType="done"
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    secureTextEntry={true}
+                    value={values.passwordConfirmation}
+                    onChangeText={handleChange("passwordConfirmation")}
+                    errorMessage={errors.passwordConfirmation}
+                    onBlur={() => setFieldTouched("passwordConfirmation")}
+                    errorVisible={touched.passwordConfirmation}
+                  />
+                </ScrollView>
+                <View style={{flexDirection: "row"}}>
+                    <Button loading={registerApi.loading} onPress={handleSubmit} style={{ marginTop: 20 }}>
+                    Save
+                    </Button>
+                    <Button loading={registerApi.loading} onPress={handleSubmit} style={{ marginTop: 20 }}>
+                    Cancel
+                    </Button>
+                </View>
+              </>
+            )}
+          </Formik>
         
       </View>
     </Page>
