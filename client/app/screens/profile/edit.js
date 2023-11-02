@@ -180,6 +180,7 @@ function ProfileEdit({ navigation }) {
     firstName: user ? user.firstName : null,
     lastName: user ? user.lastName : null,
     userName: user ? user.userName : null,
+    email: user ? user.email : null,
   };
 
 
@@ -228,9 +229,10 @@ function ProfileEdit({ navigation }) {
         <KeyboardAwareScrollView contentContainerStyle={{ flex: 1, paddingHorizontal: 10 }}>
           <Formik
             initialValues={{
-              firstName: "",
-              lastName: "",
-              email: "",
+              firstName: userProfile.firstName,
+              lastName: userProfile.lastName,
+              userName: userProfile.userName,
+              email: userProfile.email,
               password: "",
               passwordConfirmation: "",
             }}
@@ -272,6 +274,19 @@ function ProfileEdit({ navigation }) {
                     errorMessage={errors.lastName}
                     onBlur={() => setFieldTouched("lastName")}
                     errorVisible={touched.lastName}
+                    />
+                    <TextInput
+                    placeholder="User Name"
+                    autoCompleteType="name"
+                    keyboardType="default"
+                    returnKeyType="next"
+                    textContentType="familyName"
+                    autoCapitalize="none"
+                    value={values.userName}
+                    onChangeText={handleChange("userName")}
+                    errorMessage={errors.userName}
+                    onBlur={() => setFieldTouched("userName")}
+                    errorVisible={touched.userName}
                     />
                   <TextInput
                     placeholder="Email"
