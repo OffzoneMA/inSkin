@@ -5,7 +5,7 @@ const getAllBrands = async () => client.get("/brands");
 
 const getBrandById = async (id) => {
     try {
-      const response = await client.get(`/brands/${id}`);
+      const response = await client.get(`/brands/get-brand-byid/${id}`);
       return response.data;
     } catch (error) {
       console.error(error);
@@ -34,5 +34,5 @@ const getBrandsByIds = async (ids) => {
 export default {
     getAllBrands,
     getBrandById,
-    getBrandsByIds,
+    getBrandById,
 };

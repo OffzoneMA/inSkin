@@ -15,8 +15,8 @@ export default {
   "color-primary-default-border": "$color-primary-default",
   "color-primary-hover-border": "$color-primary-hover",
   "color-primary-focus-border": "$color-primary-700",
-  "color-primary-active-border": "$color-primary-active",
-  "color-primary-disabled-border": "$color-primary-disabled",
+  "color-primary-active-border": "$color-primary-default",
+  "color-primary-disabled-border": "$color-basic-600",
 
   "background-basic-color-1": "$color-basic-400",
   "background-basic-color-2": "$color-basic-300",

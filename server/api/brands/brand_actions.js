@@ -37,6 +37,8 @@ router.get("/", async (req, res) => {
 // GET a single brand by ID
 router.get("/get-brand-byid/:id", async (req, res) => {
     try {
+
+      console.log("test");
       const brandId = req.params.id;
   
       // Query the database to find a product by ID

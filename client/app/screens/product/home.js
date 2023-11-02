@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import {
   FlatList,
   StyleSheet,
@@ -31,11 +31,13 @@ import authApi from "../../api/auth";
 
 import AuthContext from "../../contexts/auth";
 
+import { encode } from 'base-64';
+
 function ProductHome({ route }) {
 
   const theme = useTheme();
 
-  const { product } = route.params;
+  const { productId } = route.params;
 
   const [productRating, setProductRating] = useState(0);
 
@@ -49,7 +51,8 @@ function ProductHome({ route }) {
 
   const [commentRating, setCommentRating] = useState(0);
 
-  const [brands, setBrands] = useState([]);
+  const [brand, setBrand] = useState(null);
+  const [product, setProduct] = useState(null);
 
   function calculateProductRating(comments) {
     if (!comments || comments.length === 0) {
@@ -67,7 +70,7 @@ function ProductHome({ route }) {
 
   const getProductComments = async () => {
     try {
-      const result = await productActionsApi.getProductComments(product._id);
+      const result = await productActionsApi.getProductComments(productId);
 
       if (!result.ok) {
         //toast.show(result.data, { type: "danger" });
@@ -97,11 +100,12 @@ function ProductHome({ route }) {
     }
   };
 
-  const getBrandsByIds = async (_id) => {
+  const getBrandById = async (_id) => {
     try {
-      const result = await brandActionsApi.getBrandsByIds(_id);
+      console.log(_id);
+      const result = await brandActionsApi.getBrandById(_id);
 
-      setBrands(result);
+      setBrand(result);
 
       if (!result.ok) {
         //toast.show(result.data, { type: "danger" });
@@ -131,7 +135,7 @@ function ProductHome({ route }) {
 
       const result = await productActionsApi
       .addCommentToProduct(
-        product._id,
+        productId,
         user._id,
         commentText,
         commentRating
@@ -158,56 +162,97 @@ function ProductHome({ route }) {
     }
   };
 
-  const Item = ({ item }) => (
-      <View style={{ marginVertical: 5, flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
-        <View style={{ flex: 1, flexDirection:"column" }}>
-          <Label>{item.userName}</Label>
-          <StarRating
-            rating={item.review}
-            onChange={() => {}}
-            animationConfig={{scale: 1}}
-            starSize={18}
-            starStyle={{marginHorizontal: 0}}
-          />
-          {item.text !== "" ? <Paragraph style={{marginLeft: 4}}>{item.text}</Paragraph> : null}
-        </View>
-        <View style={{ padding: 5 }}>
-          <TouchableOpacity
-              onPress={()=>{
-              }}
-              style={{ borderRadius: 5}}
-              activeOpacity={0.5} // Customize the opacity when pressed
-            >
-            <Icon
-              name="heart-outline"
-              width={20} // Set the width of the icon
-              height={20} // Set the height of the icon
-              fill={theme["color-basic-600"]} // Set the color of the icon
-            />
-          </TouchableOpacity>
-        </View>
-        
-      </View>
-  );
+  const getProductById = async (_id) => {
+    try {
+      const result = await productActionsApi.getProductById(_id);
+
+      setProduct(result);
+
+      if (!result.ok) {
+        //toast.show(result.data, { type: "danger" });
+      } else {
+        //toast.show(result.data.message, { type: "success" });
+        /* const brandName = result.data.brands.map(brand => ({
+          value: brand._id, // Use _id as the key
+          label: brand.name // Use name as the value
+        })); */
+        //const brandName = result.data.brand;
+        //setBrandsNames(brandsNames);
+      }
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+    }
+  };
 
   // Fetch products when the component mounts and when the screen comes into focus
   useFocusEffect(
     React.useCallback(() => {
       setIsRefreshing(true); // Set refreshing state to true when the screen comes into focus
+      getProductById(productId);
       getProductComments();
-      getBrandsByIds(product.productDetails.brands);
     }, [])
   );
+
+  // useEffect with dependency on the product state variable
+  useEffect(() => {
+    // Check if product is not null and its productDetails property is present
+    if (product && product.productDetails && product.productDetails.brand) {
+      // Call getBrandById when product is not null
+      getBrandById(product.productDetails.brand)
+        .then((brandData) => {
+          // Handle the retrieved brand data here if needed
+        })
+        .catch((error) => {
+          console.error('Error fetching brand data:', error);
+        });
+    }
+  }, [product]); // Dependency array with product as the dependency
 
   const onRefresh = () => {
     setIsRefreshing(true); // Set refreshing state to true when the user pulls down to refresh
     getProductComments();
   };
+
+  const Item = ({ item }) => (
+    <View style={{ marginVertical: 5, flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
+      <View style={{ flex: 1, flexDirection:"column" }}>
+        <Label>{item.userName}</Label>
+        <StarRating
+          rating={item.review}
+          onChange={() => {}}
+          animationConfig={{scale: 1}}
+          starSize={18}
+          starStyle={{marginHorizontal: 0}}
+        />
+        {item.text !== "" ? <Paragraph style={{marginLeft: 4}}>{item.text}</Paragraph> : null}
+      </View>
+      <View style={{ padding: 5 }}>
+        <TouchableOpacity
+            onPress={()=>{
+            }}
+            style={{ borderRadius: 5}}
+            activeOpacity={0.5} // Customize the opacity when pressed
+          >
+          <Icon
+            name="heart-outline"
+            width={20} // Set the width of the icon
+            height={20} // Set the height of the icon
+            fill={theme["color-primary-disabled-border"]} // Set the color of the icon
+          />
+        </TouchableOpacity>
+      </View>
+      
+    </View>
+  );
   
   return (
     <Page>
       <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
-      <Heading>{product.barcode}</Heading>
+      {product ? (
+          <Heading style={{color: theme["color-primary-default"]}}>{product.barcode}</Heading>
+      ) : (
+        <Heading>...</Heading>
+      )}
       <View style={{flexDirection: "row"}}>
         <TouchableOpacity
             onPress={()=>{
@@ -219,7 +264,7 @@ function ProductHome({ route }) {
             name="share-outline"
             width={24} // Set the width of the icon
             height={24} // Set the height of the icon
-            fill={theme["color-basic-600"]} // Set the color of the icon
+            fill={theme["color-primary-active-border"]} // Set the color of the icon
           />
         </TouchableOpacity>
 
@@ -235,78 +280,128 @@ function ProductHome({ route }) {
             name="bookmark-outline"
             width={24} // Set the width of the icon
             height={24} // Set the height of the icon
-            fill={theme["color-basic-600"]} // Set the color of the icon
+            fill={theme["color-primary-disabled-border"]} // Set the color of the icon
           />
         </TouchableOpacity>
         
         </View>
       </View>
+
+      <View style={{ flexDirection: "column", alignItems: "center",justifyContent: "center" }}>
+        <Paragraph>{productRating}</Paragraph>
+        <StarRating
+          rating={productRating}
+          onChange={() => {}}
+          animationConfig={{scale: 1}}
+          starSize={20}
+          starStyle={{marginHorizontal: 0}}
+        />
+      </View>
       
-      <View style={{ flexDirection: "row" }}>
-        <View style={{ height: 100, width: 100 }}>
-          <View style={{ flex: 1, borderRadius: 5, overflow: "hidden", backgroundColor: "blue" }}>
-            <Image source={require('./1.png')} style={{flex: 1, width: null, height: null}} />
-          </View>
-        </View>
+      <View style={{ flexDirection: "column" }}>
         
-        <View style={{ flex: 1, marginBottom: "auto", flexDirection: "row", marginLeft: 5 }}>
-          <View style={{ flex: 2, flexDirection: "column"}}>
+            {product && product.images && Array.isArray(product.images) && product.images.length > 0 ? (
+              <View style={{ maxHeight: 200 }}>
+              <FlatList
+                data={product.images}
+                keyExtractor={(item, index) => index.toString()}
+                horizontal={false}
+                numColumns={3}
+                renderItem={({ item, index }) => (
+                  <View style={{ marginVertical: 5, marginRight: 10 }}>
+                    <View style={{ position: 'relative' }}>
+                      <Image 
+                        source={{ uri: 'data:' + item.contentType + ';base64,' + encode(item.data.data.map(byte => String.fromCharCode(byte)).join('')) }}
+                        style={{ width: 100, height: 100, borderRadius: 10 }}
+                      />
+                    </View>
+                  </View>
+                )}
+              />
+            </View>
+            ) : brand && brand.image && brand.image.data && brand.image.data.data ? (
+              <View style={{ height: 100, width: 100, alignSelf: "center" }}>
+              <View style={{ flex: 1, justifyContent: "center", borderRadius: 5, overflow: "hidden", backgroundColor: "gray" }}>
+              <Image 
+                source={{ uri: 'data:' + brand.image.contentType + ';base64,' + encode(brand.image.data.data.map(byte => String.fromCharCode(byte)).join('')) }}
+                style={{flex: 1, width: null, height: null}} 
+              />
+              </View>
+              </View>
+            ) : (
+              <View style={{ height: 100, width: 100, alignSelf: "center" }}>
+              <View style={{ flex: 1, justifyContent: "center", borderRadius: 5, overflow: "hidden", backgroundColor: "gray" }}>
+              <Icon
+                name="image-outline"
+                width={24}
+                height={24}
+                fill={theme["color-basic-600"]}
+                style={{alignSelf: "center"}}
+              />
+              </View>
+              </View>
+            )}
+
+      
+          
+        
+          <View style={{ flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+            {product ? (
             <SubHeading>{product.productDetails.name}</SubHeading>
-            <Paragraph>
-              {brands.length > 0
-                ? brands.map(item => item.name).join(', ')
-                : 'No brands available'}
-            </Paragraph>
-          </View>  
-          <View style={{ flexDirection: "column", justifyContent: "center"}}>
-            <Paragraph style={{alignSelf: "center"}}>{productRating}</Paragraph>
-            <StarRating
-              rating={productRating}
-              onChange={() => {}}
-              animationConfig={{scale: 1}}
-              starSize={20}
-              starStyle={{marginHorizontal: 0}}
-            />
-          </View>
+            ) : (
+              <SubHeading>...</SubHeading>
+            )}
+            
+            
+            {brand ? (
+              <Paragraph>{brand.name}</Paragraph>
+            )  : (
+              <Paragraph>No brand available</Paragraph>
+            )} 
+          
         </View>
       </View>
+
       <View style={{ marginVertical: 5, flexDirection: "row", alignItems: "center" }}>
-        <TouchableOpacity activeOpacity={0.5} onPress={()=>{}} style={{ borderRadius: 5, flexDirection: "row", marginRight: 5 }}>
+        <View style={{ borderRadius: 5, flexDirection: "row", marginRight: 5 }}>
           <Icon
             name="eye-outline"
             width={24} // Set the width of the icon
             height={24} // Set the height of the icon
-            fill={theme["color-basic-600"]} // Set the color of the icon
+            fill={theme["color-primary-disabled-border"]} // Set the color of the icon
           />
-          <Paragraph>5450</Paragraph>
-        </TouchableOpacity>
-        <TouchableOpacity activeOpacity={0.5} onPress={()=>{}} style={{ borderRadius: 5, flexDirection: "row", marginRight: 5 }}>
+          <Paragraph style={{color: theme["color-primary-disabled-border"]}}>5450</Paragraph>
+        </View>
+        <View  style={{ borderRadius: 5, flexDirection: "row", marginRight: 5 }}>
           <Icon
             name="share-outline"
             width={24} // Set the width of the icon
             height={24} // Set the height of the icon
-            fill={theme["color-basic-600"]} // Set the color of the icon
+            fill={theme["color-primary-disabled-border"]} // Set the color of the icon
           />
-          <Paragraph>5450</Paragraph>
-        </TouchableOpacity>
-        <TouchableOpacity activeOpacity={0.5} onPress={()=>{}} style={{ borderRadius: 5, flexDirection: "row", marginRight: 5 }}>
+          <Paragraph style={{color: theme["color-primary-disabled-border"]}}>5450</Paragraph>
+        </View>
+        <View style={{ borderRadius: 5, flexDirection: "row", marginRight: 5 }}>
+
+          <MaterialCommunityIcons
+            name={"cube-scan"}
+            size={24}
+            color={theme["color-primary-disabled-border"]}
+          />
+          <Paragraph style={{color: theme["color-primary-disabled-border"]}}>5450</Paragraph>
+        </View>
+        <TouchableOpacity activeOpacity={0.5} onPress={()=>{}} style={{ borderRadius: 5, flexDirection: "row", marginLeft: 'auto' }}>
+
+          
           <Icon
             name="funnel-outline"
             width={24} // Set the width of the icon
             height={24} // Set the height of the icon
-            fill={theme["color-basic-600"]} // Set the color of the icon
+            fill={theme["color-primary-active-border"]} // Set the color of the icon
           />
-          <Paragraph>Filter</Paragraph>
-        </TouchableOpacity>
-        <TouchableOpacity activeOpacity={0.5} onPress={()=>{}} style={{ borderRadius: 5, flexDirection: "row", marginLeft: 'auto' }}>
-          <MaterialCommunityIcons
-            name={"cube-scan"}
-            size={24}
-            color={theme["color-basic-600"]}
-          />
-          <Paragraph>5450</Paragraph>
         </TouchableOpacity>
       </View>
+      
       <View style={{ flex: 1 }}>
           <FlatList
             data={comments}
@@ -316,21 +411,16 @@ function ProductHome({ route }) {
             <RefreshControl
               refreshing={isRefreshing}
               onRefresh={onRefresh}
+              colors={[theme['color-primary-default']]} // Array of colors
+              progressBackgroundColor={theme["background-basic-color-2"]} // Background color of the indicator
             />
           }
           />
       </View>
-      <View style={[styles.commentContainer, { paddingTop: 10, flexDirection: "column", alignItems: "center" }]}>
-        <StarRating
-          rating={commentRating}
-          onChange={setCommentRating}
-          style={{marginLeft: 20}}
-          animationConfig={{scale: 1}}
-          starSize={35}
-          starStyle={{marginHorizontal: 0}}
-        />
-        <View style={{ paddingHorizontal: 5, flexDirection: "row", alignItems: "center" }}>
-          <View style={{flex: 1, marginTop: 10, marginHorizontal: 10}}>
+      <View style={[styles.commentContainer, { flexDirection: "column", height: 100, alignItems: "center", justifyContent: "center", marginTop: 10, backgroundColor: theme["background-basic-color-1"] }]}>
+        
+        <View style={{ paddingHorizontal: 7, paddingVertical: 0, flexDirection: "row", alignItems: "center", height: 48 }}>
+          <View style={{flex: 1, height: 48}}>
             <TextInput
               placeholder="Comment..."
               keyboardType="default"
@@ -340,22 +430,31 @@ function ProductHome({ route }) {
               onChangeText={setCommentText}
             />
           </View>
-          
-          <TouchableOpacity
-            onPress={()=>{
-              addCommentToProduct();
-            }} 
-            style={styles.button}
-            activeOpacity={0.7} // Customize the opacity when pressed
-          >
-            <MaterialCommunityIcons
-              name={"send"}
-              size={24}
-              color={theme["color-basic-600"]}
-            />
-          </TouchableOpacity>
-          
+          <View style={{padding: 3}}>
+            <TouchableOpacity
+              onPress={()=>{
+                addCommentToProduct();
+              }} 
+              style={[styles.button, {backgroundColor: theme["color-primary-default"]}]}
+              activeOpacity={0.7} // Customize the opacity when pressed
+            >
+              <MaterialCommunityIcons
+                name={"send"}
+                size={24}
+                style={{marginLeft: 2, color: theme["background-basic-color-2"]}}
+              />
+            </TouchableOpacity>
+          </View>
         </View>
+
+        <StarRating
+          rating={commentRating}
+          onChange={setCommentRating}
+          style={{marginTop: 5}}
+          animationConfig={{scale: 1}}
+          starSize={35}
+          starStyle={{marginHorizontal: 0, marginVertical: 0}}
+        />
       </View>
       
     </Page>
@@ -365,30 +464,25 @@ function ProductHome({ route }) {
 const styles = StyleSheet.create({
   button: {
     justifyContent: "center",
-    marginVertical: 10,
-    paddingHorizontal: 10,
-    backgroundColor: 'lightgray', // Customize the background color
-    borderRadius: 5, // Optional: Customize the border radius
-    alignSelf: 'stretch',
+    alignItems: 'center',
+    height: "100%",
+    aspectRatio: 1,
+    marginLeft: 5,
+    borderRadius: 50, // Optional: Customize the border radius
   },
   text: {
     fontSize: 16,
     color: 'black', // Customize the text color
   },
   commentContainer: {
-    borderColor: "red",
-    borderRadius: 5,
-    marginBottom: 10,
-    padding: 12,
-    shadowColor: '#000',
+    borderRadius: 10,
+    shadowColor: "black",
     shadowOffset: {
       width: 0,
-      height: 1,
+      height: 2,
     },
-    shadowOpacity: 0.2,
-    shadowRadius: 1.41,
-
-    elevation: 2,
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
 });
 

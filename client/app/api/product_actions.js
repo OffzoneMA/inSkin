@@ -3,9 +3,9 @@ import client from "./client";
 const add_product = (
   barcode,
   userId,
-  //images,
+  images,
   name,
-  brands,
+  brand,
   description,
   /* reader_type = null,
   reader_goals = [],
@@ -13,11 +13,13 @@ const add_product = (
 ) => {
   
   const formData = new FormData();
+  
   formData.append("barcode", barcode);
   formData.append("userId", userId); // Include userId in the FormData
-  //formData.append("images", images);
+  // Iterate over the images array and append each image object to the FormData
+  images.forEach((item) => formData.append("images", item));
   formData.append("productDetails[name]", name);
-  brands.forEach((item) => formData.append("productDetails[brands][]", item));
+  formData.append("productDetails[brand]", brand);
   formData.append("productDetails[description]", description);
 
   return client.post("/products/add-product", formData, {
