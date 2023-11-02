@@ -219,8 +219,9 @@ function ProfileEdit({ navigation }) {
               lastName: userProfile.lastName,
               userName: userProfile.userName,
               email: userProfile.email,
-              password: "",
-              passwordConfirmation: "",
+              oldPassword: "",
+              newPassword: "",
+              newPasswordConfirmation: "",
             }}
             onSubmit={registerHandler}
             validationSchema={validationSchema}
@@ -295,11 +296,11 @@ function ProfileEdit({ navigation }) {
                     autoCapitalize="none"
                     autoCorrect={false}
                     secureTextEntry={true}
-                    value={values.password}
-                    onChangeText={handleChange("password")}
-                    errorMessage={errors.password}
-                    onBlur={() => setFieldTouched("password")}
-                    errorVisible={touched.password}
+                    value={values.oldPassword}
+                    onChangeText={handleChange("oldPassword")}
+                    errorMessage={errors.oldPassword}
+                    onBlur={() => setFieldTouched("oldPassword")}
+                    errorVisible={touched.oldPassword}
                   />
                   <TextInput
                     placeholder="New Password"
@@ -309,11 +310,11 @@ function ProfileEdit({ navigation }) {
                     autoCapitalize="none"
                     autoCorrect={false}
                     secureTextEntry={true}
-                    value={values.passwordConfirmation}
-                    onChangeText={handleChange("passwordConfirmation")}
-                    errorMessage={errors.passwordConfirmation}
-                    onBlur={() => setFieldTouched("passwordConfirmation")}
-                    errorVisible={touched.passwordConfirmation}
+                    value={values.newPassword}
+                    onChangeText={handleChange("newPassword")}
+                    errorMessage={errors.newPassword}
+                    onBlur={() => setFieldTouched("newPassword")}
+                    errorVisible={touched.newPassword}
                   />
                   <TextInput
                     placeholder="Confirm New Password"
@@ -323,11 +324,11 @@ function ProfileEdit({ navigation }) {
                     autoCapitalize="none"
                     autoCorrect={false}
                     secureTextEntry={true}
-                    value={values.passwordConfirmation}
-                    onChangeText={handleChange("passwordConfirmation")}
-                    errorMessage={errors.passwordConfirmation}
-                    onBlur={() => setFieldTouched("passwordConfirmation")}
-                    errorVisible={touched.passwordConfirmation}
+                    value={values.newPasswordConfirmation}
+                    onChangeText={handleChange("newPasswordConfirmation")}
+                    errorMessage={errors.newPasswordConfirmation}
+                    onBlur={() => setFieldTouched("newPasswordConfirmation")}
+                    errorVisible={touched.newPasswordConfirmation}
                   />
 
                 
