@@ -290,11 +290,30 @@ function ProductHome({ route }) {
       <View style={{ flexDirection: "row" }}>
         <View style={{ height: 100, width: 100 }}>
           <View style={{ flex: 1, justifyContent: "center", borderRadius: 5, overflow: "hidden", backgroundColor: "gray" }}>
-            {brand && brand.image && brand.image.data && brand.image.data.data ? (
-            <Image 
-              source={{ uri: 'data:' + brand.image.contentType + ';base64,' + encode(brand.image.data.data.map(byte => String.fromCharCode(byte)).join('')) }}
-              style={{flex: 1, width: null, height: null}} 
-            />
+            {product && product.images && Array.isArray(product.images) && product.images.length > 0 ? (
+              <View style={{ maxHeight: 200 }}>
+              <FlatList
+                data={product.images}
+                keyExtractor={(item, index) => index.toString()}
+                horizontal={false}
+                numColumns={3}
+                renderItem={({ item, index }) => (
+                  <View style={{ marginVertical: 5, marginRight: 10 }}>
+                    <View style={{ position: 'relative' }}>
+                      <Image 
+                        source={{ uri: 'data:' + item.contentType + ';base64,' + encode(item.data.data.map(byte => String.fromCharCode(byte)).join('')) }}
+                        style={{ width: 100, height: 100, borderRadius: 10 }}
+                      />
+                    </View>
+                  </View>
+                )}
+              />
+            </View>
+            ) : brand && brand.image && brand.image.data && brand.image.data.data ? (
+              <Image 
+                source={{ uri: 'data:' + brand.image.contentType + ';base64,' + encode(brand.image.data.data.map(byte => String.fromCharCode(byte)).join('')) }}
+                style={{flex: 1, width: null, height: null}} 
+              />
             ) : (
               <Icon
                 name="image-outline"
@@ -422,7 +441,7 @@ function ProductHome({ route }) {
 
           <TouchableOpacity
             onPress={()=>{
-              getBrandById();
+              console.log(product);
             }} 
             style={styles.button}
             activeOpacity={0.7} // Customize the opacity when pressed
