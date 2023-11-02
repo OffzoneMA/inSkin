@@ -189,7 +189,7 @@ function ProfileHome({ navigation }) {
           </TouchableOpacity>
         </View>
         
-        <Button style={styles.editProfileButton}>Edit Profile</Button>
+        <Button onPress={() => {navigation.navigate("ProfileEdit")}} style={styles.editProfileButton}>Edit Profile</Button>
       </View>
 
       <View style={[styles.separator, { backgroundColor: theme["color-primary-disabled"] }]}></View>
