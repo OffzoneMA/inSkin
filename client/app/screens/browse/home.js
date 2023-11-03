@@ -78,7 +78,6 @@ function DiscoverHome({ navigation }) {
       const result = await productActionsApi.getProductById(_id);
       
       // Handle the case when result is ok
-      console.log(result._id);
       navigation.navigate('Product', { productId: result._id });
   
     } catch (error) {

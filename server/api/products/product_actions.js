@@ -15,8 +15,6 @@ router.use(bodyParser.json());
 
 const upload = multer();
 
-
-
 // POST a new product
 router.post(
   "/add-product",

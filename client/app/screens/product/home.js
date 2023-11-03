@@ -54,6 +54,8 @@ function ProductHome({ route }) {
   const [brand, setBrand] = useState(null);
   const [product, setProduct] = useState(null);
 
+  const [isSaved, setIsSaved] = useState(false);
+
   function calculateProductRating(comments) {
     if (!comments || comments.length === 0) {
         return 0; // Default average rating if there are no comments or comments is empty
@@ -102,7 +104,6 @@ function ProductHome({ route }) {
 
   const getBrandById = async (_id) => {
     try {
-      console.log(_id);
       const result = await brandActionsApi.getBrandById(_id);
 
       setBrand(result);
@@ -213,9 +214,17 @@ function ProductHome({ route }) {
     getProductComments();
   };
 
-  const Item = ({ item }) => (
-    <View style={{ marginVertical: 5, flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
-      <View style={{ flex: 1, flexDirection:"column" }}>
+  const Item = ({ item }) => {
+    const [isLiked, setIsLiked] = useState(false);
+  
+    const handleLikePress = () => {
+      setIsLiked(!isLiked);
+      // Add logic here to handle liking/unliking the item in your data or API
+    };
+  
+    return (
+      <View style={{ marginVertical: 5, flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
+              <View style={{ flex: 1, flexDirection:"column" }}>
         <Label>{item.userName}</Label>
         <StarRating
           rating={item.review}
@@ -226,24 +235,37 @@ function ProductHome({ route }) {
         />
         {item.text !== "" ? <Paragraph style={{marginLeft: 4}}>{item.text}</Paragraph> : null}
       </View>
-      <View style={{ padding: 5 }}>
-        <TouchableOpacity
-            onPress={()=>{
-            }}
+
+        <View style={{ padding: 5 }}>
+          <TouchableOpacity
+            onPress={handleLikePress}
             style={{ borderRadius: 5}}
             activeOpacity={0.5} // Customize the opacity when pressed
           >
-          <Icon
-            name="heart-outline"
-            width={20} // Set the width of the icon
-            height={20} // Set the height of the icon
-            fill={theme["color-primary-disabled-border"]} // Set the color of the icon
+            {isLiked ? (
+              <MaterialCommunityIcons
+              name={"heart"}
+              size={20}
+              color={theme["notification-error"]}
+            />
+            ) : (
+              <MaterialCommunityIcons
+            name={"heart-outline"}
+            size={20}
+            color={theme["color-primary-disabled-border"]}
           />
-        </TouchableOpacity>
+            )}
+            
+          </TouchableOpacity>
+        </View>
       </View>
-      
-    </View>
-  );
+    );
+  };  
+
+  const handleSavedPress = () => {
+    setIsSaved(!isSaved);
+    // Add logic here to handle liking/unliking the item in your data or API
+  };
   
   return (
     <Page>
@@ -271,16 +293,14 @@ function ProductHome({ route }) {
         
         <View style={{ marginRight: 10 }} />
         <TouchableOpacity
-            onPress={()=>{
-            }}
+            onPress={handleSavedPress}
             style={{ borderRadius: 5}}
             activeOpacity={0.5} // Customize the opacity when pressed
           >
-          <Icon
-            name="bookmark-outline"
-            width={24} // Set the width of the icon
-            height={24} // Set the height of the icon
-            fill={theme["color-primary-disabled-border"]} // Set the color of the icon
+          <MaterialCommunityIcons
+            name={isSaved ? 'bookmark' : 'bookmark-outline'}
+            size={24}
+            color={isSaved ? theme['color-primary-active-border'] : theme['color-primary-disabled-border']}
           />
         </TouchableOpacity>
         
