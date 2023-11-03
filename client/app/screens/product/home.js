@@ -192,6 +192,7 @@ function ProductHome({ route }) {
   useFocusEffect(
     React.useCallback(() => {
       setIsRefreshing(true); // Set refreshing state to true when the screen comes into focus
+      getProductById(productId);
       onRefresh();
     }, [])
   );
@@ -356,7 +357,7 @@ function ProductHome({ route }) {
             ) : (
               <View style={{ height: 100, width: 100, alignSelf: "center" }}>
               <View style={{ flex: 1, borderRadius: 5, overflow: "hidden", backgroundColor: theme["color-primary-disabled-border"] }}>
-              
+
               </View>
               </View>
             )}
