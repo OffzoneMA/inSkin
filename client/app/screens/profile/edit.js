@@ -204,7 +204,7 @@ function ProfileEdit({ navigation }) {
     <Page>
       <View style={styles.profileContainer}>
         <View style={[styles.profilePictureContainer, { borderColor: theme["color-primary-default"] }]}>
-          <View style={[styles.profileIconWrapper, { overflow: 'hidden', backgroundColor: theme["color-primary-disabled"] }]}>
+          <View style={[styles.profileIconWrapper, { overflow: 'hidden', backgroundColor: theme["background-basic-color-1"] }]}>
             {selectedImageUri ? ( // Step 3: Conditionally render selected image or default icon
               <Image 
                 source={{ uri: selectedImageUri }} /* style={styles.profilePicture} */ 
@@ -213,7 +213,7 @@ function ProfileEdit({ navigation }) {
             ) : (
               <Icon
                 name={userProfile.profilePicture}
-                style={styles.profilePicture} fill={theme["background-basic-color-3"]}
+                style={styles.profilePicture} fill={theme["color-primary-disabled-border"]}
               />
             )}
           </View>
