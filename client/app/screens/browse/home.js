@@ -47,7 +47,9 @@ function DiscoverHome({ navigation }) {
         //toast.show(result.data, { type: "danger" });
       } else {
         //toast.show(result.data.message, { type: "success" });
-        setComments(result.data);
+        // Sort the comments array by 'createdAt' property in descending order
+        const sortedComments = result.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        setComments(sortedComments);
       }
     } catch (error) {
       console.error("Error fetching data: ", error);

@@ -173,6 +173,7 @@ router.get(
         userId: comment.userId,
         text: comment.text,
         review: comment.review,
+        createdAt: comment.createdAt,
       }));
 
       // Send the array of comments as a response
