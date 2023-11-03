@@ -142,13 +142,14 @@ function ProductHome({ route }) {
         commentRating
       );
       
-
       setCommentRating(0);
       setCommentText("");
-
+      onRefresh();
+        
       //console.log(result);
       if (!result.ok) {
         //toast.show(result.data, { type: "danger" });
+
       } else {
         //toast.show(result.data.message, { type: "success" });
         /* const brandName = result.data.brands.map(brand => ({
@@ -157,6 +158,7 @@ function ProductHome({ route }) {
         })); */
         //const brandName = result.data.brand;
         //setBrandsNames(brandsNames);
+        
       }
     } catch (error) {
       console.error("Error fetching data: ", error);
@@ -189,8 +191,7 @@ function ProductHome({ route }) {
   useFocusEffect(
     React.useCallback(() => {
       setIsRefreshing(true); // Set refreshing state to true when the screen comes into focus
-      getProductById(productId);
-      getProductComments();
+      onRefresh();
     }, [])
   );
 
@@ -330,10 +331,13 @@ function ProductHome({ route }) {
                 renderItem={({ item, index }) => (
                   <View style={{ marginVertical: 5, marginRight: 10 }}>
                     <View style={{ position: 'relative' }}>
+                      
+                    {item && item.contentType && item.data && item.data.data && item.data.data.length > 0 && (
                       <Image 
                         source={{ uri: 'data:' + item.contentType + ';base64,' + encode(item.data.data.map(byte => String.fromCharCode(byte)).join('')) }}
                         style={{ width: 100, height: 100, borderRadius: 10 }}
                       />
+                    )}
                     </View>
                   </View>
                 )}
