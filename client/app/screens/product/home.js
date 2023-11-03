@@ -93,7 +93,9 @@ function ProductHome({ route }) {
           };
         });
         calculateProductRating(comments);
-        setComments(comments);
+        const sortedComments = comments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        console.log(sortedComments)
+        setComments(sortedComments);
       }
     } catch (error) {
       console.error("Error fetching data: ", error);
