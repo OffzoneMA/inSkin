@@ -94,7 +94,6 @@ function ProductHome({ route }) {
         });
         calculateProductRating(comments);
         const sortedComments = comments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        console.log(sortedComments)
         setComments(sortedComments);
       }
     } catch (error) {
@@ -193,6 +192,7 @@ function ProductHome({ route }) {
   useFocusEffect(
     React.useCallback(() => {
       setIsRefreshing(true); // Set refreshing state to true when the screen comes into focus
+      getProductById(productId);
       onRefresh();
     }, [])
   );
@@ -356,14 +356,8 @@ function ProductHome({ route }) {
               </View>
             ) : (
               <View style={{ height: 100, width: 100, alignSelf: "center" }}>
-              <View style={{ flex: 1, justifyContent: "center", borderRadius: 5, overflow: "hidden", backgroundColor: "gray" }}>
-              <Icon
-                name="image-outline"
-                width={24}
-                height={24}
-                fill={theme["color-basic-600"]}
-                style={{alignSelf: "center"}}
-              />
+              <View style={{ flex: 1, borderRadius: 5, overflow: "hidden", backgroundColor: theme["color-primary-disabled-border"] }}>
+
               </View>
               </View>
             )}
