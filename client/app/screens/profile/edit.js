@@ -204,7 +204,7 @@ function ProfileEdit({ navigation }) {
     <Page>
       <View style={styles.profileContainer}>
         <View style={[styles.profilePictureContainer, { borderColor: theme["color-primary-default"] }]}>
-          <View style={[styles.profileIconWrapper, { overflow: 'hidden', backgroundColor: theme["color-primary-disabled"] }]}>
+          <View style={[styles.profileIconWrapper, { overflow: 'hidden', backgroundColor: theme["background-basic-color-1"] }]}>
             {selectedImageUri ? ( // Step 3: Conditionally render selected image or default icon
               <Image 
                 source={{ uri: selectedImageUri }} /* style={styles.profilePicture} */ 
@@ -213,7 +213,7 @@ function ProfileEdit({ navigation }) {
             ) : (
               <Icon
                 name={userProfile.profilePicture}
-                style={styles.profilePicture} fill={theme["color-primary-unfocus"]}
+                style={styles.profilePicture} fill={theme["color-primary-disabled-border"]}
               />
             )}
           </View>
@@ -221,7 +221,7 @@ function ProfileEdit({ navigation }) {
           
           <TouchableOpacity
             onPress={modifyProfileImage}
-            style={[styles.actionButtonIcon, { borderColor: "white", borderWidth: 3, borderRadius: 5, bottom: -10, right: -15, position: "absolute", margin: 5, padding: 8, borderRadius: 100,width: 40, height: 40, backgroundColor: theme["color-primary-disabled"] }]}>
+            style={[styles.actionButtonIcon, { borderColor: theme["background-basic-color-2"], borderWidth: 3, borderRadius: 5, bottom: -10, right: -15, position: "absolute", margin: 5, padding: 8, borderRadius: 100,width: 40, height: 40, backgroundColor: theme["background-basic-color-1"] }]}>
               <Icon name="edit-outline" fill={theme["color-primary-default"]} style={styles.actionButtonIcon} />
           </TouchableOpacity>
         </View>
