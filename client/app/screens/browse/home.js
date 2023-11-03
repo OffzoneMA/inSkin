@@ -102,7 +102,7 @@ function DiscoverHome({ navigation }) {
             />
           ) : (
             <Icon
-                name="image-outline"
+                name="image"
                 width={24}
                 height={24}
                 fill={theme["background-basic-color-1"]}

@@ -191,7 +191,7 @@ function ProfileEdit({ navigation }) {
 
   // Placeholder for user profile data
   const userProfile = {
-    profilePicture:"person-outline",
+    profilePicture:"person",
     _id: user ? user._id : null,
     firstName: user ? user.firstName : null,
     lastName: user ? user.lastName : null,
@@ -213,7 +213,7 @@ function ProfileEdit({ navigation }) {
             ) : (
               <Icon
                 name={userProfile.profilePicture}
-                style={styles.profilePicture} fill={theme["color-primary-disabled-border"]}
+                style={[styles.profilePicture, {top: 10}]} fill={theme["color-primary-disabled-border"]}
               />
             )}
           </View>

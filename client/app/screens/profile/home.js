@@ -72,7 +72,7 @@ function ProfileHome({ navigation }) {
 
   // Placeholder for user profile data
   const userProfile = {
-    profilePicture:"person-outline",
+    profilePicture:"person",
     firstName: user ? user.firstName : null,
     lastName: user ? user.lastName : null,
     userName: user ? user.userName : null,
@@ -122,7 +122,7 @@ function ProfileHome({ navigation }) {
             ) : (
               <Icon
                 name={userProfile.profilePicture}
-                style={styles.profilePicture} fill={theme["color-primary-disabled-border"]}
+                style={[styles.profilePicture, {top: 10}]} fill={theme["color-primary-disabled-border"]}
               />
             )}
           </View>
