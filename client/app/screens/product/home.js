@@ -142,13 +142,14 @@ function ProductHome({ route }) {
         commentRating
       );
       
-
       setCommentRating(0);
       setCommentText("");
-
+      onRefresh();
+        
       //console.log(result);
       if (!result.ok) {
         //toast.show(result.data, { type: "danger" });
+
       } else {
         //toast.show(result.data.message, { type: "success" });
         /* const brandName = result.data.brands.map(brand => ({
@@ -157,6 +158,7 @@ function ProductHome({ route }) {
         })); */
         //const brandName = result.data.brand;
         //setBrandsNames(brandsNames);
+        
       }
     } catch (error) {
       console.error("Error fetching data: ", error);
@@ -189,8 +191,7 @@ function ProductHome({ route }) {
   useFocusEffect(
     React.useCallback(() => {
       setIsRefreshing(true); // Set refreshing state to true when the screen comes into focus
-      getProductById(productId);
-      getProductComments();
+      onRefresh();
     }, [])
   );
 
