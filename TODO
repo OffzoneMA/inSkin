@@ -25,7 +25,6 @@ TODO: add filters to comments on product and browse screen
 TODO: add save and save page, share option, legit scaning number and view number and share number
 TODO: separate styligns
 TODO: add convenient README
-TODO: remove extra backend functions
 DONE: my create account button doesn't work when i logout
 DONE: make add product pop up isolated from Camera.js File
 DONE: implement product pop up in gallery import
@@ -41,3 +40,4 @@ DONE: add brands dropdown lists when add new product
 DONE: implement posting review and comments feature
 DONE: improve mockdata
 DONE: add product manually
+DONE: remove extra backend functions
