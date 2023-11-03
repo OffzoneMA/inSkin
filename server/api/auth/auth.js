@@ -97,29 +97,6 @@ router.put(
   })
 );
 
-router.get(
-  "/status",
-  auth,
-  asyncMiddleware(async (req, res) => {
-    res.status(200).send("OK");
-  })
-);
-
-async function getImageBufferFromURL(imageURL) {
-  try {
-    const response = await axios.get(imageURL, {
-      responseType: 'arraybuffer' // Ensure response is treated as an array buffer
-    });
-
-    const imageBuffer = Buffer.from(response.data, 'binary');
-    return imageBuffer;
-  } catch (error) {
-    // Handle errors, e.g., URL not found, network issues, etc.
-    console.error('Error fetching and converting image:', error);
-    throw error; // Rethrow the error for the caller to handle
-  }
-}
-
 router.post(
   "/register",
   asyncMiddleware(async (req, res) => {
@@ -180,6 +157,13 @@ router.post(
   })
 );
 
+router.get(
+  "/status",
+  auth,
+  asyncMiddleware(async (req, res) => {
+    res.status(200).send("OK");
+  })
+);
 
 // Route to update profile image
 router.put(
