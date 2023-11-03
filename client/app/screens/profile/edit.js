@@ -70,17 +70,26 @@ function ProfileEdit({ navigation }) {
   const getProfileImageApi = useApi(authApi.getProfileImage);
   
   const getProfileImage = async () => {
-    //toast.show("Logout Successful", { type: "success" });
-    const profileImage = await getProfileImageApi.request(user._id);
+    try {
+        //toast.show("Logout Successful", { type: "success" });
+        const profileImage = await getProfileImageApi.request(user._id);
 
-    // Extract the image data from the response
-    const imageData = profileImage.data.data.data;
+        // Check if profileImage is defined and has the data property
+        if (profileImage && profileImage.data && profileImage.data.data && profileImage.data.data.data) {
+            // Extract the image data from the response
+            const imageData = profileImage.data.data.data;
 
-    // Convert the image data from bytes to a base64 string
-    const base64ImageData = imageData.map(byte => String.fromCharCode(byte)).join('');
-    const imageUrl = 'data:' + profileImage.data.contentType + ';base64,' + encode(base64ImageData);
+            // Convert the image data from bytes to a base64 string
+            const base64ImageData = imageData.map(byte => String.fromCharCode(byte)).join('');
+            const imageUrl = 'data:' + profileImage.data.contentType + ';base64,' + encode(base64ImageData);
 
-    setSelectedImageUri(imageUrl);
+            setSelectedImageUri(imageUrl);
+        } 
+    } catch (error) {
+        // Handle other errors that might occur during the API request
+        console.error('Error fetching profile image:', error);
+        // Handle this error condition as per your application's requirements
+    }
   };
 
   async function modifyProfileImage() {
@@ -182,7 +191,7 @@ function ProfileEdit({ navigation }) {
 
   // Placeholder for user profile data
   const userProfile = {
-    profilePicture:"person-outline",
+    profilePicture:"person",
     _id: user ? user._id : null,
     firstName: user ? user.firstName : null,
     lastName: user ? user.lastName : null,
@@ -195,7 +204,7 @@ function ProfileEdit({ navigation }) {
     <Page>
       <View style={styles.profileContainer}>
         <View style={[styles.profilePictureContainer, { borderColor: theme["color-primary-default"] }]}>
-          <View style={[styles.profileIconWrapper, { overflow: 'hidden', backgroundColor: theme["color-primary-disabled"] }]}>
+          <View style={[styles.profileIconWrapper, { overflow: 'hidden', backgroundColor: theme["background-basic-color-1"] }]}>
             {selectedImageUri ? ( // Step 3: Conditionally render selected image or default icon
               <Image 
                 source={{ uri: selectedImageUri }} /* style={styles.profilePicture} */ 
@@ -204,7 +213,7 @@ function ProfileEdit({ navigation }) {
             ) : (
               <Icon
                 name={userProfile.profilePicture}
-                style={styles.profilePicture} fill={theme["color-primary-unfocus"]}
+                style={[styles.profilePicture, {top: 10}]} fill={theme["color-primary-disabled-border"]}
               />
             )}
           </View>
@@ -212,7 +221,7 @@ function ProfileEdit({ navigation }) {
           
           <TouchableOpacity
             onPress={modifyProfileImage}
-            style={[styles.actionButtonIcon, { borderColor: "white", borderWidth: 3, borderRadius: 5, bottom: -10, right: -15, position: "absolute", margin: 5, padding: 8, borderRadius: 100,width: 40, height: 40, backgroundColor: theme["color-primary-disabled"] }]}>
+            style={[styles.actionButtonIcon, { borderColor: theme["background-basic-color-2"], borderWidth: 3, borderRadius: 5, bottom: -10, right: -15, position: "absolute", margin: 5, padding: 8, borderRadius: 100,width: 40, height: 40, backgroundColor: theme["background-basic-color-1"] }]}>
               <Icon name="edit-outline" fill={theme["color-primary-default"]} style={styles.actionButtonIcon} />
           </TouchableOpacity>
         </View>

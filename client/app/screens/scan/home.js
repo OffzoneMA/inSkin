@@ -153,6 +153,15 @@ export default function Home({ navigation }) {
           <View style={styles.separator}></View>
           <Pressable
             style={styles.iconContainer}
+            onPress={() => {navigation.navigate("AddProduct", {barcode: ""})}}
+          >
+            <View>
+              <MaterialIcons name="add" size={35} color="white" />
+            </View>
+          </Pressable>
+          <View style={styles.separator}></View>
+          <Pressable
+            style={styles.iconContainer}
             onPress={scanQRCodeFromGallery}
           >
             <View>
@@ -209,8 +218,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     height: "100%",
-    padding: 10,
-    paddingVertical: 16,
   },
   primeAction: {
     padding: 10,

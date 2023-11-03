@@ -160,7 +160,6 @@ const handleOKPress = ({
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [4, 3],
       quality: 1,
     });
 
@@ -200,48 +199,43 @@ const handleOKPress = ({
     <Page>
         <View>
         {selectedImages.length > 0 ? (
-    <View style={{ maxHeight: 200 }}>
+    <View style={{ maxHeight: 300 }}>
       <FlatList
         data={selectedImages}
         keyExtractor={(item, index) => index.toString()}
         horizontal={false}
         numColumns={3}
         renderItem={({ item, index }) => (
-          <View style={{ marginVertical: 5, marginRight: 10 }}>
+          <View style={{ marginVertical: 8, marginRight: 10 }}>
             <View style={{ position: 'relative' }}>
               <Image source={{ uri: item.uri }} style={{ width: 100, height: 100, borderRadius: 10 }} />
               <TouchableOpacity
                 onPress={() => removeImage(index)}
                 style={{
                   position: 'absolute',
-                  top: 5,
-                  right: 5,
-                  backgroundColor: 'red',
-                  padding: 5,
+                  top: -8,
+                  right: -8,
+                  backgroundColor: theme['background-basic-color-1'],
+                  padding: 8,
                   borderRadius: 50,
                   zIndex: 1,
                 }}
               >
-                <Text style={{ color: 'white' }}>X</Text>
+                <Icon name="trash-2-outline" width={20} height={20} fill={theme['notification-error']} />
               </TouchableOpacity>
             </View>
           </View>
         )}
-        ListFooterComponent={
-          <TouchableOpacity onPress={handleImagePicker}>
-            <View style={{ marginVertical: 5, backgroundColor: 'blue', width: 100, height: 100, borderRadius: 10, backgroundColor: 'gray', justifyContent: 'center', alignItems: 'center', alignSelf: 'center' }}>
-              <Icon name="plus-circle-outline" width={24} height={24} fill={theme['color-basic-600']} />
-            </View>
-          </TouchableOpacity>
-        }
       />
+
+      <Button onPress={handleImagePicker} style={{ alignSelf: "center",padding: 0, marginVertical: 8, width: "50%", borderColor: theme['color-primary-disabled-border'], backgroundColor: theme['color-primary-disabled-border']}}>Add Image</Button>
     </View>
   ) : null}
 
       {selectedImages.length > 0 ? null : (
         <TouchableOpacity onPress={handleImagePicker}>
-          <View style={{ marginVertical: 5, backgroundColor: 'blue', width: 100, height: 100, borderRadius: 10, backgroundColor: 'gray', justifyContent: 'center', alignItems: 'center', alignSelf: 'center' }}>
-            <Icon name="image-outline" width={24} height={24} fill={theme['color-basic-600']} />
+          <View style={{ marginVertical: 5, backgroundColor: 'blue', width: 100, height: 100, borderRadius: 10, backgroundColor: theme['color-primary-disabled-border'], justifyContent: 'center', alignItems: 'center', alignSelf: 'center' }}>
+            <Icon name="image" width={24} height={24} fill={theme['background-basic-color-1']} />
           </View>
         </TouchableOpacity>
       )}

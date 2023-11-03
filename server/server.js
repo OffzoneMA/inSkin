@@ -8,7 +8,9 @@ const settings = require('./config/settings')
 
 const app = express()
 
-require('./startup/mockdata')();
+if (settings.environment !== 'prod') {
+    require('./startup/mockdata')();
+}
 
 require('./startup/logging')()
 require('./startup/routes')(app)

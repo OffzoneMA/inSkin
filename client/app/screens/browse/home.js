@@ -94,7 +94,7 @@ function DiscoverHome({ navigation }) {
       }}
     >
       <View style={{ borderRadius: 5, flex: 1/4, justifyContent: 'center', alignItems: 'center' }}>
-        <View style={[styles.profileIconWrapper, {width: '100%', borderRadius: 100, marginBottom: "auto", backgroundColor: "gray", aspectRatio: 1, overflow: 'hidden', justifyContent: "center"}]}>
+        <View style={[styles.profileIconWrapper, {width: '100%', borderRadius: 100, marginBottom: "auto", backgroundColor: theme['color-primary-disabled-border'], aspectRatio: 1, overflow: 'hidden', justifyContent: "center"}]}>
           {item.profileImage && item.profileImage.data && item.profileImage.data.data ? (
             <Image 
                 source={{ uri: 'data:' + item.profileImage.contentType + ';base64,' + encode(item.profileImage.data.data.map(byte => String.fromCharCode(byte)).join('')) }}
@@ -102,10 +102,10 @@ function DiscoverHome({ navigation }) {
             />
           ) : (
             <Icon
-                name="image-outline"
+                name="image"
                 width={24}
                 height={24}
-                fill={theme["color-basic-600"]}
+                fill={theme["background-basic-color-1"]}
                 style={{alignSelf: "center"}}
             />
           )}
