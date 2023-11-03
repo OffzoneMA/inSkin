@@ -51,6 +51,52 @@ router.post(
   })
 );
 
+router.put(
+  "/update-user-info",
+  asyncMiddleware(async (req, res) => {
+    try {
+      const userId = req.body._id;
+      const foundUser = await User.findById(userId);
+
+      // User doesn't exist
+      if (!foundUser) {
+        res.status(400).send("User does not exist!");
+        return;
+      }
+
+      // Compare passwords if provided
+      
+
+      // Update user properties
+      foundUser.firstName = req.body.firstName || foundUser.firstName;
+      foundUser.lastName = req.body.lastName || foundUser.lastName;
+
+      // Update password if provided
+      if (req.body.newPassword) {
+        const passwordMatch = await bcrypt.compare(
+          req.body.currentPassword,
+          foundUser.password
+        );
+
+        if (!passwordMatch) {
+          res.status(400).send("Incorrect password! Please try again");
+          return;
+        }
+
+        foundUser.password = await bcrypt.hash(req.body.newPassword, 10);
+      }
+
+      await foundUser.save();
+
+      const token = foundUser.generateAuthToken();
+      res.header("bearer-token", token).json({ message: "User information updated successfully" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Internal Server Error");
+    }
+  })
+);
+
 router.get(
   "/status",
   auth,

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 
 import ProfileHome from "../screens/profile/home";
+import ProfileEdit from "../screens/profile/edit";
 import ProfileSaved from "../screens/profile/saved";
 import ProfileAbout from "../screens/profile/about";
 import ProfileSettings from "../screens/profile/settings";
@@ -18,6 +19,11 @@ export default function ProfileNavigator() {
         name="ProfileHome"
         options={{ title: "Profile" }}
         component={ProfileHome}
+      />
+      <Stack.Screen
+        name="ProfileEdit"
+        options={{ title: "Edit" }}
+        component={ProfileEdit}
       />
       <Stack.Screen
         name="ProfileSaved"

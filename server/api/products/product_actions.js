@@ -15,8 +15,6 @@ router.use(bodyParser.json());
 
 const upload = multer();
 
-
-
 // POST a new product
 router.post(
   "/add-product",
@@ -30,6 +28,7 @@ router.post(
       res.status(400).send(error.details[0].message);
       return;
     }
+    
 
     const foundProduct = await Product.findOne({
       barcode: req.body.barcode,
