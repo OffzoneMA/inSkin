@@ -336,7 +336,6 @@ const handleOKPress = ({
                 <Button title="OK" onPress={handleSubmit} style={{flex: 2, marginRight: 2}}>Add Product</Button>
                 <Button onPress={onCancelClick} style={{flex: 1, marginLeft: 2, backgroundColor: "#8F9BB3", borderColor: "#8F9BB3"}}>Cancel</Button>
               </View>
-              <Button onPress={() => console.log(selectedImages.length)} style={{flex: 1, margin: 20}}>test</Button>
             </View>
           )}
       </Formik>
