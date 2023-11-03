@@ -32,14 +32,26 @@ import TextLink from "../../components/TextLink";
 import jwt_decode from "jwt-decode"
 
 const validationSchema = Yup.object({
-    firstName: Yup.string().required().label("First name"),
-    lastName: Yup.string().label("Last Name"),
-    email: Yup.string().required().email().label("Email"),
-    password: Yup.string().required().min(4).label("Password"),
-    passwordConfirmation: Yup.string()
-      .required("Password needs to be confirmed")
-      .oneOf([Yup.ref("password"), null], "Passwords must match"),
-  });
+  firstName: Yup.string().required().label("First Name"),
+  lastName: Yup.string().required().label("Last Name"),
+  email: Yup.string().required().email().label("Email"),
+  currentPassword: Yup.string()
+        .when('newPassword', {
+          is: (newPassword) => newPassword == undefined || newPassword.length == 0,
+          then: (schema) => schema.label("Current Password"),
+          otherwise: (schema) => schema.required('Current password is required').label("Old Password"),
+        }),
+  newPassword: Yup.string().min(4)
+        .when('newPasswordConfirmation', {
+          is: (newPasswordConfirmation) => newPasswordConfirmation == undefined || newPasswordConfirmation.length == 0,
+          then: (schema) => schema.label("New Password"),
+          otherwise: (schema) => schema.required('New password is required').label("New Password"),
+        }),
+  newPasswordConfirmation: Yup.string()
+    .oneOf([Yup.ref("newPassword"), null], "Passwords must match")
+    .label("Confirm New Password")
+});
+
 
 function ProfileEdit({ navigation }) {
   const updateUserInfoApi = useApi(authApi.updateUserInfo);
@@ -107,12 +119,11 @@ function ProfileEdit({ navigation }) {
     }, 5000);
   }
 
-  const registerHandler = async ({
+  const saveHandler = async ({
     _id,
     firstName,
     lastName,
-    email,
-    oldPassword,
+    currentPassword,
     newPassword,
   }) => {
     var readerType;
@@ -134,8 +145,7 @@ function ProfileEdit({ navigation }) {
       _id,
       firstName.trim(),
       lastName.trim(),
-      email,
-      oldPassword,
+      currentPassword,
       newPassword,
       readerType,
       readerGoals,
@@ -176,7 +186,6 @@ function ProfileEdit({ navigation }) {
     _id: user ? user._id : null,
     firstName: user ? user.firstName : null,
     lastName: user ? user.lastName : null,
-    userName: user ? user.userName : null,
     email: user ? user.email : null,
   };
 
@@ -215,14 +224,14 @@ function ProfileEdit({ navigation }) {
               _id: userProfile._id,
               firstName: userProfile.firstName,
               lastName: userProfile.lastName,
-              userName: userProfile.userName,
               email: userProfile.email,
-              oldPassword: "",
+              currentPassword: "",
               newPassword: "",
               newPasswordConfirmation: "",
             }}
-            onSubmit={registerHandler}
-            //validationSchema={validationSchema}
+            onSubmit={saveHandler}
+            validationSchema={validationSchema}
+            validateOnChange={true}
           >
             {({
               handleChange,
@@ -260,45 +269,19 @@ function ProfileEdit({ navigation }) {
                     onBlur={() => setFieldTouched("lastName")}
                     errorVisible={touched.lastName}
                     />
-                    <TextInput
-                    placeholder="User Name"
-                    autoCompleteType="name"
-                    keyboardType="default"
-                    returnKeyType="next"
-                    textContentType="familyName"
-                    autoCapitalize="none"
-                    value={values.userName}
-                    onChangeText={handleChange("userName")}
-                    errorMessage={errors.userName}
-                    onBlur={() => setFieldTouched("userName")}
-                    errorVisible={touched.userName}
-                    />
                   <TextInput
-                    placeholder="Email"
-                    autoCompleteType="email"
-                    keyboardType="email-address"
-                    returnKeyType="next"
-                    textContentType="emailAddress"
-                    autoCapitalize="none"
-                    value={values.email}
-                    onChangeText={handleChange("email")}
-                    errorMessage={errors.email}
-                    onBlur={() => setFieldTouched("email")}
-                    errorVisible={touched.email}
-                  />
-                  <TextInput
-                    placeholder="Old Password"
+                    placeholder="Current Password"
                     autoCompleteType="password"
                     keyboardType="default"
                     returnKeyType="next"
                     autoCapitalize="none"
                     autoCorrect={false}
                     secureTextEntry={true}
-                    value={values.oldPassword}
-                    onChangeText={handleChange("oldPassword")}
-                    errorMessage={errors.oldPassword}
-                    onBlur={() => setFieldTouched("oldPassword")}
-                    errorVisible={touched.oldPassword}
+                    value={values.currentPassword}
+                    onChangeText={handleChange("currentPassword")}
+                    errorMessage={errors.currentPassword}
+                    onBlur={() => setFieldTouched("currentPassword")}
+                    errorVisible={touched.currentPassword}
                   />
                   <TextInput
                     placeholder="New Password"

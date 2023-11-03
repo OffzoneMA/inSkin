@@ -113,6 +113,7 @@ export default function RegisterScreen({ route, navigation }) {
             }}
             onSubmit={registerHandler}
             validationSchema={validationSchema}
+            validateOnChange={true}
           >
             {({
               handleChange,

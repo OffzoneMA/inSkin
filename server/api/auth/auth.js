@@ -70,13 +70,11 @@ router.put(
       // Update user properties
       foundUser.firstName = req.body.firstName || foundUser.firstName;
       foundUser.lastName = req.body.lastName || foundUser.lastName;
-      foundUser.userName = req.body.userName || foundUser.userName;
-      foundUser.email = req.body.email || foundUser.email;
 
       // Update password if provided
       if (req.body.newPassword) {
         const passwordMatch = await bcrypt.compare(
-          req.body.oldPassword,
+          req.body.currentPassword,
           foundUser.password
         );
 

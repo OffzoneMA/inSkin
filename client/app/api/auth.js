@@ -7,9 +7,7 @@ const updateUserInfo = async (
   _id,
   firstName,
   lastName,
-  userName,
-  email,
-  oldPassword,
+  currentPassword,
   newPassword,
   /* reader_type = null,
   reader_goals = [],
@@ -20,15 +18,13 @@ const updateUserInfo = async (
       _id,
       firstName,
       lastName,
-      userName,
-      email,
-      oldPassword,
+      currentPassword,
       newPassword,
       /* reader_type,
       reader_goals,
       reader_genres, */
     });
-    
+
     return response;
   } catch (error) {
     console.error("Error updating user information:", error); // Handle the error
