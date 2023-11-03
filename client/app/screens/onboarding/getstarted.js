@@ -6,7 +6,7 @@ import Heading from "../../components/Heading";
 import Button from '../../components/Button';
 import Paragraph from "../../components/Paragraph";
 
-export default function getstarted({ navigation }) {
+export default function Getstarted({ navigation }) {
   return (
     <Page>
       <View style={{ flex: 1}}>

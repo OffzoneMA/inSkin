@@ -51,8 +51,8 @@ export default function OnboardingScreen({ navigation }) {
   return (
     <Page withPadding={false}>
       <Onboarding
-        onSkip={() => navigation.replace("Login")}
-        onDone={() => navigation.navigate("Login")}
+        onSkip={() => navigation.replace("AuthNavigator")}
+        onDone={() => navigation.navigate("AuthNavigator")}
         DoneButtonComponent={Done}
         NextButtonComponent={Next}
         SkipButtonComponent={Skip}

@@ -3,7 +3,6 @@ import { createStackNavigator } from "@react-navigation/stack";
 
 import OnboardingScreen from "../screens/onboarding/swiper";
 import GetStartedScreen from "../screens/onboarding/getstarted";
-import RegisterScreen from "../screens/register";
 
 import AuthNavigator from "./auth";
 
@@ -17,7 +16,7 @@ export default function OnboardingNavigator() {
       >
         <Stack.Screen name="GetStarted" component={GetStartedScreen} />
         <Stack.Screen name="Onboarding" component={OnboardingScreen} />
-        <Stack.Screen name="Login" component={AuthNavigator} />
+        <Stack.Screen name="AuthNavigator" component={AuthNavigator} />
       </Stack.Navigator>
   );
 }

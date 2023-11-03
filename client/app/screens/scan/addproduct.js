@@ -229,8 +229,8 @@ const handleOKPress = ({
         )}
         ListFooterComponent={
           <TouchableOpacity onPress={handleImagePicker}>
-            <View style={{ marginVertical: 5, backgroundColor: 'blue', width: 100, height: 100, borderRadius: 10, backgroundColor: 'gray', justifyContent: 'center', alignItems: 'center', alignSelf: 'center' }}>
-              <Icon name="plus-circle-outline" width={24} height={24} fill={theme['color-basic-600']} />
+            <View style={{ marginVertical: 5, backgroundColor: 'blue', width: 100, height: 100, borderRadius: 10, backgroundColor: theme['color-primary-disabled-border'], justifyContent: 'center', alignItems: 'center', alignSelf: 'center' }}>
+              <Icon name="plus-circle-outline" width={24} height={24} fill={theme['background-basic-color-1']} />
             </View>
           </TouchableOpacity>
         }
@@ -240,8 +240,8 @@ const handleOKPress = ({
 
       {selectedImages.length > 0 ? null : (
         <TouchableOpacity onPress={handleImagePicker}>
-          <View style={{ marginVertical: 5, backgroundColor: 'blue', width: 100, height: 100, borderRadius: 10, backgroundColor: 'gray', justifyContent: 'center', alignItems: 'center', alignSelf: 'center' }}>
-            <Icon name="image-outline" width={24} height={24} fill={theme['color-basic-600']} />
+          <View style={{ marginVertical: 5, backgroundColor: 'blue', width: 100, height: 100, borderRadius: 10, backgroundColor: theme['color-primary-disabled-border'], justifyContent: 'center', alignItems: 'center', alignSelf: 'center' }}>
+            <Icon name="image-outline" width={24} height={24} fill={theme['background-basic-color-1']} />
           </View>
         </TouchableOpacity>
       )}
