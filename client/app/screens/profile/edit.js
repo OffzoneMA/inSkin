@@ -70,17 +70,26 @@ function ProfileEdit({ navigation }) {
   const getProfileImageApi = useApi(authApi.getProfileImage);
   
   const getProfileImage = async () => {
-    //toast.show("Logout Successful", { type: "success" });
-    const profileImage = await getProfileImageApi.request(user._id);
+    try {
+        //toast.show("Logout Successful", { type: "success" });
+        const profileImage = await getProfileImageApi.request(user._id);
 
-    // Extract the image data from the response
-    const imageData = profileImage.data.data.data;
+        // Check if profileImage is defined and has the data property
+        if (profileImage && profileImage.data && profileImage.data.data && profileImage.data.data.data) {
+            // Extract the image data from the response
+            const imageData = profileImage.data.data.data;
 
-    // Convert the image data from bytes to a base64 string
-    const base64ImageData = imageData.map(byte => String.fromCharCode(byte)).join('');
-    const imageUrl = 'data:' + profileImage.data.contentType + ';base64,' + encode(base64ImageData);
+            // Convert the image data from bytes to a base64 string
+            const base64ImageData = imageData.map(byte => String.fromCharCode(byte)).join('');
+            const imageUrl = 'data:' + profileImage.data.contentType + ';base64,' + encode(base64ImageData);
 
-    setSelectedImageUri(imageUrl);
+            setSelectedImageUri(imageUrl);
+        } 
+    } catch (error) {
+        // Handle other errors that might occur during the API request
+        console.error('Error fetching profile image:', error);
+        // Handle this error condition as per your application's requirements
+    }
   };
 
   async function modifyProfileImage() {
