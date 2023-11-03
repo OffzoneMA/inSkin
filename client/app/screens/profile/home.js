@@ -55,7 +55,9 @@ function ProfileHome({ navigation }) {
   // Fetch products when the component mounts and when the screen comes into focus
   useFocusEffect(
     React.useCallback(() => {
-      getProfileImage();
+      if(user && user._id) {
+        getProfileImage();
+      }
     }, [])
   );
 

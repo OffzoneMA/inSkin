@@ -330,10 +330,13 @@ function ProductHome({ route }) {
                 renderItem={({ item, index }) => (
                   <View style={{ marginVertical: 5, marginRight: 10 }}>
                     <View style={{ position: 'relative' }}>
+                      
+                    {item && item.contentType && item.data && item.data.data && item.data.data.length > 0 && (
                       <Image 
                         source={{ uri: 'data:' + item.contentType + ';base64,' + encode(item.data.data.map(byte => String.fromCharCode(byte)).join('')) }}
                         style={{ width: 100, height: 100, borderRadius: 10 }}
                       />
+                    )}
                     </View>
                   </View>
                 )}
