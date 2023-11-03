@@ -1,6 +1,4 @@
-TODO: add browsing products feature with images and the ability to comment and review
-TODO: add profile informations (saved posts, my posts)
-TODO: add product image importation feature
+TODO: add profile informations (saved posts, settings)
 TODO: add admin and not admin users
 TODO: admin users have the ability to delete posts
 TODO: admin users have the ability to validate posts and they only can see unvalidated posts
@@ -9,20 +7,14 @@ TODO: implement google/facebook auth
 TODO: implement google/facebook auth
 TODO: add forgot password option
 TODO: fix icon not showing in IOS and latency on Android
-TODO: add brands and categories dropdown lists when add new product
-TODO: make profile settings list dynamic, make it a lazy list even if it's short
 TODO: handle errors properly in the auth.js update and get profile image route
 TODO: handle proper data fetch timing, use hooks on the browse screen so that the fetching won't be done until the browsing screen is swiped on
 TODO: implement edit product server routes
 TODO: add search bar, list type grid or simple, products or accounts browsing choice, different filter
 TODO: users can only view comments of accounts they've followed
-TODO: implement posting review and comments feature
 TODO: how can users follow other users if in the first the only see accounts they've followed ?
-TODO: handle null error in scan home response.data
 TODO: implement new behaviour in camera scan
 TODO: implement add product manually button in scan screen typing the barcode manually
-TODO: improve add product screen U.I
-TODO: handle show brand image
 TODO: add server routes: get brands by id, get users username by id, get first brand image, get product comments, put comments and review
 TODO: filter comment by most recent or most liked
 TODO: increment product views, product shared, and product scanned
@@ -31,13 +23,20 @@ TODO: remove commented auth parameter in server routes
 TODO: add a working toast library
 TODO: add filters to comments on product and browse screen
 TODO: add save and save page, share option, legit scaning number and view number and share number
-TODO: fix finding property of undefined error
 TODO: separate styligns
-TODO: add concenient README
+TODO: add convenient README
 TODO: improve mockdata
 TODO: remove extra backend functions
-TODO: like and save posts
 DONE: my create account button doesn't work when i logout
 DONE: make add product pop up isolated from Camera.js File
 DONE: implement product pop up in gallery import
 DONE: link products with brands, and add a drop down list of available brands when adding a new product
+DONE: fix finding property of undefined error
+DONE: like and save posts client side
+DONE: handle show brand image
+DONE: improve add product screen U.I
+DONE: handle null error in scan home response.data
+DONE: make profile settings list dynamic, make it a lazy list even if it's short
+DONE: add browsing products feature with images and the ability to comment and review
+DONE: add brands dropdown lists when add new product
+DONE: implement posting review and comments feature

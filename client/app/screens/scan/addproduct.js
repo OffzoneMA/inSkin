@@ -56,6 +56,8 @@ function AddProduct({ navigation, route }) {
 
   const [selectedImages, setSelectedImages] = useState([]);
 
+  const [isFocus, setIsFocus] = useState(false);
+
   const getAllBrands = async () => {
     try {
       const result = await brandActionsApi.getAllBrands();
@@ -67,6 +69,13 @@ function AddProduct({ navigation, route }) {
           value: brand._id, // Use _id as the key
           label: brand.name // Use name as the value
         }));
+  
+        // Add the extra item to the brandsNames array
+        brandsNames.unshift({
+          value: "",
+          label: "No brand"
+        });
+  
         setBrandsNames(brandsNames);
       }
     } catch (error) {
@@ -110,13 +119,11 @@ function AddProduct({ navigation, route }) {
 
     if (!result.ok) {
       //toast.show(result.data, {type: "danger"});
-      console.log("danger");
       console.log(result);
       return;
     }
 
     //toast.show(result.data.message, {type: "success"});
-    console.log("success");
     navigation.goBack();
   };
 
@@ -144,13 +151,7 @@ const handleOKPress = ({
   const renderItem = item => {
     return (
       <View style={styles.item}>
-        <Text style={styles.selectedTextStyle}>{item.label}</Text>
-        <Icon
-          name="image-outline"
-          width={24} // Set the width of the icon
-          height={24} // Set the height of the icon
-          fill={theme["color-basic-600"]} // Set the color of the icon
-        />
+        <Text style={[styles.selectedTextStyle, {color: theme["text-basic-color"]}]}>{item.label}</Text>
       </View>
     );
   };
@@ -291,44 +292,27 @@ const handleOKPress = ({
                   errorVisible={touched.name}
               />
               <Dropdown
-                style={[styles.dropdown, {backgroundColor: theme["background-basic-color-2"]}]}
+                style={[styles.dropdown, {backgroundColor: theme["background-basic-color-2"], borderWidth: 1, borderColor: theme["background-basic-color-4"]}, isFocus && { borderColor: theme['color-primary-default'], backgroundColor: theme["background-basic-color-1"] }]}
                 placeholderStyle={[styles.placeholderStyle, {color: theme["color-basic-600"]}]}
                 selectedTextStyle={[styles.selectedTextStyle, {color: theme["text-basic-color"]}]}
                 inputSearchStyle={styles.inputSearchStyle}
-                iconStyle={styles.iconStyle}
                 data={brandsNames}
+                containerStyle={{backgroundColor: theme["background-basic-color-1"]}}
+                fontFamily="Jost-Regular"
                 labelField="label"
                 valueField="value"
                 placeholder="Select brand"
                 value={values.brand}
+                onFocus={() => setIsFocus(true)}
+                onBlur={() => setIsFocus(false)}
                 search
                 searchPlaceholder="Search..."
                 onChange={item => {
                   setSelected(item.value);
                   setFieldValue("brand", item.value);
                 }}
-                renderLeftIcon={() => (
-                  <Icon
-                    name="image-outline"
-                    width={24} // Set the width of the icon
-                    height={24} // Set the height of the icon
-                    fill={theme["color-basic-600"]} // Set the color of the icon
-                  />
-                )}
                 renderItem={renderItem}
-                renderSelectedItem={(item, unSelect) => (
-                  <TouchableOpacity onPress={() => unSelect && unSelect(item)}>
-                    <View style={styles.selectedStyle}>
-                      <Text style={styles.textSelectedStyle}>{item.label}</Text>
-                      <Icon
-                        name="close-outline"
-                        width={24} // Set the width of the icon
-                        height={24} // Set the height of the icon
-                        fill={theme["color-basic-600"]} // Set the color of the icon
-                      />
-                    </View>
-                  </TouchableOpacity>
-                )}
+                activeColor={theme["background-basic-color-2"]}
               />
 
               <TextInput
@@ -350,7 +334,6 @@ const handleOKPress = ({
                 <Button title="OK" onPress={handleSubmit} style={{flex: 2, marginRight: 2}}>Add Product</Button>
                 <Button onPress={onCancelClick} style={{flex: 1, marginLeft: 2, backgroundColor: "#8F9BB3", borderColor: "#8F9BB3"}}>Cancel</Button>
               </View>
-              <Button onPress={() => console.log(selectedImages.length)} style={{flex: 1, margin: 20}}>test</Button>
             </View>
           )}
       </Formik>
