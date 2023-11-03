@@ -119,13 +119,11 @@ function AddProduct({ navigation, route }) {
 
     if (!result.ok) {
       //toast.show(result.data, {type: "danger"});
-      console.log("danger");
       console.log(result);
       return;
     }
 
     //toast.show(result.data.message, {type: "success"});
-    console.log("success");
     navigation.goBack();
   };
 
