@@ -19,7 +19,7 @@ const AddProductModal = ({ isVisible, onClose, onAddProduct }) => {
         >
             <View style={styles.modalBackground}>
                 <View style={[styles.modalContainer, {backgroundColor: theme["background-basic-color-3"]}]}>
-                    <Paragraph>This product doesn't exist!</Paragraph>
+                    <Paragraph style={{ textAlign: "center" }}>This product doesn't exist!</Paragraph>
                     <Paragraph>Would you like to add it?</Paragraph>
                     <View style={styles.buttonContainer}>
                         <Button style={styles.button} title="Yes" onPress={() => {
