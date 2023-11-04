@@ -23,11 +23,8 @@ import * as Yup from "yup";
 
 // Components
 import Page from "../../components/Page";
-import Heading from "../../components/Heading";
-import Paragraph from "../../components/Paragraph";
 import Button from "../../components/Button";
 import TextInput from "../../components/TextInput";
-import TextLink from "../../components/TextLink";
 
 import jwt_decode from "jwt-decode"
 
