@@ -7,12 +7,20 @@ import { Camera } from "expo-camera";
 
 import { TouchableNativeFeedback } from "react-native";
 
+import Paragraph from "./Paragraph";
+
+import { useTheme } from "@ui-kitten/components";
+
+import Button from './Button';
+
 export default function Cam({ flash, zoom }) {
 
   const [permission, requestPermission] = Camera.useCameraPermissions();
   const {scanned, setScanned} = useContext(ScanContext);
 
   const { setQrcode } = useContext(ScanContext);
+
+  const theme = useTheme();
 
   const handleBarcodeScanned = (qr) => {
     setQrcode({ date: new Date(), qr });
@@ -25,22 +33,17 @@ export default function Cam({ flash, zoom }) {
   if (!permission.granted) {
     // Camera permissions are not granted yet
     return (
-      <View style={styles.permissionContainer}>
-        <View style={styles.permissionDialogBox}>
-          <Text style={{ fontSize: 20, textAlign: "center", color: "red" }}>
+      <View style={styles.modalBackground}>
+        <View style={[styles.modalContainer, {backgroundColor: theme["background-basic-color-3"]}]}>
+          <Paragraph style={{ textAlign: "center" }}>
             We need your permission to show the camera
-          </Text>
-          <TouchableNativeFeedback
+          </Paragraph>
+          <Button
             onPress={requestPermission}
+            style={[styles.permissionBtn, {marginTop: 10, borderColor: theme["notification-success"], backgroundColor: theme["notification-success"]}]}
           >
-            <View style={styles.permissionBtn}>
-              <Text
-                style={{ textAlign: "center", fontSize: 18, color: "#fff" }}
-              >
-                Grant permission
-              </Text>
-            </View>
-          </TouchableNativeFeedback>
+            Grant permission
+          </Button>
         </View>
       </View>
     );
@@ -67,6 +70,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
+    alignItems: "center",
     aspectRatio: 3 / 4,
   },
   camera: {
@@ -97,10 +101,6 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   permissionBtn: {
-    padding: 10,
-    borderWidth: 0,
-    borderRadius: 10,
-    backgroundColor: "#00A86B",
   },
   customPopup: {
     position: "absolute",
@@ -113,4 +113,24 @@ const styles = StyleSheet.create({
     alignItems: "center",
     zIndex: 1, // Make sure the pop-up is above the camera view
   },
+  modalBackground: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background
+},
+modalContainer: {
+    borderRadius: 10,
+    padding: 20,
+    width: "80%", // Adjust the width as needed
+    alignItems: "center",
+},
+buttonContainer: {
+    flexDirection: "row",
+    marginTop: 10,
+},
+button: {
+    flex: 1,
+    marginHorizontal: 5,
+},
 });

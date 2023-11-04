@@ -108,9 +108,9 @@ _(...and many more coming soon!)_
 
 | Command                 | Description                                                                           |
 | ----------------------- | ------------------------------------------------------------------------------------- |
-| `npm run start:dev`     | Starts the server with the development configuration, restarts server on file changes |
-| `npm run start:staging` | Starts the server with the staging configuration                                      |
-| `npm run start:prod`    | Starts the server with the production configuration                                   |
+| `npm run dev`     | Starts the server with the development configuration, restarts server on file changes |
+| `npm run staging` | Starts the server with the staging configuration                                      |
+| `npm run prod`    | Starts the server with the production configuration                                   |
 | `npm run test:watch`    | Active development of tests, watch files for changes and re-runs tests                |
 | `npm run test`          | Displays code coverage in cli and updates the code coverage html                      |
 
