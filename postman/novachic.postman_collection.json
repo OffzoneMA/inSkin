@@ -7,6 +7,34 @@
 	},
 	"item": [
 		{
+			"name": "put user info",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"_id\": \"653aeb27f2c51f15f877f594\",\r\n  \"password\": \"user1Password\", // Provide current password for verification\r\n  \"newPassword\": \"newPassword1\", // Leave this field empty if you don't want to update the password\r\n  \"firstName\": \"UpdatedFirstName\",\r\n  \"lastName\": \"UpdatedLastName\",\r\n  \"userName\": \"UpdatedUserName\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{API_URL}}/auth/update-user-info",
+					"protocol": "http",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"auth",
+						"update-user-info"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "post product images",
 			"event": [
 				{
@@ -444,6 +472,26 @@
 							"key": "ids",
 							"value": "6527dfd779335935f822fd92,6527dfd779335935f822fd91,6527dfd779335935f822fd92,6527dfd779335935f822fd91"
 						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get brand by id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{API_URL}}/brands/get-brand-byid/653aeb27f2c51f15f877f596",
+					"protocol": "http",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"brands",
+						"get-brand-byid",
+						"653aeb27f2c51f15f877f596"
 					]
 				}
 			},

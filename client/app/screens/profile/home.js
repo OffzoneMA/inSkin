@@ -7,8 +7,6 @@ import authStorage from "../../utilities/authStorage";
 //import { useToast } from "react-native-toast-notifications";
 import Button from "../../components/Button";
 
-import * as ImagePicker from "expo-image-picker";
-
 import { useState } from "react";
 
 import authApi from "../../api/auth";

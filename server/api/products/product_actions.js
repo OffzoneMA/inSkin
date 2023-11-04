@@ -18,7 +18,7 @@ const upload = multer();
 // POST a new product
 router.post(
   "/add-product",
-  /* auth, */ // Ensure user is authenticated
+  auth, // Ensure user is authenticated
   upload.array('images'),
   asyncMiddleware(async (req, res) => {
 
@@ -63,7 +63,10 @@ router.post(
 );
 
 // GET all products
-router.get("/", async (req, res) => {
+router.get(
+  "/",
+  auth,
+  asyncMiddleware(async (req, res) => {
   try {
     // Query the database to get all products
     const products = await Product.find();
@@ -79,10 +82,13 @@ router.get("/", async (req, res) => {
     console.error(error);
     res.status(500).json({ message: "Internal Server Error" });
   }
-});
+}));
 
 // GET a single product by ID
-router.get("/get-product-byid/:id", async (req, res) => {
+router.get(
+  "/get-product-byid/:id",
+  auth,
+  asyncMiddleware(async (req, res) => {
   try {
     const productId = req.params.id;
 
@@ -100,12 +106,12 @@ router.get("/get-product-byid/:id", async (req, res) => {
     console.error(error);
     res.status(500).json({ message: "Internal Server Error" });
   }
-});
+}));
 
 // POST a new product
 router.get(
   "/get-product-bybarcode/:barcode",
-  /* auth, */ // Ensure user is authenticated
+  auth, // Ensure user is authenticated
   asyncMiddleware(async (req, res) => {
 
     const foundProduct = await Product.findOne({
@@ -125,7 +131,7 @@ router.get(
 // Route to update profile image
 router.put(
   "/add-comment",
-  /* auth, */
+  auth,
   asyncMiddleware(async (req, res) => {
     const productId = req.body._id; // Assuming you have the user ID in the request object
     const { userId, text, review } = req.body; // Assuming userId, text, and review are in the request body
@@ -157,6 +163,7 @@ router.put(
 // Add this route to your Express router
 router.get(
   "/product-comments/:id",
+  auth,
   asyncMiddleware(async (req, res) => {
     try {
       // Find the product by ID in the database
@@ -186,7 +193,10 @@ router.get(
   })
 );
 
-router.get("/all-comments", asyncMiddleware(async (req, res) => {
+router.get(
+  "/all-comments",
+  auth,
+  asyncMiddleware(async (req, res) => {
   try {
       const products = await Product.find().populate({
           path: 'comments.userId',

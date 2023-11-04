@@ -53,6 +53,7 @@ router.post(
 
 router.put(
   "/update-user-info",
+  auth,
   asyncMiddleware(async (req, res) => {
     try {
       const userId = req.body._id;
@@ -168,7 +169,7 @@ router.get(
 // Route to update profile image
 router.put(
   "/update-profile-image",
-  /* auth, */
+  auth, 
   upload.single('image'),
   asyncMiddleware(async (req, res) => {
     const userId = req.body._id; // Assuming you have the user ID in the request object
@@ -196,7 +197,7 @@ router.put(
 
 router.get(
   "/profile-image/:id",
-  /* auth, */ // Ensure the user is authenticated to access this route
+  auth, // Ensure the user is authenticated to access this route
   asyncMiddleware(async (req, res) => {
     const userId = req.params.id; // Assuming you have the user ID in the request object after authentication
     const user = await User.findById(userId).select({ userName: 1 , profileImage: 1});
@@ -220,7 +221,10 @@ router.get(
 );
 
 // GET multiple users by IDs
-router.get("/get-users-byids", async (req, res) => {
+router.get(
+  "/get-users-byids", 
+  auth,
+  asyncMiddleware(async (req, res) => {
   try {
       // Retrieve an array of brand IDs from the request query parameters
       const userIds = req.query.ids.split(',');
@@ -239,6 +243,6 @@ router.get("/get-users-byids", async (req, res) => {
       console.error(error);
       res.status(500).json({ message: "Internal Server Error" });
   }
-});
+}));
 
 module.exports = router;

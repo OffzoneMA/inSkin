@@ -1,5 +1,5 @@
-import React, { useState, useContext } from "react";
-import { StyleSheet, View, ScrollView, Image, Alert } from "react-native";
+import React, { useContext } from "react";
+import { StyleSheet, View, ScrollView } from "react-native";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import AsyncStorage from "@react-native-async-storage/async-storage";

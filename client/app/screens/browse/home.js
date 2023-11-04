@@ -24,8 +24,6 @@ import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEff
 
 import { useTheme, Icon } from "@ui-kitten/components";
 
-import ShowProductModal from '../../components/ShowProductModal';
-
 import StarRating from 'react-native-star-rating-widget';
 
 import { encode } from 'base-64';
@@ -36,8 +34,6 @@ function DiscoverHome({ navigation }) {
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const theme = useTheme();
-
-  const [showCustomPopup, setShowCustomPopup] = useState(false); // State to control custom pop-up visibility
 
   const getAllComments = async () => {
     try {
@@ -71,10 +67,6 @@ function DiscoverHome({ navigation }) {
     getAllComments();
   };
 
-  const closeCustomPopup = () => {
-    setShowCustomPopup(false);
-  };
-
   const getProductById = async (_id) => {
     try {
       const result = await productActionsApi.getProductById(_id);
@@ -102,7 +94,7 @@ function DiscoverHome({ navigation }) {
             />
           ) : (
             <Icon
-                name="image"
+                name="image-outline"
                 width={24}
                 height={24}
                 fill={theme["background-basic-color-1"]}
@@ -147,11 +139,6 @@ function DiscoverHome({ navigation }) {
           }
         />
       </SafeAreaView>
-      <ShowProductModal
-        showCustomPopup={showCustomPopup}
-        setShowCustomPopup={setShowCustomPopup}
-        closeCustomPopup={closeCustomPopup}
-      />
     </Page>
   );
 }

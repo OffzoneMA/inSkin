@@ -1,6 +1,5 @@
-import React, { useEffect, useRef } from "react";
-import { View, StyleSheet, Text } from "react-native";
-import LottieView from "lottie-react-native";
+import React from "react";
+import { StyleSheet } from "react-native";
 
 import Page from "../components/Page";
 import ActivityIndicator from "../components/ActivityIndicator";
