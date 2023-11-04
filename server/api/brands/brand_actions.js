@@ -16,7 +16,10 @@ router.use(bodyParser.json());
 const upload = multer();
 
 // GET all brands
-router.get("/", async (req, res) => {
+router.get(
+  "/",
+  auth,
+  asyncMiddleware(async (req, res) => {
     try {
         // Query the database to get all products
         const brands = await Brand.find();
@@ -32,10 +35,13 @@ router.get("/", async (req, res) => {
         console.error(error);
         res.status(500).json({ message: "Internal Server Error" });
     }
-});
+}));
 
 // GET a single brand by ID
-router.get("/get-brand-byid/:id", async (req, res) => {
+router.get(
+  "/get-brand-byid/:id",
+  auth,
+  asyncMiddleware(async (req, res) => {
     try {
       const brandId = req.params.id;
   
@@ -53,6 +59,6 @@ router.get("/get-brand-byid/:id", async (req, res) => {
       console.error(error);
       res.status(500).json({ message: "Internal Server Error" });
     }
-});
+}));
 
 module.exports = router;
