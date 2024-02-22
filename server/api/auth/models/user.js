@@ -97,6 +97,7 @@ userSchema.methods.generateAuthToken = function () {
 const User = mongoose.model("User", userSchema);
 
 function validateUser(user) {
+  
   const schema = Joi.object({
     firstName: Joi.string().required(),
     lastName: Joi.string(),
@@ -112,7 +113,7 @@ function validateUser(user) {
     }),
     isAdmin: Joi.boolean(),
   });
-
+  
   return schema.validate(user);
 }
 

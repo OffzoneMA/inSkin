@@ -41,6 +41,7 @@ const register = (
   reader_goals = [],
   reader_genres = [] */
 ) =>
+
   client.post("/auth/register", {
     firstName,
     lastName,

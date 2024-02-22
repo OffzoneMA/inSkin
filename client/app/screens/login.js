@@ -10,7 +10,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import AuthContext from "../contexts/auth";
 import jwt_decode from "jwt-decode";
-
 // Components
 import Page from "../components/Page";
 import Heading from "../components/Heading";
@@ -30,18 +29,18 @@ const validationSchema = Yup.object({
   email: Yup.string().required().email().label("Email"),
   password: Yup.string().required().min(4).label("Password"),
 });
-
+ 
 export default function LoginScreen({ navigation }) {
   const loginApi = useApi(authApi.login);
-
   const authContext = useContext(AuthContext);
   //const toast = useToast();
 
   const loginHandler = async ({ email, password }) => {
     const result = await loginApi.request(email, password);
-
+    console.log("n est pas comris",result)
     if (!result.ok) {
       //toast.show(result.data, {type: "danger"});
+      console.log("n est pas comris")
       return;
     }
 
@@ -136,7 +135,7 @@ export default function LoginScreen({ navigation }) {
             style={{ marginTop: 20, marginBottom: 10, flexDirection: "row" }}
           >
             <Paragraph style={{ marginRight: 10 }}>New user?</Paragraph>
-            <TextLink onPress={() => navigation.navigate("Register")}>
+            <TextLink onPress={() => navigation.navigate("Register1")}>
               Create account
             </TextLink>
           </View>

@@ -102,22 +102,26 @@ router.post(
   "/register",
   asyncMiddleware(async (req, res) => {
     const { error } = validate(req.body);
+    console.log("erererer")
     if (error) {
+      console.log("errer icic",error)
       res.status(400).send(error.details[0].message);
       return;
     }
-
+    console.log("ererereraat")
+    console.log("newuser")
     const foundUser = await User.findOne({
       email: req.body.email,
     });
-    
+    console.log("newuser")
     if (foundUser) {
       res.status(400).send("A user is already registered with this email!");
       return;
     }
-
+    console.log("newuser")
+    
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
-
+    console.log("mamama")
     // Generate unique username
     var userName;
     while (true) {
@@ -133,11 +137,14 @@ router.post(
         break;
       }
     }
-
+    console.log("mamama")
     // Fetch image from the URL and convert it to a buffer
-    const imageURL = faker.image.avatar(); // Replace with the actual URL to your image
-    const imageBuffer = await getImageBufferFromURL(imageURL);
-
+    const imageURL = faker.image.avatar(); 
+    console.log("hahahahahahah")
+    // Replace with the actual URL to your image
+    //const imageBuffer = await getImageBufferFromURL(imageURL);
+    console.log("mamamababababab")
+    console.log("newuser")
     const newUser = new User({
       firstName: req.body.firstName,
       lastName: req.body.lastName,
@@ -145,13 +152,14 @@ router.post(
       email: req.body.email,
       password: hashedPassword,
       profileImage: {  // Include profile image data in newUser object
-        data: imageBuffer, // Assuming imageURL is a base64 encoded string
+        //data: imageBuffer, // Assuming imageURL is a base64 encoded string
         contentType: 'image/jpg' // Set the content type accordingly
       }
     });
-
+    console.log("newuser")
     await newUser.save();
     const token = newUser.generateAuthToken();
+    console.log("Registration Successful!");
     res
       .header("bearer-token", token)
       .json({ message: "Registration Successful!" });

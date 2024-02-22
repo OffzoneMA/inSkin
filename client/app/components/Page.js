@@ -15,7 +15,7 @@ export default function Page({ children, withPadding = true }) {
   return (
     <Layout
       style={{
-        backgroundColor: theme["background-basic-color-2"],
+        backgroundColor: "white",
         flex: 1,
         padding: withPadding ? 20 : 0
       }}
