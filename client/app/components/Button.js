@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
   buttonTextStyle: {
     fontSize: 14,
     textTransform: 'uppercase',
-    color: 'white'
+    color: '#ECCC9'
   },
   indicator: {
     justifyContent: 'center',
@@ -38,11 +38,5 @@ const styles = StyleSheet.create({
   },
   button: {
     // Style du bouton actif
-  },
-  disabledButton: {
-    backgroundColor: '#CCCCCC', // Couleur de fond lorsque le bouton est désactivé
-  },
-  disabledButtonText: {
-    color: '#999999', // Couleur du texte lorsque le bouton est désactivé
   },
 });

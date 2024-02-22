@@ -3,19 +3,24 @@ import {
   StyleSheet,
   View,
   ScrollView,
+  Text,
+  TextInput
 } from "react-native";
+import style from './style';
+import Fontisto from 'react-native-vector-icons/Fontisto';
 import { Formik } from "formik";
 import * as Yup from "yup";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import AuthContext from "../contexts/auth";
 import jwt_decode from "jwt-decode";
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+
 // Components
 import Page from "../components/Page";
 import Heading from "../components/Heading";
 import Paragraph from "../components/Paragraph";
 import Button from "../components/Button";
-import TextInput from "../components/TextInput";
 import TextLink from "../components/TextLink";
 
 // API
@@ -63,7 +68,11 @@ export default function LoginScreen({ navigation }) {
     <>
       <Page>
         <KeyboardAwareScrollView contentContainerStyle={{ flex: 1 }}>
-          <Heading style={{ marginBottom: 20, marginTop: 20 }}>Login</Heading>
+        <View >
+             <Text style={{fontSize: 30, fontWeight: 'bold'}}>Welcome Back</Text> 
+             <Text style={{ fontSize: 18, marginVertical: 10}}>Sign In to continue</Text>
+            
+          </View>
 
           <Formik
             initialValues={{
@@ -84,8 +93,17 @@ export default function LoginScreen({ navigation }) {
               <>
                 <ScrollView>
                   {/* <Label style={{marginBottom: 10}}>Email</Label> */}
+                  <Text style={style.label}>Email adress:</Text>
+                   <View style={[style.action, touched.email && errors.email && styles.inputError]}>
+                    <Fontisto
+                      name="email"
+                      color="#420475"
+                      size={24}
+                     style={{marginLeft: 0, paddingRight: 5}}
+            />
                   <TextInput
-                    placeholder="Email"
+                 style={style.textInput}
+                 placeholder="Enter your email address"
                     autoCompleteType="email"
                     keyboardType="email-address"
                     returnKeyType="next"
@@ -97,21 +115,32 @@ export default function LoginScreen({ navigation }) {
                     onBlur={() => setFieldTouched("email")}
                     errorVisible={touched.email}
                   />
+                  {touched.email && errors.email && (
+                 <FontAwesome name="exclamation-circle" color="red" size={24} style={{ marginRight: 5 }} />
+                    )}
+                  </View>
                   {/* <Label style={{marginBottom: 10}}>Password</Label> */}
+                  <Text style={style.label}>Password:</Text>
+                  <View style={[style.action, touched.password && errors.password && styles.inputError]}>
                   <TextInput
+                   style={style.textInput}
                     placeholder="Password"
                     autoCompleteType="password"
                     keyboardType="default"
                     returnKeyType="next"
                     autoCapitalize="none"
                     autoCorrect={false}
-                    secure={true}
+                    secureTextEntry={true}
                     value={values.password}
                     onChangeText={handleChange("password")}
                     errorMessage={errors.password}
                     onBlur={() => setFieldTouched("password")}
                     errorVisible={touched.password}
                   />
+                   {touched.password && errors.password && (
+                 <FontAwesome name="exclamation-circle" color="red" size={24} style={{ marginRight: 5 }} />
+                    )}
+                  </View>
                   <TextLink
                     onPress={() => console.log("Forgot Password")}
                     style={{ alignSelf: "flex-end", marginTop: 10 }}
@@ -120,13 +149,26 @@ export default function LoginScreen({ navigation }) {
                   </TextLink>
                 </ScrollView>
 
+               
                 <Button
-                  loading={loginApi.loading}
-                  onPress={handleSubmit}
-                  style={{ marginTop: 20 }}
-                >
-                  Sign In
-                </Button>
+  loading={loginApi.loading}
+  onPress={handleSubmit}
+  style={{
+    marginTop: 20,
+    opacity: values.email && values.password ? 1 : 0.5,
+    backgroundColor: '#EA6479', // couleur de fond du bouton
+    color: 'white', // couleur du texte du bouton
+    borderColor: '#EA6479', // couleur de la bordure du bouton
+    borderWidth: 1, // épaisseur de la bordure
+    borderRadius: 5, // bordure arrondie
+  }}
+  disabled={!values.email || !values.password || Object.keys(errors).length !== 0}
+>
+  Sign In
+</Button>
+
+
+
               </>
             )}
           </Formik>
@@ -134,9 +176,10 @@ export default function LoginScreen({ navigation }) {
           <View
             style={{ marginTop: 20, marginBottom: 10, flexDirection: "row" }}
           >
-            <Paragraph style={{ marginRight: 10 }}>New user?</Paragraph>
+            <Paragraph style={{ marginRight: 10, color: 'black' }}>Don’t have an account ?</Paragraph>
+
             <TextLink onPress={() => navigation.navigate("Register1")}>
-              Create account
+            Sign Up
             </TextLink>
           </View>
         </KeyboardAwareScrollView>

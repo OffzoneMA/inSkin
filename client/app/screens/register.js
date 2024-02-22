@@ -1,4 +1,4 @@
-import React, { useContext,useState,useEffect  } from "react";
+import React, { useCallback, useContext,useState,useEffect  } from "react";
 import { StyleSheet,Modal,TouchableOpacity , View, ScrollView, TextInput,Text } from "react-native";
 import { Formik } from "formik";
 import * as Yup from "yup";
@@ -7,7 +7,6 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import AuthContext from "../contexts/auth";
 import jwt_decode from "jwt-decode";
 import { FontAwesome } from '@expo/vector-icons';
-
 // Components
 import Page from "../components/Page";
 import Heading from "../components/Heading";
@@ -49,6 +48,33 @@ export default function RegisterScreen({ route, navigation }) {
     console.log("Checked:", checked);
     setIsChecked(checked);
 
+  };
+  
+
+  const buttonPressed = () => {
+    bottomSheetRef.current?.present();
+  };
+  const renderBackdrop = useCallback((props) => {
+    return (
+      <BottomSheetBackdrop
+        {...props}
+        disappearsOnIndex={-1}
+        appearsOnIndex={0}
+      />
+    );
+  }, []);
+  
+  const [currentSize, setCurrentSize] = useState("38");
+
+  const goToCart = () => {
+    console.log("goToCart");
+    bottomSheetRef.current?.dismiss();
+    // TODO: navigation.navigate('Cart');
+  };
+
+  const continuePurchase = () => {
+    console.log("continue");
+    bottomSheetRef.current?.dismiss();
   };
   const checkFormValid = async ({ firstName,lastName, email, password, passwordConfirmation }) => {
     try {
@@ -292,8 +318,17 @@ export default function RegisterScreen({ route, navigation }) {
           
                   <Button
                    onPress={handleSubmit1}
-                   style={[styles.button, !isFormValid ? styles.buttonChecked : styles.buttonUnchecked]}
-                   disabled={isFormValid}
+                   style={{
+                    marginTop: 20,
+                    opacity: values.email && values.password && values.firstName && values.lastName && values.passwordConfirmation? 1 : 0.5,
+                    backgroundColor: '#EA6479', // couleur de fond du bouton
+                    color: 'white', // couleur du texte du bouton
+                    borderColor: '#EA6479', // couleur de la bordure du bouton
+                    borderWidth: 1, // épaisseur de la bordure
+                    borderRadius: 5, // bordure arrondie
+                  }}
+                  disabled={!values.email || !values.password || Object.keys(errors).length !== 0}
+                   
                    
                     >
                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
@@ -305,46 +340,61 @@ export default function RegisterScreen({ route, navigation }) {
                 </ScrollView>
                 
                 <Modal
-            visible={showTerms}
-            transparent={true}
-            animationType="fade"
-          >
-            <TouchableOpacity
-              style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
-              onPress={handleCloseModal}
-            >
-              <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 10 }}>
-                <TouchableOpacity
-                  onPress={handleCloseModal}
-                  style={{ position: 'absolute', top: 10, right: 10 }}
-                >
-                  <FontAwesome name="close" size={24} color="black" />
-                </TouchableOpacity>
-                <Text style={{ marginBottom: 10 }}>Terms and Conditions</Text>
-               <Text> Please read and accept the conditions below. Thank you.</Text>
-               <Text>In accordance with the law 09-08, you have the right to access, rectify, and object to the processing of your personal data.This processing has been authorized by the CNDP under number (in progress).</Text>
-               <CheckBox
-                     title="I accept the Terms of Service and the Privacy Policy of InSkin."
-                     onPress={() => setMusic(!music)} 
-                     isChecked={music} />
-
-
-<Button
-  loading={registerApi.loading}
-  onPress={handleSubmit}
-  title="Sign up"
-  style={[styles.button, music ? styles.buttonChecked : styles.buttonUnchecked]}
-  textStyle={styles.buttonText}
-  disabled={music}
+  visible={showTerms}
+  transparent={true}
+  animationType="slide" // Utilisez l'animation slide pour un effet de glissement
 >
-  Sign up
-</Button>
+  <View style={{ flex: 1, justifyContent: 'flex-end' }}>
+    <TouchableOpacity
+      style={{ flex: 1 }}
+      onPress={handleCloseModal}
+    />
+    <View style={{ backgroundColor: 'white', padding: 20, borderTopLeftRadius: 20, borderTopRightRadius: 20 }}>
+      <TouchableOpacity
+        onPress={handleCloseModal}
+        style={{ position: 'absolute', top: 10, right: 10 }}
+      >
+        <FontAwesome name="close" size={18} color="gray" />
+      </TouchableOpacity>
+      <Text style={{ marginBottom: 10, color: 'black', fontSize: 25, fontWeight: 'bold' }}>Terms and Conditions</Text>
+      <View style={{ borderBottomWidth: 1, borderBottomColor: 'gray', marginBottom: 10 }} />
+      <Text style={{ marginRight: 10, color: 'black', fontWeight: 'bold' }} >
+  Please read and accept the conditions below. Thank you.
+</Text>
+
+      <Text>In accordance with the law 09-08, you have the right to access, rectify, and object to the processing of your personal data. This processing has been authorized by the CNDP under number (in progress).</Text>
+      <CheckBox
+        title="I accept the Terms of Service and the Privacy Policy of InSkin."
+        onPress={() => setMusic(!music)}
+        isChecked={music}
+      />
+      <CheckBox
+        title="Remember my username."
+      />
+      <Button
+        loading={registerApi.loading}
+        onPress={handleSubmit}
+        title="Sign up"
+        // style={[styles.button, music ? styles.buttonChecked : styles.buttonUnchecked]}
+        style={{
+          marginTop: 20,
+          opacity: music ? 1 : 0.5,
+          backgroundColor: '#EA6479', // couleur de fond du bouton
+          color: 'white', // couleur du texte du bouton
+          borderColor: '#EA6479', // couleur de la bordure du bouton
+          borderWidth: 1, // épaisseur de la bordure
+          borderRadius: 5, // bordure arrondie
+        }}
+        textStyle={styles.buttonText}
+        disabled={!music}
+      >
+        Sign up
+      </Button>
+    </View>
+  </View>
+</Modal>
 
 
-                </View>
-          </TouchableOpacity> 
-          
-                </Modal>
         
               </>
             )}
@@ -353,9 +403,9 @@ export default function RegisterScreen({ route, navigation }) {
           <View
             style={{ marginTop: 20, marginBottom: 10, flexDirection: "row" }}
           >
-            <Paragraph style={{ marginRight: 10 }}>Have an account?</Paragraph>
+            <Paragraph style={{ marginRight: 10, color: 'black' }}>Already have an account? </Paragraph>
             <TextLink onPress={() => navigation.navigate("Login")}>
-              Login
+            Sign In
             </TextLink>
           </View>
           
@@ -387,15 +437,7 @@ const styles = StyleSheet.create({
     color: 'white',
     textAlign: 'center',
   },
-  buttonChecked: {
-    backgroundColor: '#EA6479', // Couleur lorsque le CheckBox est coché
-  },
-  buttonUnchecked: {
-    backgroundColor: '#ECCC9', // Couleur lorsque le CheckBox n'est pas coché
-  },
-  inputError: {
-    borderColor: 'red', // Couleur de la bordure en cas d'erreur
-  },
+ 
   errorText: {
     color: 'red', // Couleur du texte d'erreur
     marginTop: 5, // Espacement par rapport au champ d'entrée
