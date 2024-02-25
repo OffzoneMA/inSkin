@@ -104,6 +104,7 @@ export default function RegisterScreen({ route, navigation }) {
     email,
     password,
   }) => {
+    console.log("I'm here")
     var readerType;
     var readerGoals;
     var readerGenres;
@@ -126,7 +127,7 @@ export default function RegisterScreen({ route, navigation }) {
       readerGoals,
       readerGenres
     );
-
+   console.log(result)
     if (!result.ok) {
       //toast.show(result.data, {type: "danger"});
       return;

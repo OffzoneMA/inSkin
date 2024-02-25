@@ -42,7 +42,7 @@ export default function LoginScreen({ navigation }) {
 
   const loginHandler = async ({ email, password }) => {
     const result = await loginApi.request(email, password);
-    console.log("n est pas comris",result)
+    console.log("j ai pas compris",result)
     if (!result.ok) {
       //toast.show(result.data, {type: "danger"});
       console.log("n est pas comris")
