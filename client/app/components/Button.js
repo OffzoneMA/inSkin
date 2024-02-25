@@ -3,7 +3,7 @@ import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { Button, Spinner } from "@ui-kitten/components";
 import SubHeading from "./SubHeading";
 
-export default function CustomButton({ children, loading = false, ...props }) {
+export default function CustomButton({ children, loading = false, disabled = false, ...props }) {
   const LoadingIndicator = (props) => (
     <View style={styles.indicator}>
       <Spinner status="basic" size='small'/>
@@ -13,20 +13,30 @@ export default function CustomButton({ children, loading = false, ...props }) {
   const ButtonText = ({children, loading}) => {
     if(loading) return null
     return <SubHeading style={styles.buttonTextStyle}>{children}</SubHeading>
-}
+  };
 
-  return <Button children={ButtonText({children, loading})} accessoryLeft={loading ? LoadingIndicator : null} {...props}>
-    </Button>;
+  return (
+    <Button
+      children={ButtonText({children, loading})}
+      accessoryLeft={loading ? LoadingIndicator : null}
+      disabled={disabled} // Utilisation de la propriété disabled
+      style={[styles.button, disabled ? styles.disabledButton : null]} // Application du style du bouton désactivé si disabled est true
+      {...props}
+    />
+  );
 }
 
 const styles = StyleSheet.create({
   buttonTextStyle: {
     fontSize: 14,
     textTransform: 'uppercase',
-    color: 'white'
+    color: '#ECCC9'
   },
   indicator: {
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  button: {
+    // Style du bouton actif
   },
 });

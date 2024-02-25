@@ -13,7 +13,6 @@ RUN npm install --global expo-cli
 
 # Copy app source code
 COPY . .
-
 # Exports
 EXPOSE 19000
 EXPOSE 19001

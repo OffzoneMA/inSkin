@@ -49,14 +49,9 @@ export default function App() {
   };
 
   const computeInitialRoute = async () => {
-    try {
+    
       const value = await AsyncStorage.getItem("hasOnboarded");
-      if (value == "true") {
-        setInitialRoute("Auth");
-      }
-    } catch (e) {
-      console.log(e);
-    }
+      
   };
 
   const startUp = async () => {
@@ -99,7 +94,7 @@ export default function App() {
               > */}
                 <SafeScreen>
                   <OfflineNotice />
-                  <NavigationContainer>
+                  <NavigationContainer screenOptions={{ headerShown: false }}>
                     {user ? (
                       <AppNavigator />
                     ) : initialRoute == "Onboarding" ? (

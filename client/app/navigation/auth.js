@@ -15,7 +15,7 @@ export default function AuthNavigator() {
         initialRouteName="Login"
       >
         <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="Register" component={RegisterScreen} />
+        <Stack.Screen name="Register1" component={RegisterScreen} />
         <Stack.Screen name="Loading" component={LoadingScreen} />
         <Stack.Screen name="App" component={AppNavigator} />
       </Stack.Navigator>

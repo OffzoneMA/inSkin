@@ -7,10 +7,9 @@ const winston = require('winston');
 const settings = require('../config/settings')
 
 const request = superagent(app);
-
 // Connect to a test database
 mongoose
-  .connect(`${settings.databaseUrl}/nawvel_test?authSource=admin`, {
+  .connect(`${settings.databaseUrl}?authSource=admin`, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useFindAndModify: false,

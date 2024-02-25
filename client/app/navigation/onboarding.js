@@ -14,9 +14,9 @@ export default function OnboardingNavigator() {
         screenOptions={{ headerShown: false }}
         initialRouteName="GetStarted"
       >
-        <Stack.Screen name="GetStarted" component={GetStartedScreen} />
-        <Stack.Screen name="Onboarding" component={OnboardingScreen} />
-        <Stack.Screen name="AuthNavigator" component={AuthNavigator} />
+        <Stack.Screen name="GetStarted" component={GetStartedScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Onboarding" component={OnboardingScreen}  options={{ headerShown: false }}/>
+        <Stack.Screen name="AuthNavigator" component={AuthNavigator} options={{ headerShown: false }} />
       </Stack.Navigator>
   );
 }
