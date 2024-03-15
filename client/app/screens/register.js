@@ -1,5 +1,5 @@
 import React, { useCallback, useContext,useState,useEffect  } from "react";
-import { StyleSheet,Modal,TouchableOpacity , View, ScrollView, TextInput,Text } from "react-native";
+import { StyleSheet,Modal,TouchableOpacity , View, ScrollView, TextInput,Text,Image } from "react-native";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -34,6 +34,7 @@ export default function RegisterScreen({ route, navigation }) {
   const [isFormValid, setIsFormValid] = useState(false);
   const [isFormFilled, setIsFormFilled] = useState(false);
   const registerApi = useApi(authApi.register);
+  const handleGoogleLogin=useApi(authApi.handleGoogleLogin);
   const [music, setMusic] = useState(false); 
   const [acceptedConditions, setAcceptedConditions] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
@@ -152,6 +153,10 @@ export default function RegisterScreen({ route, navigation }) {
     
 
     setShowTerms(true);
+  };
+  const handleSubmitwhithgoogle = async() => {
+    console.log("authentification whith google")
+    const result = await handleGoogleLogin.request();
   };
   const handleCloseModal = () => {
     setShowTerms(false);
@@ -337,7 +342,35 @@ export default function RegisterScreen({ route, navigation }) {
                              <FontAwesome name="long-arrow-right" size={18} color="white" />
                               </View>
                          </Button>
-          
+                         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginTop: 10 }}>
+                        <View style={{ flex: 1, height: 1, backgroundColor: 'black' }} />
+                        <Text style={{ paddingHorizontal: 5 }}>or</Text>
+                        <View style={{ flex: 1, height: 1, backgroundColor: 'black' }} />
+                        </View>
+                        <Button
+                   onPress={handleSubmitwhithgoogle}
+                   style={{
+                    marginTop: 20,
+                    backgroundColor: '#F4F4F4', // Fond gris clair pour le bouton Google
+                    borderColor: '#F4F4F4', // Bordure gris clair
+                    color: 'black', 
+                    borderWidth: 1, 
+                    borderRadius: 5, 
+                  }}
+                 
+                   
+                   
+                    >
+                       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                       <Image
+                            source={require('../../img/google_icone.png')} 
+                            style={{ width: 24, height: 24, marginRight: 5 }} 
+    />
+                       <Text style={{ color: 'black', marginLeft: 5 }}>Sign up with Google</Text>
+                            
+                              </View>
+                         </Button>
+                         
                 </ScrollView>
                 
                 <Modal

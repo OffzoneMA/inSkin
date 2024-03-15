@@ -142,7 +142,8 @@ export default function LoginScreen({ navigation }) {
                     )}
                   </View>
                   <TextLink
-                    onPress={() => console.log("Forgot Password")}
+                   
+                    onPress={() => navigation.navigate("Forgotpassword")}
                     style={{ alignSelf: "flex-end", marginTop: 10 }}
                   >
                     Forgot Password?

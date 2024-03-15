@@ -12,7 +12,9 @@ const Stack = createStackNavigator();
 export default function ProfileNavigator() {
   return (
     <Stack.Navigator
-      screenOptions={{ headerShown: false }}
+    screenOptions={{ 
+      headerShown: false,
+    }}
       initialRouteName="ProfileHome"
     >
       <Stack.Screen
