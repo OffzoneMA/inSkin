@@ -3,79 +3,137 @@ import { createMaterialTopTabNavigator } from "@react-navigation/material-top-ta
 import BrowseNavigator from "./browse";
 import ProfileNavigator from "./profile";
 import ScanNavigator from "./scan";
-import { useTheme } from "@ui-kitten/components";
+import { useTheme ,Icon} from "@ui-kitten/components";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { SafeAreaView, Dimensions,View,Text, Image } from "react-native";
+import { useState } from "react";
+import {renderProfileImage} from "../screens/profile/ProfilePicture"
+import { encode } from 'base-64';
 
+import { useFocusEffect } from "@react-navigation/native"; 
 const Tab = createMaterialTopTabNavigator();
 
 export default function AppTabNavigator() {
   const theme = useTheme();
-
+  const windowWidth = Dimensions.get('window').width; // Get the window width
+  const renderHeaderLogo = () => (
+    <Text style={{ color: theme["color-primary-default"], fontSize: 20, fontWeight: 'bold' }}>INSKIN</Text>
+  );
+  const renderProfileImage1=()=>(
+    <View>
+    {renderProfileImage()} 
+  </View>
+  )
+  // Fonction pour afficher l'icône de notification dans l'entête
+  const renderNotificationIcon = () => (
+    <MaterialCommunityIcons name='bell-outline' size={40} color='black' />
+  );
+  
+  // Fonction pour afficher la photo de profil dans l'entête
+  
+  
   return (
-    <Tab.Navigator
-      initialRouteName="Scan"
-      backBehavior= "none"
-      screenOptions = {({ route }) =>({
-        tabBarActiveTintColor: theme["color-primary-default"],
-        tabBarInactiveTintColor: theme["color-primary-unfocus"],
-        tabBarShowIcon: true, // Show icons in tabs
-        tabBarLabelStyle: {
-          fontSize: 12,
-          fontWeight: "bold", // Make the tab labels bold
-          marginVertical: 0,
-        },
-        tabBarIndicatorStyle: {
-          backgroundColor: theme["color-primary-default"], // Color of the active tab indicator
-        },
-        tabBarIconStyle: {
-          marginVertical: 0, // Remove vertical margin
-        },
-        tabBarStyle: {
-          backgroundColor: theme["background-basic-color-1"],
-        },
-        tabBarIcon: ({ color }) => 
-        screenOptions(route, color),
-      })}
-    >
-      <Tab.Screen
-        name="Browse"
-        component={BrowseNavigator}
-        options={{
-          tabBarIcon: ({ focused, color, size }) => (
-            <MaterialCommunityIcons
-              name={focused ? "magnify-expand" : "magnify-expand"}
-              size={24}
-              color={color}
-            />
-          ),
+    <SafeAreaView style={{ flex: 1 }}>
+  <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 10,backgroundColor:'white'}}>
+  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+    {renderHeaderLogo()}
+  </View>
+  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+    {renderProfileImage1()}
+    {renderNotificationIcon()}
+  </View>
+</View>
+      <Tab.Navigator
+        initialRouteName="Home"
+        backBehavior="none"
+        tabBarPosition="bottom" // Position the tabBar at the bottom
+        tabBarOptions={{
+          activeTintColor: theme["color-primary-default"],
+          inactiveTintColor: 'black',
+          showIcon: true, // Show icons in tabs
+          labelStyle: {
+            fontSize: 12,
+            fontWeight: "bold", // Make the tab labels bold
+            marginVertical: 0,
+          },
+          indicatorStyle: {
+            backgroundColor: theme["color-primary-default"], // Color of the active tab indicator
+          },
+          iconStyle: {
+            marginVertical: 0, // Remove vertical margin
+          },
+          style: {
+            backgroundColor:' #F4F4F4',
+            width: windowWidth, // Set the tabBar width to window width
+          },
         }}
-      />
-      <Tab.Screen
-        name="Scan"
-        component={ScanNavigator}
-        options={{
-          tabBarIcon: ({ focused, color, size }) => (
-            <MaterialCommunityIcons
-              name={focused ? "barcode-scan" : "barcode-scan"}
-              size={24}
-              color={color}
-            />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Profile"
-        component={ProfileNavigator}
-        options={{
-          tabBarIcon: ({ focused, color, size }) => (
-            <MaterialCommunityIcons
-              name={focused ? "account-outline" : "account-outline"}
-              size={24}
-              color={color}
-            />
-          ),
-        }}
-      />
-    </Tab.Navigator>
+      >
+        <Tab.Screen
+          name="Home"
+          component={BrowseNavigator}
+          options={{
+            tabBarIcon: ({ focused, color, size }) => (
+              <MaterialCommunityIcons
+                name={focused ? "home" : "home-outline"}
+                size={24}
+                color={color}
+              />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Search"
+          component={BrowseNavigator}
+          options={{
+            tabBarIcon: ({ focused, color, size }) => (
+              <MaterialCommunityIcons
+                name={focused ? "magnify-expand" : "magnify-expand"}
+                size={24}
+                color={color}
+              />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Favoris"
+          component={BrowseNavigator}
+          options={{
+            tabBarIcon: ({ focused, color, size }) => (
+              <MaterialCommunityIcons
+                name={focused ? "heart" : "heart-outline"}
+                size={24}
+                color={color}
+              />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Posts"
+          component={BrowseNavigator}
+          options={{
+            tabBarIcon: ({ focused, color, size }) => (
+              <MaterialCommunityIcons
+                name={focused ? "file-document-edit" : "file-document-edit-outline"}
+                size={24}
+                color={color}
+              />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Profile"
+          component={ProfileNavigator}
+          options={{
+            tabBarIcon: ({ focused, color, size }) => (
+              <MaterialCommunityIcons
+                name={focused ? "account-outline" : "account-outline"}
+                size={24}
+                color={color}
+              />
+            ),
+          }}
+        />
+      </Tab.Navigator>
+    </SafeAreaView>
   );
 }

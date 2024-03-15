@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { MaterialIcons } from '@expo/vector-icons';
 import {
   SafeAreaView,
   View,
@@ -8,6 +9,8 @@ import {
   RefreshControl,
   Image,
   TouchableOpacity,
+  Button,
+  Text
 } from "react-native";
 
 import Page from "../../components/Page";
@@ -80,52 +83,55 @@ function DiscoverHome({ navigation }) {
   }
   
   const Item = ({ item }) => (
-    <TouchableOpacity activeOpacity={0.7} style={[styles.item, {backgroundColor: theme["background-basic-color-1"]}]} onPress={() => 
-      { 
-        getProductById(item.productId);
-      }}
+    <TouchableOpacity 
+      activeOpacity={0.7} 
+      style={[styles.item, {backgroundColor: '#F4F4F4'}]} 
+      onPress={() => { getProductById(item.productId); }}
     >
-      <View style={{ borderRadius: 5, flex: 1/4, justifyContent: 'center', alignItems: 'center' }}>
-        <View style={[styles.profileIconWrapper, {width: '100%', borderRadius: 100, marginBottom: "auto", backgroundColor: theme['color-primary-disabled-border'], aspectRatio: 1, overflow: 'hidden', justifyContent: "center"}]}>
+    
+      <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+      <MaterialIcons style={{marginLeft:200}} name="close" size={24} color="black" onPress={() => handleFollow(item.userId)} />
+        <View style={[styles.profileIconWrapper, {width: 100, borderRadius: 50, backgroundColor: theme['color-primary-disabled-border'],justifyContent: "center", alignItems: "center", aspectRatio: 1, overflow: 'hidden'}]}>
           {item.profileImage && item.profileImage.data && item.profileImage.data.data ? (
             <Image 
-                source={{ uri: 'data:' + item.profileImage.contentType + ';base64,' + encode(item.profileImage.data.data.map(byte => String.fromCharCode(byte)).join('')) }}
-                style={[styles.profilePicture, { flex: 1, width: null, height: null }]}
+              source={{ uri: 'data:' + item.profileImage.contentType + ';base64,' + encode(item.profileImage.data.data.map(byte => String.fromCharCode(byte)).join('')) }}
             />
           ) : (
             <Icon
-                name="image-outline"
-                width={24}
-                height={24}
-                fill={theme["background-basic-color-1"]}
-                style={{alignSelf: "center"}}
+              name="image-outline"
+              width={24}
+              height={24}
+              fill={theme["background-basic-color-1"]}
+              style={{alignSelf: "center"}}
             />
           )}
         </View>
-        
+        <View style={{ flex: 1, flexDirection:"row"}}>
+      <SubHeading style={{ marginLeft: 4, color: 'black'}}>{item.productName}</SubHeading>
       </View>
-      <View style={{ flex: 1, flexDirection:"column"}}>
+      <Button onPress={() => handleFollow(item.userId)} title="Suivre" />
+      </View>
 
-        <Label style={{marginLeft: 4}}>{item.userName}</Label>
-        <SubHeading style={{marginLeft: 4}}>{item.productName}</SubHeading>
-        <StarRating
-          rating={item.review}
-          onChange={() => {}}
-          animationConfig={{scale: 1}}
-          starSize={20}
-          starStyle={{marginHorizontal: 0}}
-        />
-        {item.text !== "" ? <Paragraph style={{marginLeft: 4}}>{item.text}</Paragraph> : null}
-        
-      </View>
     </TouchableOpacity>
   );
-
+  
   return (
     <Page style={{color: "red"}}>
       <Heading>Browse</Heading>
-      <SafeAreaView style={styles.container}>
+      <View style={{ alignItems: 'center' }}>
+        <Text style={{ color: 'black', fontWeight: 'bold', textAlign: 'center' ,fontSize: 25}}>Welcome to INSKINE</Text>
+      </View>
+      <View style={{ alignItems: 'center' }}>
+        <Text style={{ textAlign: 'center',fontSize: 18 }}><Text style={{ textAlign: 'center' }}>
+    Follow people to {'\n'}
+    start seeing the products{'\n'}
+     and posts they share.
+  </Text></Text>
+      </View>
+      <SafeAreaView>
         <FlatList
+        horizontal
+        
           data={comments}
           renderItem={({ item }) => <Item item={item} />}
           keyExtractor={(item) => item._id}
@@ -147,6 +153,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: StatusBar.currentHeight || 0,
+   
   },
   item: {
     flexDirection: "row",
@@ -156,11 +163,12 @@ const styles = StyleSheet.create({
     shadowColor: "black",
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 4,
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    height: 100,
+    height: 300,
+    width:250,
     margin: 5,
   },
   title: {

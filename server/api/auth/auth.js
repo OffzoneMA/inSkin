@@ -2,14 +2,15 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const asyncMiddleware = require("../../middleware/async");
 const { User, validate } = require("./models/user");
+const PasswordReset = require("./models/PasswordReset");
 const auth = require("../../middleware/auth");
-
+const passport= require('passport');
+const GoogleStrategy = require( 'passport-google-oauth2' ).Strategy;
+const session = require('express-session');
+//const nodemailer= require('nodemailer')
 const router = express.Router();
-
 const multer = require("multer");
-
 const bodyParser = require('body-parser');
-
 router.use(bodyParser.json());
 
 const upload = multer();
@@ -17,7 +18,24 @@ const upload = multer();
 const { faker } = require('@faker-js/faker');
 
 const axios = require('axios');
+const{v4:uuidv4}=require("uuid");
+const { error } = require("winston");
+// let transporter = nodemailer.createTransport({
+//   service:"gmail",
+//   auth:{
+//     user:process.env.AUTH_EMAIL,
+//     pass:process.env.AUTH_PASS,
+//   },
+// });
 
+// transporter.verify((error,success)=>{
+//   if(error){
+//     console.log(error);
+
+//   }else{
+//     console.log("Ready for message", success);
+//   }
+// });
 router.post(
   "/login",
   asyncMiddleware(async (req, res) => {
@@ -50,6 +68,82 @@ router.post(
     res.header("bearer-token", token).json({ message: "Login Successful" });
   })
 );
+router.post(
+  "/requestepasswordreset",
+  asyncMiddleware(async (req, res) => {
+    const {email, redirectUrl}= req.body;
+    // Find user with email
+    const foundUser = await User.findOne({email
+    }).then((data)=>{
+      if(data.length){
+        if(!data[0].veified){
+          res.status(400).send("Email hasn't verfied yet. check your inbox!");
+
+        }else{
+          sendResetEmail(data[0],redirectUrl,res);
+
+        }
+      }else{
+        // User doesn't exist
+        res.status(400).send("User does not exist!");
+        return;
+      }
+    });
+    const token = foundUser.generateAuthToken();
+    res.header("bearer-token", token).json({ message: "Login Successful" });
+  })
+);
+const sendResetEmail=({_id,email},redirectUrl,res)=>{
+  const resetString= uuidv4 + _id;
+PasswordReset
+.deleteMany({userId: _id})
+.then(result=>{
+  const mailoptions = {
+    from: process.env.AUTH_EMAIL,
+    to: email,
+    subject: "Password Reset",
+    html: `<p>Use the link below to reset it.</p> <p><a href="${redirectUrl}/${_id}/${resetString}">Here</a> to proceed.</p>`,
+  };
+  const saltRounds =10;
+  bcrypt
+  .hash(resetString, saltRounds)
+  .then(hashedResetString=>{
+    const newPasswordReset= new PasswordReset({userId:_id,
+    resetString:hashedResetString,
+    createddAt:Date.now(),
+    expiresAt:Date.now() + 3600000
+    });
+    newPasswordReset
+    .save()
+    .then(()=>{
+      // transporter
+      // .sendMail(mailoptions)
+      // .then(()=>{
+      //   res.json({
+      //     status:"pending",
+      //     message:"password reset email sent"
+      //   })
+      // })
+      // .catch(error=>{
+      //   console.log(error);
+      // })
+
+    })
+    .catch(error=>{
+      console.log(error);
+    })
+  })
+  .catch(error=>{
+    console.log(error);
+  })
+
+  
+})
+.catch( error=>{
+  console.log(error)
+})
+
+}
 
 router.put(
   "/update-user-info",
@@ -252,5 +346,32 @@ router.get(
       res.status(500).json({ message: "Internal Server Error" });
   }
 }));
+router.get(
+  "/get-users-by-emails",
+  auth,
+  asyncMiddleware(async (req, res) => {
+    try {
+      // Retrieve an array of email addresses from the request query parameters
+      const emails = req.query.emails.split(',');
+
+      // Query the database to find users by email addresses
+      const users = await User.find({ email: { $in: emails } });
+
+      // Check if any users exist
+      if (users.length === 0) {
+        return res.status(404).json({ message: "No users found for the provided email addresses" });
+      }
+
+      // Return the users as a JSON response
+      res.status(200).json(users);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+  })
+);
+
+
+c
 
 module.exports = router;

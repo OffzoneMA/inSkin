@@ -86,7 +86,26 @@ const getUsersByIds = async (ids) => {
       throw new Error("Failed to fetch brands by IDs");
   }
 };
-
+const getUserByEmail = async (email) => {
+  try {
+    const response = await client.get(`/auth/get-users-by-emails?email=${email}`);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to fetch user by email");
+  }
+};
+const handleGoogleLogin = async () => {
+  try {
+    // Appeler la fonction d'authentification Google du module client
+    const response = await client.get("/auth/google");
+    // Gérer la réponse ou la redirection du serveur
+    console.log("Google authentication initiated:");
+  } catch (error) {
+    console.error("Error initiating Google authentication:", error);
+    // Gérer les erreurs, par exemple afficher un message à l'utilisateur
+  }
+};
 export default {
   login,
   register,
@@ -95,4 +114,6 @@ export default {
   getProfileImage,
   getUsersByIds,
   updateUserInfo,
+  getUserByEmail,
+  handleGoogleLogin
 };
