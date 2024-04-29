@@ -11,7 +11,7 @@ const settings = {
 
   },
   staging: {
-    apiUrl:"http://staging.api.com"
+    //apiUrl:"http://staging.api.com"
   },
   prod: {
     
