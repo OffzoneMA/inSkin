@@ -86,6 +86,16 @@ const getUsersByIds = async (ids) => {
       throw new Error("Failed to fetch brands by IDs");
   }
 };
+const followUser = async (email) => {
+  try {
+    console.log("email",email )
+    const response = await client.post("/auth/follow", { email: email });
+    return response.data; // Retournez les données de la réponse si nécessaire
+  } catch (error) {
+    console.error("Error following user:", error);
+    throw error; // Renvoyez l'erreur pour que l'appelant la gère
+  }
+};
 const getUserByEmail = async (email) => {
   try {
     const response = await client.get(`/auth/get-users-by-emails?email=${email}`);
@@ -115,5 +125,6 @@ export default {
   getUsersByIds,
   updateUserInfo,
   getUserByEmail,
-  handleGoogleLogin
+  handleGoogleLogin,
+  followUser,
 };

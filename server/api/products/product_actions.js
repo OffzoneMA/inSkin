@@ -192,6 +192,129 @@ router.get(
     }
   })
 );
+router.get(
+  "/users-with-products",
+  auth,
+  asyncMiddleware(async (req, res) => {
+    try {
+      const loggedInUserId = req.user.id;
+      console.log("l id de l utilisateur connecte ",loggedInUserId);
+      // Trouver tous les utilisateurs avec leurs produits associés
+      const usersWithProducts = await Product.aggregate([
+        {
+          $group: {
+            _id: "$userId", // Grouper par l'ID de l'utilisateur
+            products: { $push: "$$ROOT" }, // Ajouter tous les produits de l'utilisateur à un tableau
+          },
+        },
+        {
+          $lookup: {
+            from: "users", // Nom de la collection des utilisateurs
+            localField: "_id",
+            foreignField: "_id",
+            as: "user",
+          },
+        },
+        {
+          $unwind: "$user", // Désagréger le tableau d'utilisateurs
+        },
+        {
+          $project: {
+            _id: "$_id",
+            firstName: "$user.firstName",
+            lastName: "$user.lastName",
+            email: "$user.email",
+            userName:"$user.userName",
+            followers:"$user.followers",
+            profileImage: "$user.profileImage",
+            products: "$products", // Garder le tableau de produits
+          },
+        },
+        {
+          $unwind: "$products", // Désagréger le tableau de produits
+        },
+        {
+          $replaceRoot: { newRoot: { $mergeObjects: ["$$ROOT", "$products"] } } // Fusionner les informations des produits avec l'utilisateur
+        },
+        {
+          $project: { products: 0 } // Supprimer le tableau de produits initial
+        }
+      ]);
+      
+       console.log("tableau de users with publication",usersWithProducts);
+       // Filtrer les utilisateurs pour n'inclure que ceux qui ont des produits publiés mais qui ne sont pas suivis par l'utilisateur connecté actuel
+       const unfollowedUsersWithProducts = usersWithProducts.filter(user => {
+       
+        const loggedInUserIdObj = mongoose.Types.ObjectId(loggedInUserId);
+    
+        
+        const isNotFollowed = !user.followers.some(follower => follower.equals(loggedInUserIdObj));
+          console.log("verifier si il le suivi ",isNotFollowed);
+      
+        return isNotFollowed;
+    });
+    console.log("unfollowedUsersWithProducts wiiamaa",unfollowedUsersWithProducts);
+      // Envoyer la liste des utilisateurs filtrés en réponse
+      res.json(unfollowedUsersWithProducts);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.get(
+  "/followed-products",
+  auth,
+  asyncMiddleware(async (req, res) => {
+    try {
+      const userId = req.user._id;
+   
+      const followedProducts = await Product.aggregate([
+        {
+          $lookup: {
+            from: "users",
+            localField: "userId",
+            foreignField: "_id",
+            as: "user",
+          },
+        },
+        {
+          $lookup: {
+            from: "comments",
+            localField: "_id",
+            foreignField: "productId",
+            as: "comments",
+          },
+        },
+        {
+          $match: {
+            "user.followers": userId,
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            productId: "$_id",
+            productName: "$productDetails.name",
+            userId: 1,
+            userName: "$user.userName",
+            images: "$images",
+            comments: 1, // Inclure tous les commentaires associés à chaque produit
+          },
+        },
+      ]);
+     
+      res.json(followedProducts);
+      
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+
 
 router.get(
   "/all-comments",
