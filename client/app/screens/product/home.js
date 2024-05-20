@@ -297,32 +297,17 @@ function ProductHome({ route }) {
   
   return (
     <Page>
-      
-      
-      
-      <View style={{ flexDirection: "column" }}>
-        
+      <View style={{ flexDirection: "column", alignItems: "center" }}>
             {product && product.images && Array.isArray(product.images) && product.images.length > 0 ? (
-              <View style={{ maxHeight: 200 }}>
-              <FlatList
-                data={product.images}
-                keyExtractor={(item, index) => index.toString()}
-                horizontal={false}
-                numColumns={3}
-                renderItem={({ item, index }) => (
-                  <View style={{ marginVertical: 5, marginRight: 10 }}>
-                    <View style={{ position: 'relative' }}>
-                      
-                    {item && item.contentType && item.data && item.data.data && item.data.data.length > 0 && (
-                      <Image 
-                        source={{ uri: 'data:' + item.contentType + ';base64,' + encode(item.data.data.map(byte => String.fromCharCode(byte)).join('')) }}
-                        style={{ width: 100, height: 100, borderRadius: 10 }}
-                      />
-                    )}
-                    </View>
-                  </View>
+              <View style={{ maxHeight: 300 }}>
+              <View style={{ position: 'relative' }}>
+                {product.images[0].contentType && product.images[0].data && product.images[0].data.data && product.images[0].data.data.length > 0 && (
+                  <Image 
+                    source={{ uri: 'data:' + product.images[0].contentType + ';base64,' + encode(product.images[0].data.data.map(byte => String.fromCharCode(byte)).join('')) }}
+                    style={{ width: 300, height: 300, borderRadius: 10 }}
+                  />
                 )}
-              />
+              </View>
             </View>
             ) : brand && brand.image && brand.image.data && brand.image.data.data ? (
               <View style={{ height: 100, width: 100, alignSelf: "center" }}>
@@ -350,17 +335,17 @@ function ProductHome({ route }) {
           starStyle={{marginHorizontal: 0}}
         />
         <Text style={{ flexDirection: "row" ,Color: 'black'}}>{productRating}</Text>
-        <View style={{  flexDirection: "row" }}>
+        <View style={{  flexDirection: "row" ,marginHorizontal: 30}}>
         <View style={{ borderRadius: 5, flexDirection: "row", marginRight: 5 }}>
-        <MaterialIcons name="thumb-up-off-alt" size={24}  />
-          <Paragraph style={{color: 'black'}}>5450</Paragraph>
+        <MaterialIcons name="thumb-up-off-alt" size={20}  />
+         <Paragraph style={{color: 'black'}}>5450</Paragraph>
         </View>
         <View style={{ borderRadius: 5, flexDirection: "row", marginRight: 5 }}>
-        <MaterialIcons name="visibility" size={24}  />
+        <MaterialIcons name="visibility" size={20}  />
           <Paragraph style={{color: 'black'}}>5450</Paragraph>
         </View>
         <View  style={{ borderRadius: 5, flexDirection: "row", marginRight: 5 }}>
-        <MaterialIcons name="share" size={24} color="black" />
+        <MaterialIcons name="share" size={20} color="black" />
           <Paragraph style={{color: 'black'}}>5450</Paragraph>
         </View>
       </View>
@@ -368,21 +353,39 @@ function ProductHome({ route }) {
       
           
         
-          <View style={{ flexDirection: "row" }}>
-            {product ? (
-            <Text style={{fontWeight: 'bold'}}>{product.productDetails.name}</Text>
-            ) : (
-              <SubHeading>...</SubHeading>
-            )}
-          
-        </View>
+  <View style={{ flexDirection: "row" }}>
+  <View style={{ paddingHorizontal: 80}}> 
+    {product ? (
+      <Text style={{ fontWeight: 'bold', fontSize:18}}>{product.productDetails.name}</Text>
+    ) : (
+      <SubHeading>...</SubHeading>
+    )}
+    <Text style={{ fontWeight: 'bold', fontSize:18}} >Description</Text>
+  </View>
+  <View style={{ flexDirection: "row",marginHorizontal: 80 }}>
+  <TouchableOpacity onPress={() => handleSave()}>
+      <MaterialIcons name="bookmark-border" size={24} color="black" />
+    </TouchableOpacity>
+    <TouchableOpacity onPress={() => handleLove()}>
+      <MaterialIcons name="favorite-border" size={24} color="black" />
+    </TouchableOpacity>
+  </View>
+</View>
       </View>
-
-      
       <View>
-      <Text style={{ fontSize: 16, marginBottom: 10, paddingHorizontal: 10, backgroundColor: '#F4F4F4', fontWeight: 'bold' }}>Comments</Text>
-      </View>
+      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+  <Text style={{ fontSize: 16, marginBottom: 10, paddingHorizontal: 10, backgroundColor: 'white', fontWeight: 'bold' }}>les commentaires</Text>
+  <View style={{ flexDirection: "row", alignItems: "center" }}>
+    <TouchableOpacity onPress={() => handleSortComments('recent')} style={{ marginRight: 10 }}>
+      <Text style={{ color: 'black' }}>Plus récents</Text>
+    </TouchableOpacity>
     
+    <TouchableOpacity onPress={() => handleSortComments('old')}>
+      <Text style={{ color: 'black' }}>Plus anciens</Text>
+    </TouchableOpacity>
+  </View>
+</View>
+      </View>
     <View style={{ flex: 1, paddingTop: 10, backgroundColor: '#F4F4F4', borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 3.84, elevation: 5 }}>
   <FlatList
     data={comments}

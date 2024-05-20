@@ -32,6 +32,7 @@ const add_product = (
 
 // GET all products
 const getAllProducts = () => client.get("/products/users-with-products");
+const getmyproduct = () => client.get("/products/my-products");
 const getfollowedproducts=()=>client.get("/products/followed-products")
 // GET a single product by ID
 const getProductById = async (id) => {
@@ -102,4 +103,5 @@ export default {
     getProductComments,
     getAllComments,
     getfollowedproducts,
+    getmyproduct,
 };

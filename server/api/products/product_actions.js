@@ -313,6 +313,26 @@ router.get(
     }
   })
 );
+// GET products by the connected user
+router.get(
+  "/my-products",
+  auth,
+  asyncMiddleware(async (req, res) => {
+    try {
+      // Query the database to get products of the connected user
+      const products = await Product.find({ userId: req.user.id });
+      // Check if there are no products
+      if (!products || products.length === 0) {
+        return res.status(404).json({ message: "No products found for the current user" });
+      }
+      // Return the products as JSON response
+      res.status(200).json({ message: "User's products retrieved successfully", products });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+  })
+);
 
 
 

@@ -2,20 +2,23 @@ import React from "react";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import BrowseNavigator from "./browse";
 import ProfileNavigator from "./profile";
+import postNavigator from "./post"
+import NotificationScreen from "./NotificationScreen";
 import ScanNavigator from "./scan";
 import { useTheme ,Icon} from "@ui-kitten/components";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { SafeAreaView, Dimensions,View,Text, Image } from "react-native";
+import { SafeAreaView, Dimensions,View,Text, Image, TouchableOpacity } from "react-native";
 import { useState } from "react";
 import {renderProfileImage} from "../screens/profile/ProfilePicture"
 import { encode } from 'base-64';
-
+import { useNavigation } from "@react-navigation/native";
 import { useFocusEffect } from "@react-navigation/native"; 
 const Tab = createMaterialTopTabNavigator();
 
 export default function AppTabNavigator() {
   const theme = useTheme();
-  const windowWidth = Dimensions.get('window').width; // Get the window width
+  const windowWidth = Dimensions.get('window').width; 
+  const navigation = useNavigation(); 
   const renderHeaderLogo = () => (
     <Text style={{ color: theme["color-primary-default"], fontSize: 20, fontWeight: 'bold' }}>INSKIN</Text>
   );
@@ -26,10 +29,12 @@ export default function AppTabNavigator() {
   )
   // Fonction pour afficher l'icône de notification dans l'entête
   const renderNotificationIcon = () => (
-    <MaterialCommunityIcons name='bell-outline' size={40} color='black' />
+    <TouchableOpacity onPress={() => navigation.navigate('Notifications')}>
+      <MaterialCommunityIcons name='bell-outline' size={40} color='black' />
+    </TouchableOpacity>
   );
   
-  // Fonction pour afficher la photo de profil dans l'entête
+  
   
   
   return (
@@ -109,7 +114,7 @@ export default function AppTabNavigator() {
         />
         <Tab.Screen
           name="Posts"
-          component={BrowseNavigator}
+          component={postNavigator}
           options={{
             tabBarIcon: ({ focused, color, size }) => (
               <MaterialCommunityIcons

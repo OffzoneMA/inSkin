@@ -1,17 +1,12 @@
 import React from "react";
-import { createStackNavigator } from "@react-navigation/stack";
+import { createStackNavigator, HeaderBackButton } from "@react-navigation/stack";
 import AppTabNavigator from "./appTab";
-import ProductScreen from "../screens/product/home"; // Import your Product screen component here
+import NotificationScreen from "./NotificationScreen";
+import home from "../screens/scan/addproduct";
+import ProductScreen from "../screens/product/home"; // Importez votre composant d'écran de produit ici
 import { useTheme } from "@ui-kitten/components";
-import {
-  StyleSheet,
-  View,
-  RefreshControl,
-  TouchableOpacity,
-  Image,
-  
-} from "react-native";
-import { Icon } from "@ui-kitten/components";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+
 const Stack = createStackNavigator();
 
 const AppNavigator = () => {
@@ -22,13 +17,17 @@ const AppNavigator = () => {
       <Stack.Screen
         name="Tab"
         component={AppTabNavigator}
-        options={{ headerShown: false }} // Hide the header for the Tab.Navigator
+        options={{ headerShown: false }} // Masquer l'en-tête pour le Tab.Navigator
       />
       <Stack.Screen
         name="Product"
-        component={ProductScreen} // Your Product screen component
-        
+        component={ProductScreen} // Votre composant d'écran de produit
       />
+      <Stack.Screen
+        name="Notifications"
+        component={NotificationScreen}
+      />
+     <Stack.Screen name="AddPublicationScreen" component={home} />
     </Stack.Navigator>
   );
 };
