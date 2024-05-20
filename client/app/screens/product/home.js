@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useLayoutEffect } from "react";
 import {
   FlatList,
   StyleSheet,
@@ -6,11 +6,13 @@ import {
   RefreshControl,
   TouchableOpacity,
   Image,
+  Text,
+  TextInput,
+  
 } from "react-native";
-
+import { MaterialIcons } from '@expo/vector-icons';
 import Page from "../../components/Page";
 import Heading from "../../components/Heading";
-import TextInput from "../../components/TextInput";
 import Label from "../../components/Label";
 import SubHeading from "../../components/SubHeading";
 import Paragraph from "../../components/Paragraph";
@@ -24,9 +26,9 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import productActionsApi from "../../api/product_actions";
 
 import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEffect from React Navigation
-
+import { useNavigation } from "@react-navigation/native";
 import brandActionsApi from "../../api/brand_actions";
-
+import style from '../style';
 import authApi from "../../api/auth";
 
 import AuthContext from "../../contexts/auth";
@@ -36,6 +38,7 @@ import { encode } from 'base-64';
 function ProductHome({ route }) {
 
   const theme = useTheme();
+  const navigation = useNavigation();
 
   const { productId } = route.params;
 
@@ -211,7 +214,29 @@ function ProductHome({ route }) {
         });
     }
   }, [product]); // Dependency array with product as the dependency
+  useEffect(() => {
+    if (product) {
+      navigation.setOptions({
+        headerLeft: () => (
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <MaterialIcons name="keyboard-arrow-left" size={24} color="black" />
+          </TouchableOpacity>
+        ),
+        headerRight: () => (
+          <TouchableOpacity onPress={() => handleShare()}>
+            <MaterialIcons name="share" size={24} color="black" />
+          </TouchableOpacity>
+        ),
+        title: product.productDetails.name // Set product name as header title
+      });
+    }
+  }, [navigation, product]);
 
+  // Fonction pour gérer le partage
+  const handleShare = () => {
+    // Mettez ici la logique pour partager le produit
+    console.log("Share product:", product.productDetails.name);
+  };
   const onRefresh = () => {
     setIsRefreshing(true); // Set refreshing state to true when the user pulls down to refresh
     getProductComments();
@@ -228,7 +253,7 @@ function ProductHome({ route }) {
     return (
       <View style={{ marginVertical: 5, flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
               <View style={{ flex: 1, flexDirection:"column" }}>
-        <Label>{item.userName}</Label>
+        <Text>{item.userName}</Text>
         <StarRating
           rating={item.review}
           onChange={() => {}}
@@ -255,7 +280,7 @@ function ProductHome({ route }) {
               <MaterialCommunityIcons
             name={"heart-outline"}
             size={20}
-            color={theme["color-primary-disabled-border"]}
+            
           />
             )}
             
@@ -272,78 +297,17 @@ function ProductHome({ route }) {
   
   return (
     <Page>
-      <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
-      {product ? (
-          <Heading style={{color: theme["color-primary-default"]}}>{product.barcode}</Heading>
-      ) : (
-        <Heading>...</Heading>
-      )}
-      <View style={{flexDirection: "row"}}>
-        <TouchableOpacity
-            onPress={()=>{
-            }}
-            style={{ borderRadius: 5}}
-            activeOpacity={0.5} // Customize the opacity when pressed
-          >
-          <Icon
-            name="share-outline"
-            width={24} // Set the width of the icon
-            height={24} // Set the height of the icon
-            fill={theme["color-primary-active-border"]} // Set the color of the icon
-          />
-        </TouchableOpacity>
-
-        
-        <View style={{ marginRight: 10 }} />
-        <TouchableOpacity
-            onPress={handleSavedPress}
-            style={{ borderRadius: 5}}
-            activeOpacity={0.5} // Customize the opacity when pressed
-          >
-          <MaterialCommunityIcons
-            name={isSaved ? 'bookmark' : 'bookmark-outline'}
-            size={24}
-            color={isSaved ? theme['color-primary-active-border'] : theme['color-primary-disabled-border']}
-          />
-        </TouchableOpacity>
-        
-        </View>
-      </View>
-
-      <View style={{ flexDirection: "column", alignItems: "center",justifyContent: "center" }}>
-        <Paragraph>{productRating}</Paragraph>
-        <StarRating
-          rating={productRating}
-          onChange={() => {}}
-          animationConfig={{scale: 1}}
-          starSize={20}
-          starStyle={{marginHorizontal: 0}}
-        />
-      </View>
-      
-      <View style={{ flexDirection: "column" }}>
-        
+      <View style={{ flexDirection: "column", alignItems: "center" }}>
             {product && product.images && Array.isArray(product.images) && product.images.length > 0 ? (
-              <View style={{ maxHeight: 200 }}>
-              <FlatList
-                data={product.images}
-                keyExtractor={(item, index) => index.toString()}
-                horizontal={false}
-                numColumns={3}
-                renderItem={({ item, index }) => (
-                  <View style={{ marginVertical: 5, marginRight: 10 }}>
-                    <View style={{ position: 'relative' }}>
-                      
-                    {item && item.contentType && item.data && item.data.data && item.data.data.length > 0 && (
-                      <Image 
-                        source={{ uri: 'data:' + item.contentType + ';base64,' + encode(item.data.data.map(byte => String.fromCharCode(byte)).join('')) }}
-                        style={{ width: 100, height: 100, borderRadius: 10 }}
-                      />
-                    )}
-                    </View>
-                  </View>
+              <View style={{ maxHeight: 300 }}>
+              <View style={{ position: 'relative' }}>
+                {product.images[0].contentType && product.images[0].data && product.images[0].data.data && product.images[0].data.data.length > 0 && (
+                  <Image 
+                    source={{ uri: 'data:' + product.images[0].contentType + ';base64,' + encode(product.images[0].data.data.map(byte => String.fromCharCode(byte)).join('')) }}
+                    style={{ width: 300, height: 300, borderRadius: 10 }}
+                  />
                 )}
-              />
+              </View>
             </View>
             ) : brand && brand.image && brand.image.data && brand.image.data.data ? (
               <View style={{ height: 100, width: 100, alignSelf: "center" }}>
@@ -361,88 +325,90 @@ function ProductHome({ route }) {
               </View>
               </View>
             )}
-
-      
-          
-        
-          <View style={{ flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
-            {product ? (
-            <SubHeading>{product.productDetails.name}</SubHeading>
-            ) : (
-              <SubHeading>...</SubHeading>
-            )}
-            
-            
-            {brand ? (
-              <Paragraph>{brand.name}</Paragraph>
-            )  : (
-              <Paragraph>No brand available</Paragraph>
-            )} 
-          
-        </View>
-      </View>
-
-      <View style={{ marginVertical: 5, flexDirection: "row", alignItems: "center" }}>
+        <View style={{ flexDirection: "row" }}>
+       
+        <StarRating
+          rating={productRating}
+          onChange={() => {}}
+          animationConfig={{scale: 1}}
+          starSize={20}
+          starStyle={{marginHorizontal: 0}}
+        />
+        <Text style={{ flexDirection: "row" ,Color: 'black'}}>{productRating}</Text>
+        <View style={{  flexDirection: "row" ,marginHorizontal: 30}}>
         <View style={{ borderRadius: 5, flexDirection: "row", marginRight: 5 }}>
-          <Icon
-            name="eye-outline"
-            width={24} // Set the width of the icon
-            height={24} // Set the height of the icon
-            fill={theme["color-primary-disabled-border"]} // Set the color of the icon
-          />
-          <Paragraph style={{color: theme["color-primary-disabled-border"]}}>5450</Paragraph>
+        <MaterialIcons name="thumb-up-off-alt" size={20}  />
+         <Paragraph style={{color: 'black'}}>5450</Paragraph>
+        </View>
+        <View style={{ borderRadius: 5, flexDirection: "row", marginRight: 5 }}>
+        <MaterialIcons name="visibility" size={20}  />
+          <Paragraph style={{color: 'black'}}>5450</Paragraph>
         </View>
         <View  style={{ borderRadius: 5, flexDirection: "row", marginRight: 5 }}>
-          <Icon
-            name="share-outline"
-            width={24} // Set the width of the icon
-            height={24} // Set the height of the icon
-            fill={theme["color-primary-disabled-border"]} // Set the color of the icon
-          />
-          <Paragraph style={{color: theme["color-primary-disabled-border"]}}>5450</Paragraph>
+        <MaterialIcons name="share" size={20} color="black" />
+          <Paragraph style={{color: 'black'}}>5450</Paragraph>
         </View>
-        <View style={{ borderRadius: 5, flexDirection: "row", marginRight: 5 }}>
-
-          <MaterialCommunityIcons
-            name={"cube-scan"}
-            size={24}
-            color={theme["color-primary-disabled-border"]}
-          />
-          <Paragraph style={{color: theme["color-primary-disabled-border"]}}>5450</Paragraph>
-        </View>
-        <TouchableOpacity activeOpacity={0.5} onPress={()=>{}} style={{ borderRadius: 5, flexDirection: "row", marginLeft: 'auto' }}>
-
-          
-          <Icon
-            name="funnel-outline"
-            width={24} // Set the width of the icon
-            height={24} // Set the height of the icon
-            fill={theme["color-primary-active-border"]} // Set the color of the icon
-          />
-        </TouchableOpacity>
+      </View>
       </View>
       
-      <View style={{ flex: 1 }}>
-          <FlatList
-            data={comments}
-            renderItem={({ item }) => <Item item={item} />}
-            keyExtractor={(item, index) => {return item._id}}
-            refreshControl={
-            <RefreshControl
-              refreshing={isRefreshing}
-              onRefresh={onRefresh}
-              colors={[theme['color-primary-default']]} // Array of colors
-              progressBackgroundColor={theme["background-basic-color-2"]} // Background color of the indicator
-            />
-          }
-          />
+          
+        
+  <View style={{ flexDirection: "row" }}>
+  <View style={{ paddingHorizontal: 80}}> 
+    {product ? (
+      <Text style={{ fontWeight: 'bold', fontSize:18}}>{product.productDetails.name}</Text>
+    ) : (
+      <SubHeading>...</SubHeading>
+    )}
+    <Text style={{ fontWeight: 'bold', fontSize:18}} >Description</Text>
+  </View>
+  <View style={{ flexDirection: "row",marginHorizontal: 80 }}>
+  <TouchableOpacity onPress={() => handleSave()}>
+      <MaterialIcons name="bookmark-border" size={24} color="black" />
+    </TouchableOpacity>
+    <TouchableOpacity onPress={() => handleLove()}>
+      <MaterialIcons name="favorite-border" size={24} color="black" />
+    </TouchableOpacity>
+  </View>
+</View>
       </View>
-      <View style={[styles.commentContainer, { flexDirection: "column", height: 100, alignItems: "center", justifyContent: "center", marginTop: 10, backgroundColor: theme["background-basic-color-1"] }]}>
+      <View>
+      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+  <Text style={{ fontSize: 16, marginBottom: 10, paddingHorizontal: 10, backgroundColor: 'white', fontWeight: 'bold' }}>les commentaires</Text>
+  <View style={{ flexDirection: "row", alignItems: "center" }}>
+    <TouchableOpacity onPress={() => handleSortComments('recent')} style={{ marginRight: 10 }}>
+      <Text style={{ color: 'black' }}>Plus récents</Text>
+    </TouchableOpacity>
+    
+    <TouchableOpacity onPress={() => handleSortComments('old')}>
+      <Text style={{ color: 'black' }}>Plus anciens</Text>
+    </TouchableOpacity>
+  </View>
+</View>
+      </View>
+    <View style={{ flex: 1, paddingTop: 10, backgroundColor: '#F4F4F4', borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 3.84, elevation: 5 }}>
+  <FlatList
+    data={comments}
+    renderItem={({ item }) => <Item item={item} textColor="black"/>}
+    keyExtractor={(item, index) => {return item._id}}
+    refreshControl={
+      <RefreshControl
+        refreshing={isRefreshing}
+        onRefresh={onRefresh}
+        colors={[theme['color-primary-default']]}
+        progressBackgroundColor={theme["background-basic-color-2"]}
+      />
+    }
+  />
+</View>
+
+      <View style={[styles.commentContainer, { flexDirection: "column", height: 100, alignItems: "center", justifyContent: "center", marginTop: 10 }]}>
         
         <View style={{ paddingHorizontal: 7, paddingVertical: 0, flexDirection: "row", alignItems: "center", height: 48 }}>
-          <View style={{flex: 1, height: 48}}>
+          <View style={[style.action,{flex: 1, height: 48}]}>
             <TextInput
-              placeholder="Comment..."
+             style={style.textInput}
+              placeholder="Add a Comment..."
               keyboardType="default"
               returnKeyType="next"
               autoCapitalize="none"
@@ -450,7 +416,7 @@ function ProductHome({ route }) {
               onChangeText={setCommentText}
             />
           </View>
-          <View style={{padding: 3}}>
+          <View style={{padding: 2}}>
             <TouchableOpacity
               onPress={()=>{
                 addCommentToProduct();
@@ -461,20 +427,13 @@ function ProductHome({ route }) {
               <MaterialCommunityIcons
                 name={"send"}
                 size={24}
-                style={{marginLeft: 2, color: theme["background-basic-color-2"]}}
+                style={{ marginLeft: 2, color: 'white', transform: [{ rotate: '-45deg' }] }}
               />
             </TouchableOpacity>
           </View>
         </View>
 
-        <StarRating
-          rating={commentRating}
-          onChange={setCommentRating}
-          style={{marginTop: 5}}
-          animationConfig={{scale: 1}}
-          starSize={35}
-          starStyle={{marginHorizontal: 0, marginVertical: 0}}
-        />
+       
       </View>
       
     </Page>
@@ -488,7 +447,7 @@ const styles = StyleSheet.create({
     height: "100%",
     aspectRatio: 1,
     marginLeft: 5,
-    borderRadius: 50, // Optional: Customize the border radius
+    borderRadius: 10, // Optional: Customize the border radius
   },
   text: {
     fontSize: 16,

@@ -6,9 +6,12 @@ import {
 const settings = {
   dev: {
     apiUrl: "http://192.168.0.133:8000",
+    //apiUrl: "http://192.168.1.30:8000",
+    //apiUrl:"http://100.100.33.107:8000",
+  
   },
   staging: {
-    apiUrl:"http://staging.api.com"
+    //apiUrl:"http://staging.api.com"
   },
   prod: {
     

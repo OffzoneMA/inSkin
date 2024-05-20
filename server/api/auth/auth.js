@@ -346,6 +346,41 @@ router.get(
       res.status(500).json({ message: "Internal Server Error" });
   }
 }));
+router.post(
+  "/follow",
+  auth, // Assurez-vous que l'utilisateur est authentifié pour accéder à cette route
+  asyncMiddleware(async (req, res) => {
+    try {
+      const userId = req.user._id; // ID de l'utilisateur authentifié qui suit un autre utilisateur
+      console.log("ID de l'utilisateur authentifié qui suit un autre utilisateur", userId)
+      const userToFollowEmail = req.body.email; // Email de l'utilisateur à suivre
+      console.log("Email de l'utilisateur à suivre :", userToFollowEmail)
+      
+      // Vérifiez si l'utilisateur à suivre existe
+      const userToFollow = await User.findOne({ email: userToFollowEmail });
+      console.log("L'utilisateur à suivre :", userToFollow);
+      if (!userToFollow) {
+        return res.status(404).json({ message: "User to follow not found" });
+      }
+
+      // Vérifiez si l'utilisateur authentifié suit déjà l'utilisateur à suivre
+      if (userToFollow.followers.includes(userId)) {
+        return res.status(400).json({ message: "You are already following this user" });
+      }
+
+      // Mettez à jour les tableaux de suiveurs et de suivis pour les deux utilisateurs
+      await User.findByIdAndUpdate(userId, { $push: { following: userToFollow._id } });
+      await User.findByIdAndUpdate(userToFollow._id, { $push: { followers: userId } });
+
+      res.status(200).json({ message: "User followed successfully" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+  })
+);
+
+
 router.get(
   "/get-users-by-emails",
   auth,
@@ -372,6 +407,35 @@ router.get(
 );
 
 
-c
+passport.use(new GoogleStrategy({
+    clientID:    process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: "http://localhost:8000/auth/auth/google/callback",
+    passReqToCallback   : true
+  },
+  function(request, accessToken, refreshToken, profile, done) {
+    User.findOrCreate({ googleId: profile.id }, function (err, user) {
+      return done(err, user);
+    });
+  }
+));
+passport.serializeUser((user,done)=>{
+  done(null,user)
+});
+passport.deserializeUser((user,done)=>{
+  done(null,user)
+});
+router.use(session({ secret: 'cats', resave: false, saveUninitialized: true }));
+router.use(passport.initialize());
+router.use(passport.session());
+router.get('/google', passport.authenticate('google', { scope: ['email', 'profile'] }));
+
+router.get('/auth/google/callback',
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  function(req, res) {
+    // Rediriger ou effectuer d'autres actions après une authentification réussie
+    res.redirect('/');
+  });
+
 
 module.exports = router;
