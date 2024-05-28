@@ -20,6 +20,7 @@ const { faker } = require('@faker-js/faker');
 const axios = require('axios');
 const{v4:uuidv4}=require("uuid");
 const { error } = require("winston");
+
 // let transporter = nodemailer.createTransport({
 //   service:"gmail",
 //   auth:{
@@ -36,6 +37,8 @@ const { error } = require("winston");
 //     console.log("Ready for message", success);
 //   }
 // });
+
+///OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK
 router.post(
   "/login",
   asyncMiddleware(async (req, res) => {
@@ -68,6 +71,36 @@ router.post(
     res.header("bearer-token", token).json({ message: "Login Successful" });
   })
 );
+
+/// OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK
+
+router.put('/change-password', async (req, res) => {
+  const { email, newPassword } = req.body;
+
+  try {
+    // Hacher le nouveau mot de passe
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Mettre à jour le mot de passe de l'utilisateur dans la base de données
+    const updatedUser = await User.findOneAndUpdate(
+      { email: email },
+      { $set: { password: hashedPassword } },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ success: false, message: "Utilisateur non trouvé." });
+    }
+
+    return res.status(200).json({ success: true, message: "Mot de passe mis à jour avec succès." });
+  } catch (error) {
+    console.error("Erreur lors de la modification du mot de passe:", error);
+    return res.status(500).json({ success: false, message: "Erreur lors de la modification du mot de passe." });
+  }
+});
+
+////////////////////////
+
 router.post(
   "/requestepasswordreset",
   asyncMiddleware(async (req, res) => {
@@ -192,30 +225,33 @@ router.put(
   })
 );
 
+
+/// OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK
 router.post(
   "/register",
   asyncMiddleware(async (req, res) => {
     const { error } = validate(req.body);
-    console.log("erererer")
+    console.log("cmt 1")
     if (error) {
-      console.log("errer icic",error)
+      console.log("cmt 2",error)
       res.status(400).send(error.details[0].message);
       return;
     }
-    console.log("ererereraat")
-    console.log("newuser")
+    console.log("cmt 3")
+    console.log("cmt 4")
+    
     const foundUser = await User.findOne({
       email: req.body.email,
+
     });
-    console.log("newuser")
+    console.log("ncmt 5")
     if (foundUser) {
       res.status(400).send("A user is already registered with this email!");
       return;
     }
-    console.log("newuser")
-    
+    console.log("cmt 6")
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
-    console.log("mamama")
+    console.log("cmt 7")
     // Generate unique username
     var userName;
     while (true) {
@@ -231,14 +267,14 @@ router.post(
         break;
       }
     }
-    console.log("mamama")
+    console.log("cmt 8")
     // Fetch image from the URL and convert it to a buffer
     const imageURL = faker.image.avatar(); 
-    console.log("hahahahahahah")
+    console.log("cmt 9")
     // Replace with the actual URL to your image
     //const imageBuffer = await getImageBufferFromURL(imageURL);
-    console.log("mamamababababab")
-    console.log("newuser")
+    console.log("cmt 10")
+    console.log("cmt 11")
     const newUser = new User({
       firstName: req.body.firstName,
       lastName: req.body.lastName,
@@ -250,7 +286,7 @@ router.post(
         contentType: 'image/jpg' // Set the content type accordingly
       }
     });
-    console.log("newuser")
+    console.log("cmt 12")
     await newUser.save();
     const token = newUser.generateAuthToken();
     console.log("Registration Successful!");
@@ -269,34 +305,131 @@ router.get(
 );
 
 // Route to update profile image
+// router.put(
+//   "/update-profile-image",
+//   auth, 
+//   upload.single('image'),
+//   asyncMiddleware(async (req, res) => {
+//     const userId = req.body._id; // Assuming you have the user ID in the request object
+    
+//     const updatedUser = await User.findOneAndUpdate(
+//       { _id: userId },
+//       {
+//         $set: {
+//           profileImage: {
+//             data: req.file.buffer,
+//             contentType: req.file.mimetype
+//           }
+//         }
+//       },
+//       { new: true } // This option ensures that the updated document is returned
+//     );
+
+//     if (!updatedUser) {
+//       return res.status(404).send("User not found");
+//     }
+
+//     res.status(200).send("Profile image updated successfully");
+//   })
+// );
+
+// router.put(
+//   "/update-profile-image",
+//   auth, 
+//   upload.single('image'),
+//   asyncMiddleware(async (req, res) => {
+//     const userId = req.body._id;
+
+//     if (!req.file) {
+//       return res.status(400).send("No image file provided");
+//     }
+
+//     console.log('File received:', req.file);
+//     console.log('User ID:', userId);
+
+//     try {
+//       const updatedUser = await User.findOneAndUpdate(
+//         { _id: userId },
+//         {
+//           $set: {
+//             profileImage: {
+//               data: req.file.buffer,
+//               contentType: req.file.mimetype
+//             }
+//           }
+//         },
+//         { new: true }
+//       );
+
+//       if (!updatedUser) {
+//         return res.status(404).send("User not found");
+//       }
+
+//       res.status(200).send("Profile image updated successfully");
+//     } catch (error) {
+//       console.error("Error updating profile image:", error);
+//       res.status(500).send("Error updating profile image");
+//     }
+//   })
+// );
+
+
+/// OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK
+
+const mongoose = require('mongoose');
+
 router.put(
   "/update-profile-image",
-  auth, 
+  auth,
   upload.single('image'),
   asyncMiddleware(async (req, res) => {
-    const userId = req.body._id; // Assuming you have the user ID in the request object
-    
-    const updatedUser = await User.findOneAndUpdate(
-      { _id: userId },
-      {
-        $set: {
-          profileImage: {
-            data: req.file.buffer,
-            contentType: req.file.mimetype
-          }
-        }
-      },
-      { new: true } // This option ensures that the updated document is returned
-    );
+    let userId;
 
-    if (!updatedUser) {
-      return res.status(404).send("User not found");
+    try {
+      userId = JSON.parse(req.body._id); // Supprimer les guillemets doubles supplémentaires
+    } catch (err) {
+      return res.status(400).send("Invalid user ID format");
     }
 
-    res.status(200).send("Profile image updated successfully");
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).send("Invalid user ID");
+    }
+
+    if (!req.file) {
+      return res.status(400).send("No image file provided");
+    }
+
+    console.log('File received:', req.file);
+    console.log('User ID:', userId);
+
+    try {
+      const updatedUser = await User.findOneAndUpdate(
+        { _id: userId },
+        {
+          $set: {
+            profileImage: {
+              data: req.file.buffer,
+              contentType: req.file.mimetype
+            }
+          }
+        },
+        { new: true }
+      );
+
+      if (!updatedUser) {
+        return res.status(404).send("User not found");
+      }
+
+      res.status(200).send("Profile image updated successfully");
+    } catch (error) {
+      console.error("Error updating profile image:", error);
+      res.status(500).send("Error updating profile image");
+    }
   })
 );
 
+
+/// OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK
 router.get(
   "/profile-image/:id",
   auth, // Ensure the user is authenticated to access this route
@@ -322,7 +455,8 @@ router.get(
   })
 );
 
-// GET multiple users by IDs
+// GET multiple users by IDs 
+/// OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK
 router.get(
   "/get-users-byids", 
   auth,
@@ -346,6 +480,8 @@ router.get(
       res.status(500).json({ message: "Internal Server Error" });
   }
 }));
+
+/// OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK
 router.get(
   "/get-users-by-emails",
   auth,
@@ -369,9 +505,216 @@ router.get(
       res.status(500).json({ message: "Internal Server Error" });
     }
   })
+
+);
+
+///OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK
+router.get(
+  "/get-random-users", 
+  auth,
+  asyncMiddleware(async (req, res) => {
+    try {
+      const numberOfUsers = 5; // Nombre d'utilisateurs à retourner
+
+      // Utiliser la méthode de MongoDB pour récupérer un échantillon aléatoire d'utilisateurs
+      const users = await User.aggregate([ { $sample: { size: numberOfUsers } } ]);
+
+      // Vérifier si des utilisateurs ont été trouvés
+      if (users.length === 0) {
+        return res.status(404).json({ message: "No users found" });
+      }
+
+      // Retourner les utilisateurs comme réponse JSON
+      res.status(200).json(users);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+  })
 );
 
 
-c
+
+
+router.post(
+  "/follow-user222", 
+  auth,
+  asyncMiddleware(async (req, res) => {
+    try {
+      const { targetUserId } = req.body; // ID de l'utilisateur cible à suivre
+      const userId = req.user.id; // ID de l'utilisateur connecté (obtenu via le middleware auth)
+
+      // Trouver l'utilisateur connecté et l'utilisateur cible
+      const user = await User.findById(userId);
+      const targetUser = await User.findById(targetUserId);
+
+      if (!user || !targetUser) {
+        return res.status(404).json({ message: 'Utilisateur non trouvé' });
+      }
+
+      // Vérifier si l'utilisateur cible est déjà suivi
+      if (user.following.includes(targetUserId)) {
+        return res.status(400).json({ message: 'Utilisateur déjà suivi' });
+      }
+
+      // Ajouter l'utilisateur cible à la liste des suivis et
+      // ajouter l'utilisateur connecté à la liste des suiveurs
+      user.following.push(targetUserId);
+      targetUser.followers.push(userId);
+
+      // Sauvegarder les modifications
+      await user.save();
+      await targetUser.save();
+
+      res.status(200).json({ message: 'Suivi réussi' });
+    } catch (error) {
+      console.error('Erreur lors du suivi:', error);
+      res.status(500).json({ message: 'Erreur lors du suivi' });
+    }
+  })
+);
+router.post(
+  "/follow-user", 
+  auth,
+  asyncMiddleware(async (req, res) => {
+    try {
+      const { targetUserId } = req.body; // ID de l'utilisateur cible à suivre
+      const userId = req.user.id; // ID de l'utilisateur connecté (obtenu via le middleware auth)
+
+      console.log(`Target User ID: ${targetUserId}`);
+      console.log(`User ID: ${userId}`);
+
+      // Trouver l'utilisateur connecté et l'utilisateur cible
+      const user = await User.findById(userId);
+      const targetUser = await User.findById(targetUserId);
+
+      if (!user) {
+        console.log(`Connected user not found: ${userId}`);
+        return res.status(404).json({ message: 'Utilisateur non trouvé' });
+      }
+
+      if (!targetUser) {
+        console.log(`Target user not found: ${targetUserId}`);
+        return res.status(404).json({ message: 'Utilisateur non trouvé' });
+      }
+
+      // Vérifier si l'utilisateur cible est déjà suivi
+      if (user.following.includes(targetUserId)) {
+        return res.status(400).json({ message: 'Utilisateur déjà suivi' });
+      }
+
+      // Ajouter l'utilisateur cible à la liste des suivis et
+      // ajouter l'utilisateur connecté à la liste des suiveurs
+      user.following.push(targetUserId);
+      targetUser.followers.push(userId);
+
+      // Sauvegarder les modifications
+      await user.save();
+      await targetUser.save();
+
+      res.status(200).json({ message: 'Suivi réussi' });
+    } catch (error) {
+      console.error('Erreur lors du suivi:', error);
+      res.status(500).json({ message: 'Erreur lors du suivi' });
+    }
+  })
+);
+
+// Route pour supprimer un utilisateur par son ID
+router.delete('delete-user/:id', auth, async (req, res) => {
+  try {
+      // // Vérifiez si l'utilisateur actuellement connecté est autorisé à supprimer un utilisateur
+      // if (req.user.role !== 'admin') {
+      //     return res.status(403).json({ message: 'Vous n\'êtes pas autorisé à effectuer cette action' });
+      // }
+
+      // Obtenez l'ID de l'utilisateur à supprimer depuis les paramètres de la requête
+      const userIdToDelete = req.params.id;
+
+      // Recherchez l'utilisateur à supprimer dans la base de données
+      const userToDelete = await User.findById(userIdToDelete);
+
+      // Vérifiez si l'utilisateur existe
+      if (!userToDelete) {
+          return res.status(404).json({ message: 'Utilisateur non trouvé' });
+      }
+
+      // Supprimez l'utilisateur de la base de données
+      await User.findByIdAndDelete(userIdToDelete);
+
+      res.status(200).json({ message: 'Utilisateur supprimé avec succès' });
+  } catch (error) {
+      console.error('Erreur lors de la suppression de l\'utilisateur:', error);
+      res.status(500).json({ message: 'Erreur lors de la suppression de l\'utilisateur' });
+  }
+});
+
+// Route pour rechercher une personne par firstName, lastName ou userName
+router.get(
+  "/search-users",
+  auth,
+  asyncMiddleware(async (req, res) => {
+    try {
+      // Récupérer les paramètres de recherche de la requête
+      const { firstName, lastName, userName } = req.query;
+
+      // Construire un objet de recherche dynamique
+      let searchCriteria = {};
+
+      if (firstName) {
+        searchCriteria.firstName = { $regex: new RegExp(firstName, 'i') }; // Recherche insensible à la casse
+      }
+      if (lastName) {
+        searchCriteria.lastName = { $regex: new RegExp(lastName, 'i') }; // Recherche insensible à la casse
+      }
+      if (userName) {
+        searchCriteria.userName = { $regex: new RegExp(userName, 'i') }; // Recherche insensible à la casse
+      }
+
+      // Vérifier si au moins un critère de recherche est fourni
+      if (Object.keys(searchCriteria).length === 0) {
+        return res.status(400).json({ message: "Please provide at least one search parameter (firstName, lastName, or userName)" });
+      }
+
+      // Interroger la base de données pour trouver les utilisateurs correspondant aux critères de recherche
+      const users = await User.find(searchCriteria);
+
+      // Vérifier si des utilisateurs existent
+      if (users.length === 0) {
+        return res.status(404).json({ message: "No users found matching the search criteria" });
+      }
+
+      // Retourner les utilisateurs comme réponse JSON
+      res.status(200).json(users);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+  })
+);
+
+// Route pour récupérer tous les utilisateurs
+router.get(
+  "/users",
+  auth,
+  asyncMiddleware(async (req, res) => {
+    try {
+      // Récupérer tous les utilisateurs de la base de données
+      const users = await User.find();
+
+      // Vérifier si des utilisateurs existent
+      if (users.length === 0) {
+        return res.status(404).json({ message: "No users found" });
+      }
+
+      // Retourner les utilisateurs comme réponse JSON
+      res.status(200).json(users);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+  })
+);
+
 
 module.exports = router;

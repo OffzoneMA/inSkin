@@ -2,6 +2,8 @@ import React from "react";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import BrowseNavigator from "./browse";
 import ProfileNavigator from "./profile";
+import SearchUser from "../screens/search/search";
+import DiscoverHomeWithFollowers from "../screens/browse/homeWithFollowers";
 import ScanNavigator from "./scan";
 import { useTheme ,Icon} from "@ui-kitten/components";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -26,7 +28,7 @@ export default function AppTabNavigator() {
   )
   // Fonction pour afficher l'icône de notification dans l'entête
   const renderNotificationIcon = () => (
-    <MaterialCommunityIcons name='bell-outline' size={40} color='black' />
+    <MaterialCommunityIcons name='bell-outline' size={30} color='black' />
   );
   
   // Fonction pour afficher la photo de profil dans l'entête
@@ -83,7 +85,7 @@ export default function AppTabNavigator() {
         />
         <Tab.Screen
           name="Search"
-          component={BrowseNavigator}
+          component={SearchUser}
           options={{
             tabBarIcon: ({ focused, color, size }) => (
               <MaterialCommunityIcons
@@ -96,7 +98,7 @@ export default function AppTabNavigator() {
         />
         <Tab.Screen
           name="Favoris"
-          component={BrowseNavigator}
+          component={DiscoverHomeWithFollowers}
           options={{
             tabBarIcon: ({ focused, color, size }) => (
               <MaterialCommunityIcons

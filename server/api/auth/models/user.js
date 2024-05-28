@@ -3,6 +3,31 @@ const Joi = require("joi");
 const jwt = require("jsonwebtoken");
 const settings = require('../../../config/settings')
 
+const postSchema = new mongoose.Schema({
+  productId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Product", // Reference to the Product model
+    required: true,
+  },
+  description: {
+    type: String,
+    required: true,
+  },
+  likes: {
+    type: Number,
+    default: 0,
+  },
+  views: {
+    type: Number,
+    default: 0,
+  },
+  shares: {
+    type: Number,
+    default: 0,
+  },
+}, { timestamps: true });
+
+
 const userSchema = new mongoose.Schema({
   firstName: 
           { 
@@ -73,7 +98,8 @@ const userSchema = new mongoose.Schema({
         {
           type: Number,
           default: 1
-        }
+        },
+  posts: [postSchema] 
 });
 
 
