@@ -99,7 +99,12 @@ const userSchema = new mongoose.Schema({
           type: Number,
           default: 1
         },
-  posts: [postSchema] 
+  posts: [postSchema] ,
+  desactivatedAccount:
+        {
+          type: Boolean,
+          default: false,
+        }
 });
 
 
