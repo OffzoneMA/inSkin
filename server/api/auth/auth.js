@@ -717,5 +717,105 @@ router.get(
   })
 );
 
+// Route pour désactiver un compte utilisateur
+router.put('/desactivate-account/:id', auth, async (req, res) => {
+  try {
+      const userId = req.params.id;
+
+      // Vérifier si l'ID est un ObjectId valide
+      if (!mongoose.Types.ObjectId.isValid(userId)) {
+          return res.status(400).send('Invalid user ID');
+      }
+
+      const user = await User.findById(userId);
+
+      if (!user) {
+          return res.status(404).send('User not found');
+      }
+
+      if (user.desactivatedAccount) {
+          return res.status(400).send('Account already deactivated');
+      }
+
+      user.desactivatedAccount = true;
+      await user.save();
+
+      res.send('The account has been deactivated');
+  } catch (error) {
+      console.error(error);
+      res.status(500).send('Something went wrong');
+  }
+});
+
+
+///// save instagram link
+router.post(
+  "/save-instagram-link",
+  auth,
+  asyncMiddleware(async (req, res) => {
+    const { instagramLink } = req.body;
+    const userId = req.user._id; // Utilisez l'ID utilisateur extrait par le middleware auth
+
+    if (!instagramLink) {
+      return res.status(400).send("No Instagram link provided");
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).send("Invalid user ID");
+    }
+
+    try {
+      const updatedUser = await User.findOneAndUpdate(
+        { _id: userId },
+        { $set: { instagramLink } },
+        { new: true }
+      );
+
+      if (!updatedUser) {
+        return res.status(404).send("User not found");
+      }
+
+      res.status(200).send("Instagram link saved successfully");
+    } catch (error) {
+      console.error("Error saving Instagram link:", error);
+      res.status(500).send("Error saving Instagram link");
+    }
+  })
+);
+
+///// save tiktok link
+router.post(
+  "/save-tiktok-link",
+  auth,
+  asyncMiddleware(async (req, res) => {
+    const {  tiktokLink } = req.body;
+    const userId = req.user._id; // Utilisez l'ID utilisateur extrait par le middleware auth
+
+    if (!tiktokLink) {
+      return res.status(400).send("No Tiktok link provided");
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).send("Invalid user ID");
+    }
+
+    try {
+      const updatedUser = await User.findOneAndUpdate(
+        { _id: userId },
+        { $set: { tiktokLink } },
+        { new: true }
+      );
+
+      if (!updatedUser) {
+        return res.status(404).send("User not found");
+      }
+
+      res.status(200).send("Tiktok link saved successfully");
+    } catch (error) {
+      console.error("Error saving Tiktok link:", error);
+      res.status(500).send("Error saving Tiktok link");
+    }
+  })
+);
 
 module.exports = router;

@@ -104,7 +104,15 @@ const userSchema = new mongoose.Schema({
         {
           type: Boolean,
           default: false,
-        }
+        },
+  instagramLink:
+        {
+          type: String 
+        },
+  tiktokLink:
+        {
+          type: String 
+        },
 });
 
 
