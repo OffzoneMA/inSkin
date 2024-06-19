@@ -1,10 +1,13 @@
-import React, { useContext } from "react";
-import { StyleSheet, View, Image, ScrollView, TouchableOpacity } from "react-native";
-import { useTheme, Text, Icon } from "@ui-kitten/components";
+import React, { useContext , useLayoutEffect} from "react";
+import { StyleSheet, View, Image, ScrollView,Text, TouchableOpacity,TextInput } from "react-native";
+import { useTheme,  Icon, MenuItem, OverflowMenu } from "@ui-kitten/components";
 import AuthContext from "../../contexts/auth";
 import authStorage from "../../utilities/authStorage";
-//import { useToast } from "react-native-toast-notifications";
 
+import { useNavigation } from '@react-navigation/native'; // Importer le hook useNavigation
+
+//import { useToast } from "react-native-toast-notifications";
+import style from "../style";
 import * as ImagePicker from "expo-image-picker";
 
 import { useState } from "react";
@@ -24,8 +27,6 @@ import * as Yup from "yup";
 // Components
 import Page from "../../components/Page";
 import Button from "../../components/Button";
-import TextInput from "../../components/TextInput";
-
 import jwt_decode from "jwt-decode"
 
 const validationSchema = Yup.object({
@@ -65,6 +66,51 @@ function ProfileEdit({ navigation }) {
 
   const updateProfileImageApi = useApi(authApi.updateProfileImage);
   const getProfileImageApi = useApi(authApi.getProfileImage);
+  const navigation1 = useNavigation(); // Utiliser le hook useNavigation pour obtenir l'objet de navigation
+  const [menuVisible, setMenuVisible] = React.useState(false);
+  const [selectedLang, setSelectedLang] = React.useState('fr');
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: 'Personal details', // Définir le titre au centre de la barre de navigation
+      headerLeft: () => (
+        <TouchableOpacity  onPress={() => navigation.goBack()}>
+          <View style={styles.iconWrapper}>
+          <Icon name='chevron-left' style={styles.headerIcon} />
+          </View>
+        </TouchableOpacity>
+      ), 
+      headerRight: () => (
+        <OverflowMenu
+          visible={menuVisible}
+          anchor={() => (
+            <TouchableOpacity onPress={() => setMenuVisible(true)}>
+              <View style={styles.languageIconWrapper}>
+                <Icon name='more-vertical' style={styles.languageIcon} />
+              </View>
+            </TouchableOpacity>
+          )}
+          onBackdropPress={() => setMenuVisible(false)}
+        >
+          <MenuItem
+            title='Fr'
+            onPress={() => {
+              setSelectedLang('fr');
+              setMenuVisible(false);
+              // Logique pour changer la langue
+            }}
+          />
+          <MenuItem
+            title='Eng'
+            onPress={() => {
+              setSelectedLang('en');
+              setMenuVisible(false);
+              // Logique pour changer la langue
+            }}
+          />
+        </OverflowMenu>
+      ),
+    });
+  }, [navigation]);
   
   const getProfileImage = async () => {
     try {
@@ -159,7 +205,7 @@ function ProfileEdit({ navigation }) {
     );
 
     if (!result.ok) {
-      //toast.show(result.data, {type: "danger"});
+     console.log("ne change pas",result)
       return;
     }
 
@@ -199,32 +245,13 @@ function ProfileEdit({ navigation }) {
 
   return (
     <Page>
-      <View style={styles.profileContainer}>
-        <View style={[styles.profilePictureContainer, { borderColor: theme["color-primary-default"] }]}>
-          <View style={[styles.profileIconWrapper, { overflow: 'hidden', backgroundColor: theme["background-basic-color-1"] }]}>
-            {selectedImageUri ? ( // Step 3: Conditionally render selected image or default icon
-              <Image 
-                source={{ uri: selectedImageUri }} /* style={styles.profilePicture} */ 
-                style={[styles.profilePicture, {  flex: 1, width: null, height: null }]} // Use flex to fit the parent container
-              />
-            ) : (
-              <Icon
-                name={userProfile.profilePicture}
-                style={[styles.profilePicture, {top: 10}]} fill={theme["color-primary-disabled-border"]}
-              />
-            )}
-          </View>
-          {/* Floating button for uploading profile picture */}
-          
-          <TouchableOpacity
-            onPress={modifyProfileImage}
-            style={[styles.actionButtonIcon, { borderColor: theme["background-basic-color-2"], borderWidth: 3, borderRadius: 5, bottom: -10, right: -15, position: "absolute", margin: 5, padding: 8, borderRadius: 100,width: 40, height: 40, backgroundColor: theme["background-basic-color-1"] }]}>
-              <Icon name="edit-outline" fill={theme["color-primary-default"]} style={styles.actionButtonIcon} />
-          </TouchableOpacity>
-        </View>
-        </View>
 
         <KeyboardAwareScrollView contentContainerStyle={{ flex: 1, paddingHorizontal: 10 }}>
+        <View >
+             
+             <Text style={{ fontSize: 18, marginVertical: 10}}>Edit or confirm your personal information</Text>
+            
+          </View>
           <Formik
             initialValues={{
               _id: userProfile._id,
@@ -249,7 +276,10 @@ function ProfileEdit({ navigation }) {
             }) => (
               <>
                 <ScrollView>
-                    <TextInput
+                <Text style={style.label}>First Name</Text>
+                <View style={[style.action]}>
+                <TextInput
+                    style={style.textInput}
                     placeholder="First Name"
                     autoCompleteType="name"
                     keyboardType="default"
@@ -262,7 +292,12 @@ function ProfileEdit({ navigation }) {
                     onBlur={() => setFieldTouched("firstName")}
                     errorVisible={touched.firstName}
                     />
+                </View>
+                   
+                    <Text style={style.label}>Last  Name</Text>
+                    <View style={[style.action]}>
                     <TextInput
+                    style={style.textInput}
                     placeholder="Last Name"
                     autoCompleteType="name"
                     keyboardType="default"
@@ -275,60 +310,33 @@ function ProfileEdit({ navigation }) {
                     onBlur={() => setFieldTouched("lastName")}
                     errorVisible={touched.lastName}
                     />
+                    </View>
+                    <Text style={style.label}>Email Address</Text>
+                    <View style={[style.action]}>
                   <TextInput
-                    placeholder="Current Password"
-                    autoCompleteType="password"
-                    keyboardType="default"
+                  style={style.textInput}
+                    placeholder="Email Address"
+                    autoCompleteType="email"
+                    keyboardType="email-address"
                     returnKeyType="next"
+                    textContentType="emailAddress"
                     autoCapitalize="none"
-                    autoCorrect={false}
-                    secureTextEntry={true}
-                    value={values.currentPassword}
-                    onChangeText={handleChange("currentPassword")}
-                    errorMessage={errors.currentPassword}
-                    onBlur={() => setFieldTouched("currentPassword")}
-                    errorVisible={touched.currentPassword}
+                    value={values.email}
+                    onChangeText={handleChange("email")}
+                    errorMessage={errors.email}
+                    onBlur={() => setFieldTouched("email")}
+                    errorVisible={touched.email}
                   />
-                  <TextInput
-                    placeholder="New Password"
-                    autoCompleteType="password"
-                    keyboardType="default"
-                    returnKeyType="done"
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                    secureTextEntry={true}
-                    value={values.newPassword}
-                    onChangeText={handleChange("newPassword")}
-                    errorMessage={errors.newPassword}
-                    onBlur={() => setFieldTouched("newPassword")}
-                    errorVisible={touched.newPassword}
-                  />
-                  <TextInput
-                    placeholder="Confirm New Password"
-                    autoCompleteType="password"
-                    keyboardType="default"
-                    returnKeyType="done"
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                    secureTextEntry={true}
-                    value={values.newPasswordConfirmation}
-                    onChangeText={handleChange("newPasswordConfirmation")}
-                    errorMessage={errors.newPasswordConfirmation}
-                    onBlur={() => setFieldTouched("newPasswordConfirmation")}
-                    errorVisible={touched.newPasswordConfirmation}
-                  />
-
-                
-
-                </ScrollView>
-                <View style={{flexDirection: "row", justifyContent: "space-between"}}>
-                    <Button loading={updateUserInfoApi.loading} title="OK" onPress={handleSubmit} style={{flex: 2, marginRight: 2}}>
-                        Save
+                  </View>
+                  
+               <View style={{flexDirection: "row", justifyContent: "space-between"}}>
+                    <Button loading={updateUserInfoApi.loading} title="OK" onPress={handleSubmit} style={{flex: 2, marginRight: 2,borderRadius: 20}}>
+                       Confirm
                     </Button>
-                    <Button onPress={onCancelClick} style={{flex: 1, marginLeft: 2, backgroundColor: "#8F9BB3", borderColor: "#8F9BB3"}}>
-                        Cancel
-                    </Button>
+                    
                 </View>
+                </ScrollView>
+                
                 
                 
               </>
@@ -434,7 +442,38 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     marginVertical: 10,
   },
-
+  headerRightButton: {
+    marginRight: 60,
+  },
+  headerIcon: {
+    fontSize: 24,
+    width: 50,
+    height: 24,
+  },
+  iconWrapper: {
+    width: 40,
+    height: 40,
+    marginRight: 60,
+    marginLeft: 20,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.1)', // Add a background color to make the circle visible
+  },
+  languageIconWrapper: {
+    width: 40,
+    height: 40,
+    marginRight: 10,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.1)',
+  },
+  languageIcon: {
+    fontSize: 24,
+    width: 50,
+    height: 24,
+  },
 });
 
 export default ProfileEdit;

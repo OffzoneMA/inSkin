@@ -9,10 +9,10 @@ const Stack = createStackNavigator();
 export default function postNavigator() {
   return (
       <Stack.Navigator
-        screenOptions={{ headerShown: false }}
+       
         initialRouteName="PostHome"
       >
-        <Stack.Screen name="PostHome" component={PostHome} />
+        <Stack.Screen name="My posts" component={PostHome} />
       </Stack.Navigator>
   );
 }

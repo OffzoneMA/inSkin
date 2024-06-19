@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import { MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import HomeProductListView from './HomeProductListView';
+import { deviceWidth } from '../../constants/constants';
+import AppText from "../../components/AppText";
+import {colors, images} from "../../constants";
 import {
   SafeAreaView,
   View,
@@ -24,7 +27,7 @@ import Paragraph from "../../components/Paragraph";
 import productActionsApi from "../../api/product_actions";
 import authApi from "../../api/auth";
 //import { useToast } from "react-native-toast-notifications";
-
+import HomeHeader from "../../components/HomeHeader";
 import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEffect from React Navigation
 
 import { useTheme, Icon } from "@ui-kitten/components";
@@ -172,6 +175,7 @@ function DiscoverHome({ navigation }) {
     </TouchableOpacity>
   );
   const FollowedProductItem = ({ item }) => (
+    <View style={styles.cardContainer}>
     <TouchableOpacity 
       activeOpacity={0.7} 
       style={[styles.item1, { backgroundColor: '#F4F4F4' }]} 
@@ -181,7 +185,7 @@ function DiscoverHome({ navigation }) {
         {item.images && item.images.length > 0 && (
           <Image
             source={{ uri: `data:${item.images[0].contentType};base64,${item.images[0].data}` }}
-            style={{ width: 330, height: 200,  resizeMode: 'cover', borderRadius:20 }}
+            style={styles.productImage}
           />
         )}
         {!item.images || item.images.length === 0 && (
@@ -189,12 +193,28 @@ function DiscoverHome({ navigation }) {
             <MaterialIcons name="image" size={40} color="black" />
           </View>
         )}
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 20, alignItems: 'center' }}>
-          <SubHeading style={{ color: 'black' }}>{item.productName}</SubHeading>
-          <View style={{ flexDirection: 'row' }}>
-            <MaterialIcons name="bookmark-border" size={30} color="black" style={{ marginLeft: 100 }} />
-            <MaterialIcons name="chat-bubble-outline" size={30} color="black" />
+        
+       
+        <View style={styles.productNameContainer}>
+        <View
+            style={{
+              marginTop: 8,
+            }}>
+            <SubHeading style={styles.productNameText
+              
+            }        
+              >{item.productName}</SubHeading>
+            </View>
+            <View style={styles.productActionButtonContainer}>
+            <TouchableOpacity >
+              <Image source={images.bookmark} style={[styles.actionButton, { marginRight: 13 }]} />
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Image source={images.message} style={styles.actionButton} />
+            </TouchableOpacity>
           </View>
+            </View>
+          
           {item.comments && item.comments.length > 0 && (
             <View>
               <Paragraph>Comments:</Paragraph>
@@ -206,9 +226,10 @@ function DiscoverHome({ navigation }) {
               ))}
             </View>
           )}
-        </View>
+        
       </View>
     </TouchableOpacity>
+    </View>
   );
   
   
@@ -218,7 +239,8 @@ function DiscoverHome({ navigation }) {
   
   return (
     <Page style={{color: "red"}}>
-      <Heading>Browse</Heading>
+      <HomeHeader/>
+      
       {followedProducts.length === 0 && ( // Condition pour afficher le texte uniquement si l'utilisateur ne suit pas encore de compte
         <>
           <View style={{ alignItems: 'center' }}>
@@ -231,6 +253,7 @@ function DiscoverHome({ navigation }) {
               and posts they share.
             </Text></Text>
           </View>
+          
         </>
       )}
       <SafeAreaView>
@@ -264,6 +287,7 @@ function DiscoverHome({ navigation }) {
             />
           }
         />
+        
 
        
       </SafeAreaView>
@@ -316,6 +340,38 @@ const styles = StyleSheet.create({
   },
   profileIconWrapper: {
     borderRadius: 98,
+  },
+  cardContainer: {
+    minHeight: 430,
+    width: deviceWidth - 40,
+    alignSelf: 'center',
+    marginTop: 22,
+  },
+  productImage: {
+    height: 210,
+    width: deviceWidth - 40,
+    borderRadius: 10,
+    resizeMode: 'contain',
+  },
+  productNameText: {
+    lineHeight: 24,
+    color:'black'
+    
+  },
+  productNameContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  productActionButtonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  actionButton: {
+    width: 20,
+    height: 20,
+    resizeMode: 'contain',
+    tintColor: colors.black,
   },
 });
 

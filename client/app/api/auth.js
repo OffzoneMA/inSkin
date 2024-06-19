@@ -65,7 +65,18 @@ const updateProfileImage = (userId, image) => {
     },
   });
 };
-
+const comparePassword = async (userId, currentPassword) => {
+  try {
+    const response = await client.post("/auth/compare-password", {
+      _id: userId,
+      currentPassword
+    });
+    return response.data; // Retournez les données de la réponse si nécessaire
+  } catch (error) {
+    console.error("Error comparing password:", error);
+    throw error;
+  }
+};
 const getProfileImage = (userId) => {
   return client.get(`/auth/profile-image/${userId}`);
 };

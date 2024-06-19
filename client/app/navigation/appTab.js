@@ -13,6 +13,7 @@ import {renderProfileImage} from "../screens/profile/ProfilePicture"
 import { encode } from 'base-64';
 import { useNavigation } from "@react-navigation/native";
 import { useFocusEffect } from "@react-navigation/native"; 
+import { images } from '../constants';
 const Tab = createMaterialTopTabNavigator();
 
 export default function AppTabNavigator() {
@@ -39,106 +40,120 @@ export default function AppTabNavigator() {
   
   return (
     <SafeAreaView style={{ flex: 1 }}>
-  <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 10,backgroundColor:'white'}}>
-  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-    {renderHeaderLogo()}
-  </View>
-  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-    {renderProfileImage1()}
-    {renderNotificationIcon()}
-  </View>
-</View>
-      <Tab.Navigator
-        initialRouteName="Home"
-        backBehavior="none"
-        tabBarPosition="bottom" // Position the tabBar at the bottom
-        tabBarOptions={{
-          activeTintColor: theme["color-primary-default"],
-          inactiveTintColor: 'black',
-          showIcon: true, // Show icons in tabs
-          labelStyle: {
-            fontSize: 12,
-            fontWeight: "bold", // Make the tab labels bold
-            marginVertical: 0,
-          },
-          indicatorStyle: {
-            backgroundColor: theme["color-primary-default"], // Color of the active tab indicator
-          },
-          iconStyle: {
-            marginVertical: 0, // Remove vertical margin
-          },
-          style: {
-            backgroundColor:' #F4F4F4',
-            width: windowWidth, // Set the tabBar width to window width
-          },
-        }}
-      >
-        <Tab.Screen
-          name="Home"
-          component={BrowseNavigator}
-          options={{
-            tabBarIcon: ({ focused, color, size }) => (
-              <MaterialCommunityIcons
-                name={focused ? "home" : "home-outline"}
-                size={24}
-                color={color}
-              />
-            ),
+      
+      <View style={{ flex: 1 }}>
+        <Tab.Navigator
+          initialRouteName="Home"
+          backBehavior="none"
+          tabBarPosition="bottom"
+          tabBarOptions={{
+            activeTintColor: theme["color-primary-default"],
+            inactiveTintColor: 'black',
+            showIcon: true,
+            labelStyle: {
+              fontSize: 12,
+              fontWeight: "bold",
+              marginVertical: 0,
+            },
+            indicatorStyle: {
+              backgroundColor: theme["color-primary-default"],
+            },
+            iconStyle: {
+              marginVertical: 0,
+            },
+            style: {
+              backgroundColor: '#F4F4F4',
+              width: windowWidth,
+            },
           }}
-        />
-        <Tab.Screen
-          name="Search"
-          component={BrowseNavigator}
-          options={{
-            tabBarIcon: ({ focused, color, size }) => (
-              <MaterialCommunityIcons
-                name={focused ? "magnify-expand" : "magnify-expand"}
-                size={24}
-                color={color}
-              />
-            ),
+        >
+          <Tab.Screen
+            name="Home"
+            component={BrowseNavigator}
+            options={{
+              tabBarIcon: ({ focused, color, size }) => (
+                <MaterialCommunityIcons
+                  name={focused ? "home" : "home-outline"}
+                  size={24}
+                  color={color}
+                />
+              ),
+            }}
+          />
+          <Tab.Screen
+            name="Search"
+            component={BrowseNavigator}
+            options={{
+              tabBarIcon: ({ focused, color, size }) => (
+                <MaterialCommunityIcons
+                  name={focused ? "magnify-expand" : "magnify-expand"}
+                  size={24}
+                  color={color}
+                />
+              ),
+            }}
+          />
+          <Tab.Screen
+            name="Favoris"
+            component={postNavigator}
+            options={{
+              tabBarIcon: ({ focused, color, size }) => (
+                <MaterialCommunityIcons
+                  name={focused ? "heart" : "heart-outline"}
+                  size={24}
+                  color={color}
+                />
+              ),
+            }}
+          />
+          <Tab.Screen
+            name="Posts"
+            component={postNavigator}
+            options={{
+              tabBarIcon: ({ focused, color, size }) => (
+                <MaterialCommunityIcons
+                  name={focused ? "file-document-edit" : "file-document-edit-outline"}
+                  size={24}
+                  color={color}
+                />
+              ),
+            }}
+          />
+          <Tab.Screen
+            name="Profile"
+            component={ProfileNavigator}
+            options={{
+              tabBarIcon: ({ focused, color, size }) => (
+                <MaterialCommunityIcons
+                  name={focused ? "account-outline" : "account-outline"}
+                  size={24}
+                  color={color}
+                />
+              ),
+            }}
+          />
+        </Tab.Navigator>
+       <TouchableOpacity 
+          style={{
+            position: 'absolute',
+            bottom: 70, // Adjust as necessary
+            right: (windowWidth / 2) - 180, // Center horizontally
+            width: 60, // Adjust as necessary
+            height: 60, // Adjust as necessary
+            borderRadius: 30, // Half of width and height to make it a circle
+            backgroundColor: 'pink',
+            justifyContent: 'center',
+            alignItems: 'center',
+            
           }}
-        />
-        <Tab.Screen
-          name="Favoris"
-          component={BrowseNavigator}
-          options={{
-            tabBarIcon: ({ focused, color, size }) => (
-              <MaterialCommunityIcons
-                name={focused ? "heart" : "heart-outline"}
-                size={24}
-                color={color}
-              />
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="Posts"
-          component={postNavigator}
-          options={{
-            tabBarIcon: ({ focused, color, size }) => (
-              <MaterialCommunityIcons
-                name={focused ? "file-document-edit" : "file-document-edit-outline"}
-                size={24}
-                color={color}
-              />
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="Profile"
-          component={ProfileNavigator}
-          options={{
-            tabBarIcon: ({ focused, color, size }) => (
-              <MaterialCommunityIcons
-                name={focused ? "account-outline" : "account-outline"}
-                size={24}
-                color={color}
-              />
-            ),
-          }}
-        />
-      </Tab.Navigator>
+        >
+          
+          <Image
+            source={images.scanner}
+            style={{ width: 30, height: 30 }}
+          />
+        </TouchableOpacity> 
+      </View>
     </SafeAreaView>
   );
 }
