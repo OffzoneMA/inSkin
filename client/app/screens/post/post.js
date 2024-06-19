@@ -1,10 +1,13 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback,useLayoutEffect } from "react";
+import { MaterialIcons } from '@expo/vector-icons';
 import {
   StyleSheet,
   View,
   FlatList,
   TouchableOpacity,
 } from "react-native";
+import { deviceWidth } from '../../constants/constants';
+import {colors, images} from "../../constants";
 import { useTheme, Text, Icon } from "@ui-kitten/components";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Page from "../../components/Page";
@@ -20,10 +23,12 @@ function PosteHome({ route,navigation }) {
   const getMyProducts = async () => {
     try {
       const response = await productActionsApi.getmyproduct(); // Assuming this is the API call
+      console.log("mu product",response);
       if (!response.ok) {
         // Handle error
       } else {
         setProducts(response.data.products); // Assuming response.data.products contains the products
+        
       }
     } catch (error) {
       console.error("Error fetching products: ", error);
@@ -39,11 +44,47 @@ function PosteHome({ route,navigation }) {
       getMyProducts();
     }, [])
   );
-
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: 'My posts', // Définir le titre au centre de la barre de navigation
+      headerTitleAlign: 'center',
+    });
+  }, [navigation]);
   const handleAddPublication = async () => {
     navigation.navigate("AddPublicationScreen");
     console.log("result.uri");
   };
+  const ProductItem = ({ item }) => (
+    <View style={styles.cardContainer}>
+    <TouchableOpacity 
+      activeOpacity={0.7} 
+      style={[styles.item1, { backgroundColor: '#F4F4F4' }]} 
+      onPress={() => { getProductById(item.productId); }}
+    >
+      <View style={{ alignItems: 'center' }}>
+        {item.images && item.images.length > 0 && (
+          <Image
+            source={{ uri: `data:${item.images[0].contentType};base64,${item.images[0].data}` }}
+            style={styles.productImage}
+          />
+        )}
+        {!item.images || item.images.length === 0 && (
+          <View style={{ width: '100%', height: 200, aspectRatio: 16/9, justifyContent: 'center', alignItems: 'center' }}>
+            <MaterialIcons name="image" size={40} color="black" />
+          </View>
+        )}
+        
+       
+        
+          
+          
+        
+      </View>
+    </TouchableOpacity>
+    </View>
+  );
+  
+  
   return (
     <Page>
       <View style={styles.container}>
@@ -75,6 +116,8 @@ function PosteHome({ route,navigation }) {
         ) : (
           <FlatList
             data={products}
+            
+           
             renderItem={({ item }) => <ProductItem item={item} />}
             keyExtractor={(item) => item._id}
           />
@@ -84,12 +127,12 @@ function PosteHome({ route,navigation }) {
   );
 }
 
-const ProductItem = ({ item }) => {
+const ProductItem1 = ({ item }) => {
   const theme = useTheme();
   return (
     <View style={{ marginVertical: 5, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
       <View style={{ flex: 1, flexDirection: "column" }}>
-        <Text>{item.productDetails.name}</Text>
+        <Text style={styles.message}>{item.productDetails.name}</Text>
         <StarRating
           rating={item.review}
           onChange={() => {}}
@@ -140,6 +183,38 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'white',
     fontWeight: 'bold',
+  },
+  cardContainer: {
+    minHeight: 430,
+    width: deviceWidth - 40,
+    alignSelf: 'center',
+    marginTop: 22,
+  },
+  productImage: {
+    height: 210,
+    width: deviceWidth - 40,
+    borderRadius: 10,
+    resizeMode: 'contain',
+  },
+  productNameText: {
+    lineHeight: 24,
+    color:'black'
+    
+  },
+  productNameContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  productActionButtonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  actionButton: {
+    width: 20,
+    height: 20,
+    resizeMode: 'contain',
+    tintColor: colors.black,
   },
 });
 

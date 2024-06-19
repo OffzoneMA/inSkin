@@ -160,8 +160,6 @@ router.put(
       }
 
       // Compare passwords if provided
-      
-
       // Update user properties
       foundUser.firstName = req.body.firstName || foundUser.firstName;
       foundUser.lastName = req.body.lastName || foundUser.lastName;
@@ -191,7 +189,36 @@ router.put(
     }
   })
 );
+router.post(
+  '/compare-password',
+  auth,
+  asyncMiddleware(async (req, res) => {
+    try {
+      const userId = req.body._id;
+      const currentPassword = req.body.currentPassword;
 
+      // Find user by ID
+      const foundUser = await User.findById(userId);
+
+      // User doesn't exist
+      if (!foundUser) {
+        return res.status(400).send('User does not exist!');
+      }
+
+      // Compare passwords
+      const passwordMatch = await bcrypt.compare(currentPassword, foundUser.password);
+
+      if (!passwordMatch) {
+        return res.status(400).send('Incorrect password! Please try again');
+      }
+
+      res.status(200).send('Password is correct');
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Internal Server Error');
+    }
+  })
+);
 router.post(
   "/register",
   asyncMiddleware(async (req, res) => {
