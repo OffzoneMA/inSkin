@@ -75,7 +75,7 @@ router.post(
 
 /// OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK
 
-router.put('/change-password', async (req, res) => {
+router.put('/change-password', auth, async (req, res) => {
   const { email, newPassword } = req.body;
 
   try {
