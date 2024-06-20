@@ -106,6 +106,44 @@ const handleGoogleLogin = async () => {
     // Gérer les erreurs, par exemple afficher un message à l'utilisateur
   }
 };
+
+const getRandomUsers = async () => {
+  try {
+    const response = await client.get("/auth/get-random-users");
+    return response.data;
+  } catch (error) {
+    console.error("Error getting random users:", error);
+    throw error;
+  }
+};
+
+const followUser = async (targetUserId) => {
+  try {
+    const response = await client.post("/auth/follow-user", { targetUserId });
+    return response.data;
+  } catch (error) {
+    console.error("Error following user:", error);
+    throw error;
+  }
+};
+
+const searchUser = async (firstName, lastName, userName) => {
+  try {
+    // Construire l'URL avec les paramètres de recherche
+    const params = new URLSearchParams();
+    if (firstName) params.append('firstName', firstName);
+    if (lastName) params.append('lastName', lastName);
+    if (userName) params.append('userName', userName);
+
+    const response = await client.get(`/auth/search-users?${params.toString()}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error searching for users:", error);
+    throw error;
+  }
+};
+
+
 export default {
   login,
   register,
@@ -115,5 +153,8 @@ export default {
   getUsersByIds,
   updateUserInfo,
   getUserByEmail,
-  handleGoogleLogin
+  handleGoogleLogin,
+  getRandomUsers,
+  followUser,
+  searchUser,
 };

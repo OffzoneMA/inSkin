@@ -49,7 +49,7 @@ export const renderProfileImage = () => {
         <View style={[styles.profileIconWrapper, { overflow: 'hidden', backgroundColor: theme["background-basic-color-1"] }]}>
           {selectedImageUri ? ( // Step 3: Conditionally render selected image or default icon
             <Image 
-              source={{ uri: selectedImageUri }} /* style={styles.profilePicture} */ 
+              source={{ uri: selectedImageUri}} /* style={styles.profilePicture} */ 
               style={[styles.profilePicture, {  flex: 1, width: null, height: null }]} // Use flex to fit the parent container
             />
           ) : (
@@ -71,11 +71,13 @@ export const renderProfileImage = () => {
             },
             profilePictureContainer: {
               borderRadius: 100,
-              marginBottom: 10,
+              marginBottom: 2,
+              marginTop:6,
+              marginRight:6,
               borderWidth: 2,
               padding: 2,
-              width: 50,
-              height: 50,
+              width: 33, // Réduire la largeur de l'icône
+              height: 33, // Réduire la hauteur de l'icône
             },
             profileIconWrapper: {
               borderRadius: 98,

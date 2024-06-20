@@ -8,12 +8,84 @@ const router = express.Router();
 const mongoose = require("mongoose");
 
 const multer = require("multer");
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
 
 const bodyParser = require('body-parser');
 
 router.use(bodyParser.json());
 
-const upload = multer();
+
+// const upload = multer();
+
+// Debug middleware to log incoming requests
+router.use((req, res, next) => {
+  console.log('Request received: ', req.method, req.url);
+  console.log('Request body: ', req.body);
+  console.log('Request files: ', req.files);
+  next();
+});
+
+// POST a new product
+router.post(
+  "/add-product3",
+  auth, // Ensure user is authenticated
+  upload.array('images'),
+  asyncMiddleware(async (req, res) => {
+    try {
+      console.log('Inside POST /add-product2 handler');
+      console.log('Files received: ', req.files);
+      console.log('Request body: ', req.body);
+
+      // Convert string fields to JSON objects
+      req.body.productDetails = JSON.parse(req.body.productDetails);
+      req.body.comments = JSON.parse(req.body.comments);
+
+      // Validate the incoming request data
+      const { error } = validate(req.body);
+      if (error) {
+        return res.status(400).send(error.details[0].message);
+      }
+
+      // Check if a product with the same barcode already exists
+      const foundProduct = await Product.findOne({ barcode: req.body.barcode });
+      if (foundProduct) {
+        return res.status(400).send("A product already exists with this barcode!");
+      }
+
+      // Ensure files are uploaded
+      if (!req.files || req.files.length === 0) {
+        return res.status(400).send("No images uploaded.");
+      }
+      
+   
+      // Process the images
+      const images = req.files.map(file => ({
+        data: file.buffer, // Buffer of the image file
+        contentType: file.mimetype, // ContentType of the image (e.g., 'image/png')
+      }));
+
+      // Create a new product instance
+      const product = new Product({
+        barcode: req.body.barcode,
+        userId: mongoose.Types.ObjectId(req.body.userId),
+        images: images, // Replace with image URLs if needed
+        productDetails: req.body.productDetails,
+        comments: req.body.comments,
+      });
+
+      // Save the product to the database
+      await product.save();
+
+      return res.status(201).json({ message: "Product posted successfully" });
+    } catch (err) {
+      console.error('Error during product creation:', err); // Log the error for debugging
+      return res.status(500).send("Something failed.");
+    }
+  })
+);
+
 
 // POST a new product
 router.post(

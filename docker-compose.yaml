@@ -1,5 +1,4 @@
-version: '3.7'
-
+# version: '3.7'
 services:
   mongo:
     image: mongo:latest
@@ -38,7 +37,8 @@ services:
       - 19000:19000
       - 19001:19001
       - 19002:19002
-      - 8081:8081
+      # - 8081:8081
+      - 8082:8082
 
     volumes:
       - ./client/:/usr/src/app # Link host directory to container=
