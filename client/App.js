@@ -1,4 +1,14 @@
 import React, { useState, useEffect } from "react";
+
+import { Provider } from "react-redux";
+import { store } from "./app/redux/store";
+import i18n from "i18n-js";
+import * as RNLocalize from "react-native-localize";
+
+// import { LocalizationProvider } from "./app/contexts/LocalizationContext";
+import { LocalizationContext } from "./app/contexts/LocalizationContext";
+
+
 import { useFonts } from "expo-font";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useColorScheme } from 'react-native';
@@ -25,6 +35,49 @@ import OfflineNotice from "./app/components/OfflineNotice";
 //import { ToastProvider } from 'react-native-toast-notifications'
 
 export default function App() {
+
+
+  i18n.fallbacks = true;
+
+  i18n.translations = {
+    en: require("./app/localization/translation/en.json"),
+    fr: require("./app/localization/translation/fr.json"),
+  };
+
+  const fallback = { languageTag: "en" };
+  const { languageTag } =
+    RNLocalize.findBestAvailableLanguage(["en", "fr"]) || fallback;
+
+  const [locale, setLocale] = React.useState(languageTag);
+
+  const localizationContext = React.useMemo(
+    () => ({
+      translate: (scope, options) => i18n.t(scope, { locale, ...options }),
+      locale,
+      setLocale,
+    }),
+    [locale]
+  );
+
+  const handleLocalizationChange = () => {
+    const { languageTag } =
+      RNLocalize.findBestAvailableLanguage(["en", "fr"]) || fallback;
+    setLocale(languageTag);
+  };
+
+  React.useEffect(() => {
+    RNLocalize.addEventListener("change", handleLocalizationChange);
+    return () => {
+      RNLocalize.removeEventListener("change", handleLocalizationChange);
+    };
+  }, []);
+  if (!fontsLoaded) {
+    <></>
+  }
+
+
+
+
   const [haveFontsLoaded] = useFonts({
     "Jost-Regular": require("./app/assets/fonts/Jost-Regular.ttf"),
     "Jost-SemiBold": require("./app/assets/fonts/Jost-SemiBold.ttf"),
@@ -74,7 +127,9 @@ export default function App() {
   if (haveFontsLoaded && isReady) {
     return (
       <>
+      <LocalizationContext.Provider value={localizationContext}>
         <IconRegistry icons={EvaIconsPack} />
+        <Provider store={store}>
         <AuthContext.Provider value={{ user, setUser }}>
           <ThemeContext.Provider value={{ theme, setTheme }}>
             <ApplicationProvider
@@ -108,6 +163,8 @@ export default function App() {
             </ApplicationProvider>
           </ThemeContext.Provider>
         </AuthContext.Provider>
+        </Provider>
+        </LocalizationContext.Provider>
       </>
     );
   }

@@ -1,0 +1,31 @@
+{
+  "notifications": [
+    {
+      "isFollowing": true,
+      "userName": "Mary Cruz",
+      "messageText": "Starts following you",
+      "date": "Oct 24"
+    },
+    {
+      "isPost": true,
+      "messageText": `Mary Cruz likes your 'Contra Mix' post`,
+      "date": "Oct 24"
+    },
+    {
+      "isPost": true,
+      "messageText": `Mary Cruz likes your 'Contra Mix' post`,
+      "date": "Oct 24"
+    },
+    {
+      "isFollowing": true,
+      "userName": "Mary Cruz",
+      "messageText": "Starts following you",
+      "date": "Oct 24"
+    },
+    {
+      "isPost": true,
+      "messageText": `Mary Cruz likes your 'Contra Mix' post`,
+      "date": "Oct 24"
+    },
+  ]
+}

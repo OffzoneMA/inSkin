@@ -9,7 +9,7 @@ import ProfileSettings from "../screens/profile/settings";
 
 const Stack = createStackNavigator();
 
-export default function ProfileNavigator() {
+export default function ProfileNavigator1() {
   return (
     <Stack.Navigator
     screenOptions={{ 

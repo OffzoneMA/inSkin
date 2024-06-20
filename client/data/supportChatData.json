@@ -1,0 +1,13 @@
+{
+  "chatData": [
+    {
+      "isSender": false,
+      "message": "Hello! How can we help you?"
+    },
+    {
+      "isSender": true,
+      "message": "Good afternoon! I don't know how to contact the driver of the last trip, I think I left some things in the car",
+      "sentTime": "01:22"
+    }
+  ]
+}
