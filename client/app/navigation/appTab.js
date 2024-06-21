@@ -2,8 +2,10 @@ import React from "react";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import BrowseNavigator from "./browse";
 import ProfileNavigator from "./profile";
+
 import ProfileNavigator1 from "./profile";
 import ProfileNavigator from "./ProfileNavigator";
+
 import SearchUser from "../screens/search/search";
 import DiscoverHomeWithFollowers from "../screens/browse/homeWithFollowers";
 import ScanNavigator from "./scan";

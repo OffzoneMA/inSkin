@@ -135,6 +135,9 @@ const handleGoogleLogin = async () => {
   }
 };
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> aichaBranch
 
 const getRandomUsers = async () => {
   try {
@@ -173,8 +176,11 @@ const searchUser = async (firstName, lastName, userName) => {
 };
 
 
+<<<<<<< HEAD
 =======
 >>>>>>> 27644d8ea97281bed390c56840de4cd52212b747
+=======
+>>>>>>> aichaBranch
 export default {
   login,
   register,
@@ -186,10 +192,16 @@ export default {
   getUserByEmail,
   handleGoogleLogin,
 <<<<<<< HEAD
+<<<<<<< HEAD
   getRandomUsers,
   followUser,
   searchUser,
 =======
   followUser,
 >>>>>>> 27644d8ea97281bed390c56840de4cd52212b747
+=======
+  getRandomUsers,
+  followUser,
+  searchUser,
+>>>>>>> aichaBranch
 };

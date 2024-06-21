@@ -20,6 +20,7 @@ const { faker } = require('@faker-js/faker');
 const axios = require('axios');
 const{v4:uuidv4}=require("uuid");
 const { error } = require("winston");
+
 // let transporter = nodemailer.createTransport({
 //   service:"gmail",
 //   auth:{
@@ -37,6 +38,10 @@ const { error } = require("winston");
 //   }
 // });
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> aichaBranch
 ///OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK
 router.post(
   "/login",
@@ -71,7 +76,10 @@ router.post(
   })
 );
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> aichaBranch
 /// OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK
 
 router.put('/change-password', auth, async (req, res) => {
@@ -224,6 +232,7 @@ router.put(
   })
 );
 
+<<<<<<< HEAD
 /// OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK
 
 router.post(
@@ -257,6 +266,10 @@ router.post(
   })
 );
 
+=======
+
+/// OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK
+>>>>>>> aichaBranch
 router.post(
   "/register",
   asyncMiddleware(async (req, res) => {
@@ -275,7 +288,10 @@ router.post(
 
     });
     console.log("ncmt 5")
+<<<<<<< HEAD
 
+=======
+>>>>>>> aichaBranch
     if (foundUser) {
       res.status(400).send("A user is already registered with this email!");
       return;
@@ -283,7 +299,10 @@ router.post(
     console.log("cmt 6")
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
     console.log("cmt 7")
+<<<<<<< HEAD
 
+=======
+>>>>>>> aichaBranch
     // Generate unique username
     var userName;
     while (true) {
@@ -307,7 +326,10 @@ router.post(
     //const imageBuffer = await getImageBufferFromURL(imageURL);
     console.log("cmt 10")
     console.log("cmt 11")
+<<<<<<< HEAD
 
+=======
+>>>>>>> aichaBranch
     const newUser = new User({
       firstName: req.body.firstName,
       lastName: req.body.lastName,
@@ -319,8 +341,12 @@ router.post(
         contentType: 'image/jpg' // Set the content type accordingly
       }
     });
+<<<<<<< HEAD
 
     console.log("cmt 12");
+=======
+    console.log("cmt 12")
+>>>>>>> aichaBranch
     await newUser.save();
     const token = newUser.generateAuthToken();
     console.log("Registration Successful!");
@@ -338,11 +364,84 @@ router.get(
   })
 );
 
+<<<<<<< HEAD
+=======
+// Route to update profile image
+// router.put(
+//   "/update-profile-image",
+//   auth, 
+//   upload.single('image'),
+//   asyncMiddleware(async (req, res) => {
+//     const userId = req.body._id; // Assuming you have the user ID in the request object
+    
+//     const updatedUser = await User.findOneAndUpdate(
+//       { _id: userId },
+//       {
+//         $set: {
+//           profileImage: {
+//             data: req.file.buffer,
+//             contentType: req.file.mimetype
+//           }
+//         }
+//       },
+//       { new: true } // This option ensures that the updated document is returned
+//     );
+
+//     if (!updatedUser) {
+//       return res.status(404).send("User not found");
+//     }
+
+//     res.status(200).send("Profile image updated successfully");
+//   })
+// );
+
+// router.put(
+//   "/update-profile-image",
+//   auth, 
+//   upload.single('image'),
+//   asyncMiddleware(async (req, res) => {
+//     const userId = req.body._id;
+
+//     if (!req.file) {
+//       return res.status(400).send("No image file provided");
+//     }
+
+//     console.log('File received:', req.file);
+//     console.log('User ID:', userId);
+
+//     try {
+//       const updatedUser = await User.findOneAndUpdate(
+//         { _id: userId },
+//         {
+//           $set: {
+//             profileImage: {
+//               data: req.file.buffer,
+//               contentType: req.file.mimetype
+//             }
+//           }
+//         },
+//         { new: true }
+//       );
+
+//       if (!updatedUser) {
+//         return res.status(404).send("User not found");
+//       }
+
+//       res.status(200).send("Profile image updated successfully");
+//     } catch (error) {
+//       console.error("Error updating profile image:", error);
+//       res.status(500).send("Error updating profile image");
+//     }
+//   })
+// );
+
+>>>>>>> aichaBranch
 
 /// OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK
 
 const mongoose = require('mongoose');
 
+<<<<<<< HEAD
 router.put(
   "/update-profile-image",
   auth,
@@ -396,35 +495,63 @@ router.put(
 
 /// OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK
 
+=======
+>>>>>>> aichaBranch
 router.put(
   "/update-profile-image",
-  auth, 
+  auth,
   upload.single('image'),
   asyncMiddleware(async (req, res) => {
-    const userId = req.body._id; // Assuming you have the user ID in the request object
-    
-    const updatedUser = await User.findOneAndUpdate(
-      { _id: userId },
-      {
-        $set: {
-          profileImage: {
-            data: req.file.buffer,
-            contentType: req.file.mimetype
-          }
-        }
-      },
-      { new: true } // This option ensures that the updated document is returned
-    );
+    let userId;
 
-    if (!updatedUser) {
-      return res.status(404).send("User not found");
+    try {
+      userId = JSON.parse(req.body._id); // Supprimer les guillemets doubles supplémentaires
+    } catch (err) {
+      return res.status(400).send("Invalid user ID format");
     }
 
-    res.status(200).send("Profile image updated successfully");
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).send("Invalid user ID");
+    }
+
+    if (!req.file) {
+      return res.status(400).send("No image file provided");
+    }
+
+    console.log('File received:', req.file);
+    console.log('User ID:', userId);
+
+    try {
+      const updatedUser = await User.findOneAndUpdate(
+        { _id: userId },
+        {
+          $set: {
+            profileImage: {
+              data: req.file.buffer,
+              contentType: req.file.mimetype
+            }
+          }
+        },
+        { new: true }
+      );
+
+      if (!updatedUser) {
+        return res.status(404).send("User not found");
+      }
+
+      res.status(200).send("Profile image updated successfully");
+    } catch (error) {
+      console.error("Error updating profile image:", error);
+      res.status(500).send("Error updating profile image");
+    }
   })
 );
 
 
+<<<<<<< HEAD
+=======
+/// OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK
+>>>>>>> aichaBranch
 router.get(
   "/profile-image/:id",
   auth, // Ensure the user is authenticated to access this route
@@ -450,9 +577,14 @@ router.get(
   })
 );
 
+<<<<<<< HEAD
 
 /// OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK
 // GET multiple users by IDs
+=======
+// GET multiple users by IDs 
+/// OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK
+>>>>>>> aichaBranch
 router.get(
   "/get-users-byids", 
   auth,
@@ -478,6 +610,7 @@ router.get(
 }));
 
 /// OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK
+<<<<<<< HEAD
 
 router.post(
   "/follow",
@@ -514,6 +647,8 @@ router.post(
 );
 
 
+=======
+>>>>>>> aichaBranch
 router.get(
   "/get-users-by-emails",
   auth,
@@ -538,7 +673,10 @@ router.get(
     }
   })
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> aichaBranch
 );
 
 ///OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK
@@ -849,6 +987,7 @@ router.post(
     }
   })
 );
+<<<<<<< HEAD
 
 
 
@@ -883,5 +1022,7 @@ router.get('/auth/google/callback',
     res.redirect('/');
   });
 
+=======
+>>>>>>> aichaBranch
 
 module.exports = router;
