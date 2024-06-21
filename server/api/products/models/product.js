@@ -11,11 +11,11 @@ const productSchema = new mongoose.Schema({
     //   ref: "User", // Reference to the User model
     //   required: true,
     // },
-    
-    // brand: {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: "Brand",
-    //     required: true
+
+    // userId: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: "User", // Reference to the User model
+    //   required: true,
     // },
     images: [
       {
@@ -84,6 +84,7 @@ const Product = mongoose.model("Product", productSchema);
 function validateProduct(product) {
   const schema = Joi.object({
     barcode: Joi.string().required(),
+
     // userId: Joi.string().hex().length(24).required(), // Assuming userId is required
     // brand: Joi.string().required(),
     images: Joi.array().items(
@@ -94,9 +95,11 @@ function validateProduct(product) {
     ),
 
     productDetails: Joi.object({
+      
       name: Joi.string().allow('').required(),
       brand: Joi.string().hex().length(24).allow(null).required(),
       description: Joi.string().allow('').required()
+
     }),
 
     comments: Joi.array().items(

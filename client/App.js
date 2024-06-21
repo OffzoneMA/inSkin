@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-
 import { Provider } from "react-redux";
 import { store } from "./app/redux/store";
 import i18n from "i18n-js";
@@ -7,8 +6,6 @@ import * as RNLocalize from "react-native-localize";
 
 // import { LocalizationProvider } from "./app/contexts/LocalizationContext";
 import { LocalizationContext } from "./app/contexts/LocalizationContext";
-
-
 import { useFonts } from "expo-font";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useColorScheme } from 'react-native';
@@ -35,8 +32,6 @@ import OfflineNotice from "./app/components/OfflineNotice";
 //import { ToastProvider } from 'react-native-toast-notifications'
 
 export default function App() {
-
-
   i18n.fallbacks = true;
 
   i18n.translations = {
@@ -74,6 +69,7 @@ export default function App() {
   if (!fontsLoaded) {
     <></>
   }
+
 
 
 

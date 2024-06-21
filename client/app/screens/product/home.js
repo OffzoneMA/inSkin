@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useLayoutEffect } from "react";
 import {
   FlatList,
   StyleSheet,
@@ -6,11 +7,16 @@ import {
   RefreshControl,
   TouchableOpacity,
   Image,
+  Text,
+  TextInput,
 } from "react-native";
 
 import Page from "../../components/Page";
 import Heading from "../../components/Heading";
 import TextInput from "../../components/TextInput";
+import { MaterialIcons } from '@expo/vector-icons';
+import Page from "../../components/Page";
+import Heading from "../../components/Heading";
 import Label from "../../components/Label";
 import SubHeading from "../../components/SubHeading";
 import Paragraph from "../../components/Paragraph";
@@ -24,18 +30,16 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import productActionsApi from "../../api/product_actions";
 
 import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEffect from React Navigation
-
+import { useNavigation } from "@react-navigation/native";
 import brandActionsApi from "../../api/brand_actions";
-
+import style from '../style';
 import authApi from "../../api/auth";
-
 import AuthContext from "../../contexts/auth";
-
 import { encode } from 'base-64';
-
 function ProductHome({ route }) {
 
   const theme = useTheme();
+  const navigation = useNavigation();
 
   const { productId } = route.params;
 
@@ -212,6 +216,29 @@ function ProductHome({ route }) {
     }
   }, [product]); // Dependency array with product as the dependency
 
+  useEffect(() => {
+    if (product) {
+      navigation.setOptions({
+        headerLeft: () => (
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <MaterialIcons name="keyboard-arrow-left" size={24} color="black" />
+          </TouchableOpacity>
+        ),
+        headerRight: () => (
+          <TouchableOpacity onPress={() => handleShare()}>
+            <MaterialIcons name="share" size={24} color="black" />
+          </TouchableOpacity>
+        ),
+        title: product.productDetails.name // Set product name as header title
+      });
+    }
+  }, [navigation, product]);
+
+  // Fonction pour gérer le partage
+  const handleShare = () => {
+    // Mettez ici la logique pour partager le produit
+    console.log("Share product:", product.productDetails.name);
+  };
   const onRefresh = () => {
     setIsRefreshing(true); // Set refreshing state to true when the user pulls down to refresh
     getProductComments();
@@ -228,7 +255,8 @@ function ProductHome({ route }) {
     return (
       <View style={{ marginVertical: 5, flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
               <View style={{ flex: 1, flexDirection:"column" }}>
-        <Label>{item.userName}</Label>
+
+        <Text>{item.userName}</Text>
         <StarRating
           rating={item.review}
           onChange={() => {}}
@@ -256,7 +284,8 @@ function ProductHome({ route }) {
             name={"heart-outline"}
             size={20}
             color={theme["color-primary-disabled-border"]}
-          />
+
+                      />
             )}
             
           </TouchableOpacity>
@@ -344,6 +373,7 @@ function ProductHome({ route }) {
                   </View>
                 )}
               />
+
             </View>
             ) : brand && brand.image && brand.image.data && brand.image.data.data ? (
               <View style={{ height: 100, width: 100, alignSelf: "center" }}>
@@ -361,9 +391,6 @@ function ProductHome({ route }) {
               </View>
               </View>
             )}
-
-      
-          
         
           <View style={{ flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
             {product ? (
@@ -451,6 +478,7 @@ function ProductHome({ route }) {
             />
           </View>
           <View style={{padding: 3}}>
+
             <TouchableOpacity
               onPress={()=>{
                 addCommentToProduct();
@@ -462,6 +490,7 @@ function ProductHome({ route }) {
                 name={"send"}
                 size={24}
                 style={{marginLeft: 2, color: theme["background-basic-color-2"]}}
+
               />
             </TouchableOpacity>
           </View>
@@ -489,6 +518,7 @@ const styles = StyleSheet.create({
     aspectRatio: 1,
     marginLeft: 5,
     borderRadius: 50, // Optional: Customize the border radius
+
   },
   text: {
     fontSize: 16,

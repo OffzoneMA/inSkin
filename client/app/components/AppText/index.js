@@ -1,6 +1,7 @@
 import React, { useContext } from 'react'
 import { Text } from 'react-native'
 import { LocalizationContext } from '../../contexts/LocalizationContext';
+
 import { FountsEnum } from '../../constants/constants';
 
 const AppText = (props) => {

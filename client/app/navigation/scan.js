@@ -18,7 +18,6 @@ export default function ShelfNavigator() {
           options={{ title: "Scan" }}
           component={ScanHome}
         />
-
         <Stack.Screen
           name="AddProduct"
           options={{ title: "Add Product" }}

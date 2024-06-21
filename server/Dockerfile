@@ -1,6 +1,5 @@
 FROM node:10.16-alpine as dev
 
-
 RUN apk --no-cache add --virtual builds-deps build-base python
 
 # Create App Directory
@@ -12,9 +11,6 @@ COPY package.json /usr/src/app/
 COPY package-lock.json /usr/src/app/
 
 RUN npm install --only=production
-
-# RUN npm install -g npm@latest
-# RUN npm install --legacy-peer-deps
 
 # Copy app source code
 COPY . /usr/src/app

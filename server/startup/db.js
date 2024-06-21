@@ -5,10 +5,15 @@ const settings = require('../config/settings');
 module.exports = function () {
   console.log("Avant la connexion à MongoDB");
   console.log("URL de la base de données :", settings.databaseUrl);
-  console.log(settings.databaseUrl)
+
+  // console.log(settings.databaseUrl)
+  // mongoose
+  // // ?authSource=admin
+  // .connect(`${settings.databaseUrl}/app`, {
+
+  console.log(settings.databaseUrl +"?authSource=admin")
   mongoose
-  // ?authSource=admin
-  .connect(`${settings.databaseUrl}/app`, {
+  .connect(`${settings.databaseUrl}/app?authSource=admin`, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useFindAndModify: false,
@@ -25,6 +30,7 @@ module.exports = function () {
       console.log('JWT_PRIVATE_KEY:', process.env.JWT_PRIVATE_KEY);
       console.log('DEBUG:', process.env.DEBUG);
       console.log('Firbase:', process.env.Firbase);
+
       winston.info("Connected to Mongodb");
     })
     .catch((err) => {

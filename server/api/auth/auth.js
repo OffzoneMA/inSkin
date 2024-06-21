@@ -20,7 +20,6 @@ const { faker } = require('@faker-js/faker');
 const axios = require('axios');
 const{v4:uuidv4}=require("uuid");
 const { error } = require("winston");
-
 // let transporter = nodemailer.createTransport({
 //   service:"gmail",
 //   auth:{
@@ -37,7 +36,6 @@ const { error } = require("winston");
 //     console.log("Ready for message", success);
 //   }
 // });
-
 
 ///OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK
 router.post(
@@ -72,6 +70,7 @@ router.post(
     res.header("bearer-token", token).json({ message: "Login Successful" });
   })
 );
+
 
 /// OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK
 
@@ -194,7 +193,6 @@ router.put(
       }
 
       // Compare passwords if provided
-      
 
       // Update user properties
       foundUser.firstName = req.body.firstName || foundUser.firstName;
@@ -226,8 +224,39 @@ router.put(
   })
 );
 
-
 /// OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK
+
+router.post(
+  '/compare-password',
+  auth,
+  asyncMiddleware(async (req, res) => {
+    try {
+      const userId = req.body._id;
+      const currentPassword = req.body.currentPassword;
+
+      // Find user by ID
+      const foundUser = await User.findById(userId);
+
+      // User doesn't exist
+      if (!foundUser) {
+        return res.status(400).send('User does not exist!');
+      }
+
+      // Compare passwords
+      const passwordMatch = await bcrypt.compare(currentPassword, foundUser.password);
+
+      if (!passwordMatch) {
+        return res.status(400).send('Incorrect password! Please try again');
+      }
+
+      res.status(200).send('Password is correct');
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Internal Server Error');
+    }
+  })
+);
+
 router.post(
   "/register",
   asyncMiddleware(async (req, res) => {
@@ -246,6 +275,7 @@ router.post(
 
     });
     console.log("ncmt 5")
+
     if (foundUser) {
       res.status(400).send("A user is already registered with this email!");
       return;
@@ -253,6 +283,7 @@ router.post(
     console.log("cmt 6")
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
     console.log("cmt 7")
+
     // Generate unique username
     var userName;
     while (true) {
@@ -276,6 +307,7 @@ router.post(
     //const imageBuffer = await getImageBufferFromURL(imageURL);
     console.log("cmt 10")
     console.log("cmt 11")
+
     const newUser = new User({
       firstName: req.body.firstName,
       lastName: req.body.lastName,
@@ -287,7 +319,8 @@ router.post(
         contentType: 'image/jpg' // Set the content type accordingly
       }
     });
-    console.log("cmt 12")
+
+    console.log("cmt 12");
     await newUser.save();
     const token = newUser.generateAuthToken();
     console.log("Registration Successful!");
@@ -304,75 +337,6 @@ router.get(
     res.status(200).send("OK");
   })
 );
-
-// Route to update profile image
-// router.put(
-//   "/update-profile-image",
-//   auth, 
-//   upload.single('image'),
-//   asyncMiddleware(async (req, res) => {
-//     const userId = req.body._id; // Assuming you have the user ID in the request object
-    
-//     const updatedUser = await User.findOneAndUpdate(
-//       { _id: userId },
-//       {
-//         $set: {
-//           profileImage: {
-//             data: req.file.buffer,
-//             contentType: req.file.mimetype
-//           }
-//         }
-//       },
-//       { new: true } // This option ensures that the updated document is returned
-//     );
-
-//     if (!updatedUser) {
-//       return res.status(404).send("User not found");
-//     }
-
-//     res.status(200).send("Profile image updated successfully");
-//   })
-// );
-
-// router.put(
-//   "/update-profile-image",
-//   auth, 
-//   upload.single('image'),
-//   asyncMiddleware(async (req, res) => {
-//     const userId = req.body._id;
-
-//     if (!req.file) {
-//       return res.status(400).send("No image file provided");
-//     }
-
-//     console.log('File received:', req.file);
-//     console.log('User ID:', userId);
-
-//     try {
-//       const updatedUser = await User.findOneAndUpdate(
-//         { _id: userId },
-//         {
-//           $set: {
-//             profileImage: {
-//               data: req.file.buffer,
-//               contentType: req.file.mimetype
-//             }
-//           }
-//         },
-//         { new: true }
-//       );
-
-//       if (!updatedUser) {
-//         return res.status(404).send("User not found");
-//       }
-
-//       res.status(200).send("Profile image updated successfully");
-//     } catch (error) {
-//       console.error("Error updating profile image:", error);
-//       res.status(500).send("Error updating profile image");
-//     }
-//   })
-// );
 
 
 /// OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK
@@ -431,6 +395,36 @@ router.put(
 
 
 /// OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK
+
+router.put(
+  "/update-profile-image",
+  auth, 
+  upload.single('image'),
+  asyncMiddleware(async (req, res) => {
+    const userId = req.body._id; // Assuming you have the user ID in the request object
+    
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: userId },
+      {
+        $set: {
+          profileImage: {
+            data: req.file.buffer,
+            contentType: req.file.mimetype
+          }
+        }
+      },
+      { new: true } // This option ensures that the updated document is returned
+    );
+
+    if (!updatedUser) {
+      return res.status(404).send("User not found");
+    }
+
+    res.status(200).send("Profile image updated successfully");
+  })
+);
+
+
 router.get(
   "/profile-image/:id",
   auth, // Ensure the user is authenticated to access this route
@@ -456,8 +450,9 @@ router.get(
   })
 );
 
-// GET multiple users by IDs 
+
 /// OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK
+// GET multiple users by IDs
 router.get(
   "/get-users-byids", 
   auth,
@@ -483,6 +478,42 @@ router.get(
 }));
 
 /// OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK
+
+router.post(
+  "/follow",
+  auth, // Assurez-vous que l'utilisateur est authentifié pour accéder à cette route
+  asyncMiddleware(async (req, res) => {
+    try {
+      const userId = req.user._id; // ID de l'utilisateur authentifié qui suit un autre utilisateur
+      console.log("ID de l'utilisateur authentifié qui suit un autre utilisateur", userId)
+      const userToFollowEmail = req.body.email; // Email de l'utilisateur à suivre
+      console.log("Email de l'utilisateur à suivre :", userToFollowEmail)
+      
+      // Vérifiez si l'utilisateur à suivre existe
+      const userToFollow = await User.findOne({ email: userToFollowEmail });
+      console.log("L'utilisateur à suivre :", userToFollow);
+      if (!userToFollow) {
+        return res.status(404).json({ message: "User to follow not found" });
+      }
+
+      // Vérifiez si l'utilisateur authentifié suit déjà l'utilisateur à suivre
+      if (userToFollow.followers.includes(userId)) {
+        return res.status(400).json({ message: "You are already following this user" });
+      }
+
+      // Mettez à jour les tableaux de suiveurs et de suivis pour les deux utilisateurs
+      await User.findByIdAndUpdate(userId, { $push: { following: userToFollow._id } });
+      await User.findByIdAndUpdate(userToFollow._id, { $push: { followers: userId } });
+
+      res.status(200).json({ message: "User followed successfully" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+  })
+);
+
+
 router.get(
   "/get-users-by-emails",
   auth,
@@ -506,6 +537,7 @@ router.get(
       res.status(500).json({ message: "Internal Server Error" });
     }
   })
+
 
 );
 
@@ -817,5 +849,39 @@ router.post(
     }
   })
 );
+
+
+
+
+passport.use(new GoogleStrategy({
+    clientID:    process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: "http://localhost:8000/auth/auth/google/callback",
+    passReqToCallback   : true
+  },
+  function(request, accessToken, refreshToken, profile, done) {
+    User.findOrCreate({ googleId: profile.id }, function (err, user) {
+      return done(err, user);
+    });
+  }
+));
+passport.serializeUser((user,done)=>{
+  done(null,user)
+});
+passport.deserializeUser((user,done)=>{
+  done(null,user)
+});
+router.use(session({ secret: 'cats', resave: false, saveUninitialized: true }));
+router.use(passport.initialize());
+router.use(passport.session());
+router.get('/google', passport.authenticate('google', { scope: ['email', 'profile'] }));
+
+router.get('/auth/google/callback',
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  function(req, res) {
+    // Rediriger ou effectuer d'autres actions après une authentification réussie
+    res.redirect('/');
+  });
+
 
 module.exports = router;

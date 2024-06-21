@@ -62,4 +62,12 @@ export const appImages = {
   homeProductImage2: require('../assets/images/homeProduct2.png'),
   homeProductImage3: require('../assets/images/homeProduct3.png'),
   homeCarouselAvatar: require('../assets/images/Avatar2.png'),
+  //productCardImage: require('../assets/images/countraMix.png'),
+  //productDetailImage: require('../assets/images/productImage.png'),
+ userAvatar: require('../assets/images/profileAvatar.png'),
+  appTitle: require('../assets/images/appTitleLogo.png'),
+  //homeProductImage1: require('../assets/images/homeProduct1.png'),
+  //homeProductImage2: require('../assets/images/homeProduct2.png'),
+  //homeProductImage3: require('../assets/images/homeProduct3.png'),
+  //homeCarouselAvatar: require('../assets/images/Avatar2.png'),
 }

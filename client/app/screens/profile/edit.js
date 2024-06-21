@@ -5,6 +5,16 @@ import AuthContext from "../../contexts/auth";
 import authStorage from "../../utilities/authStorage";
 //import { useToast } from "react-native-toast-notifications";
 
+import React, { useContext , useLayoutEffect} from "react";
+import { StyleSheet, View, Image, ScrollView,Text, TouchableOpacity,TextInput } from "react-native";
+import { useTheme,  Icon, MenuItem, OverflowMenu } from "@ui-kitten/components";
+import AuthContext from "../../contexts/auth";
+import authStorage from "../../utilities/authStorage";
+
+import { useNavigation } from '@react-navigation/native'; // Importer le hook useNavigation
+
+//import { useToast } from "react-native-toast-notifications";
+import style from "../style";
 import * as ImagePicker from "expo-image-picker";
 
 import { useState } from "react";
@@ -65,6 +75,51 @@ function ProfileEdit({ navigation }) {
 
   const updateProfileImageApi = useApi(authApi.updateProfileImage);
   const getProfileImageApi = useApi(authApi.getProfileImage);
+  const navigation1 = useNavigation(); // Utiliser le hook useNavigation pour obtenir l'objet de navigation
+  const [menuVisible, setMenuVisible] = React.useState(false);
+  const [selectedLang, setSelectedLang] = React.useState('fr');
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: 'Personal details', // Définir le titre au centre de la barre de navigation
+      headerLeft: () => (
+        <TouchableOpacity  onPress={() => navigation.goBack()}>
+          <View style={styles.iconWrapper}>
+          <Icon name='chevron-left' style={styles.headerIcon} />
+          </View>
+        </TouchableOpacity>
+      ), 
+      headerRight: () => (
+        <OverflowMenu
+          visible={menuVisible}
+          anchor={() => (
+            <TouchableOpacity onPress={() => setMenuVisible(true)}>
+              <View style={styles.languageIconWrapper}>
+                <Icon name='more-vertical' style={styles.languageIcon} />
+              </View>
+            </TouchableOpacity>
+          )}
+          onBackdropPress={() => setMenuVisible(false)}
+        >
+          <MenuItem
+            title='Fr'
+            onPress={() => {
+              setSelectedLang('fr');
+              setMenuVisible(false);
+              // Logique pour changer la langue
+            }}
+          />
+          <MenuItem
+            title='Eng'
+            onPress={() => {
+              setSelectedLang('en');
+              setMenuVisible(false);
+              // Logique pour changer la langue
+            }}
+          />
+        </OverflowMenu>
+      ),
+    });
+  }, [navigation]);
   
   const getProfileImage = async () => {
     try {
@@ -159,7 +214,7 @@ function ProfileEdit({ navigation }) {
     );
 
     if (!result.ok) {
-      //toast.show(result.data, {type: "danger"});
+     console.log("ne change pas",result)
       return;
     }
 
@@ -249,7 +304,10 @@ function ProfileEdit({ navigation }) {
             }) => (
               <>
                 <ScrollView>
-                    <TextInput
+                <Text style={style.label}>First Name</Text>
+                <View style={[style.action]}>
+                <TextInput
+                    style={style.textInput}
                     placeholder="First Name"
                     autoCompleteType="name"
                     keyboardType="default"
@@ -262,7 +320,12 @@ function ProfileEdit({ navigation }) {
                     onBlur={() => setFieldTouched("firstName")}
                     errorVisible={touched.firstName}
                     />
+                </View>
+                   
+                    <Text style={style.label}>Last  Name</Text>
+                    <View style={[style.action]}>
                     <TextInput
+                    style={style.textInput}
                     placeholder="Last Name"
                     autoCompleteType="name"
                     keyboardType="default"
@@ -335,12 +398,10 @@ function ProfileEdit({ navigation }) {
             )}
           </Formik>
           </KeyboardAwareScrollView>
-           
-        
-      
     </Page>
   );
 }
+
 
 const styles = StyleSheet.create({
   profileContainer: {
@@ -435,6 +496,38 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
 
+  headerRightButton: {
+    marginRight: 60,
+  },
+  headerIcon: {
+    fontSize: 24,
+    width: 50,
+    height: 24,
+  },
+  iconWrapper: {
+    width: 40,
+    height: 40,
+    marginRight: 60,
+    marginLeft: 20,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.1)', // Add a background color to make the circle visible
+  },
+  languageIconWrapper: {
+    width: 40,
+    height: 40,
+    marginRight: 10,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.1)',
+  },
+  languageIcon: {
+    fontSize: 24,
+    width: 50,
+    height: 24,
+  },
 });
 
 export default ProfileEdit;

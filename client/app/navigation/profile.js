@@ -1,19 +1,31 @@
 import React, { useState, useEffect } from "react";
 import { createStackNavigator } from "@react-navigation/stack";
-
 import ProfileHome from "../screens/profile/home";
 import ProfileEdit from "../screens/profile/edit";
 import ProfileSaved from "../screens/profile/saved";
 import ProfileAbout from "../screens/profile/about";
 import ProfileSettings from "../screens/profile/settings";
+import { Icon, useTheme } from '@ui-kitten/components';
+import ProfileHome from "../screens/profile/home";
+import ProfileEdit from "../screens/profile/edit";
+import ProfileEdit1 from "../screens/profile/edit1";
+import ProfileSaved from "../screens/profile/saved";
+import ProfileAbout from "../screens/profile/about";
+import ProfileSettings from "../screens/profile/settings";
+import Changepassword from "../screens/profile/changepassword";
+import Newpassword from "../screens/profile/newpassword";
+import { TouchableOpacity } from 'react-native';
+import ScanNavigator from "../screens/scan/home";
 
 const Stack = createStackNavigator();
 
-export default function ProfileNavigator1() {
+
+export default function ProfileNavigator() {
+  const theme = useTheme();
   return (
     <Stack.Navigator
     screenOptions={{ 
-      headerShown: false,
+     
     }}
       initialRouteName="ProfileHome"
     >
@@ -21,11 +33,18 @@ export default function ProfileNavigator1() {
         name="ProfileHome"
         options={{ title: "Profile" }}
         component={ProfileHome}
+
       />
       <Stack.Screen
         name="ProfileEdit"
         options={{ title: "Edit" }}
         component={ProfileEdit}
+      />
+      <Stack.Screen
+
+        name="ProfileEdit1"
+        options={{ title: "Profile" }}
+        component={ProfileEdit1}
       />
       <Stack.Screen
         name="ProfileSaved"
@@ -41,6 +60,21 @@ export default function ProfileNavigator1() {
         name="ProfileSettings"
         options={{ title: "Settings" }}
         component={ProfileSettings}
+      />
+       <Stack.Screen
+        name="Changepassword"
+        options={{ title: "Settings" }}
+        component={Changepassword}
+      />
+       <Stack.Screen
+        name="Newpassword"
+        options={{ title: "Settings" }}
+        component={Newpassword}
+      />
+      <Stack.Screen
+        name="ScanNavigator"
+        options={{ title: "ScanNavigator" }}
+        component={ScanNavigator}
       />
     </Stack.Navigator>
   );

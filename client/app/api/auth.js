@@ -65,7 +65,22 @@ const updateProfileImage = (userId, image) => {
     },
   });
 };
+<<<<<<< HEAD
 
+=======
+const comparePassword = async (userId, currentPassword) => {
+  try {
+    const response = await client.post("/auth/compare-password", {
+      _id: userId,
+      currentPassword
+    });
+    return response.data; // Retournez les données de la réponse si nécessaire
+  } catch (error) {
+    console.error("Error comparing password:", error);
+    throw error;
+  }
+};
+>>>>>>> 27644d8ea97281bed390c56840de4cd52212b747
 const getProfileImage = (userId) => {
   return client.get(`/auth/profile-image/${userId}`);
 };
@@ -86,6 +101,19 @@ const getUsersByIds = async (ids) => {
       throw new Error("Failed to fetch brands by IDs");
   }
 };
+<<<<<<< HEAD
+=======
+const followUser = async (email) => {
+  try {
+    console.log("email",email )
+    const response = await client.post("/auth/follow", { email: email });
+    return response.data; // Retournez les données de la réponse si nécessaire
+  } catch (error) {
+    console.error("Error following user:", error);
+    throw error; // Renvoyez l'erreur pour que l'appelant la gère
+  }
+};
+>>>>>>> 27644d8ea97281bed390c56840de4cd52212b747
 const getUserByEmail = async (email) => {
   try {
     const response = await client.get(`/auth/get-users-by-emails?email=${email}`);
@@ -106,6 +134,7 @@ const handleGoogleLogin = async () => {
     // Gérer les erreurs, par exemple afficher un message à l'utilisateur
   }
 };
+<<<<<<< HEAD
 
 const getRandomUsers = async () => {
   try {
@@ -144,6 +173,8 @@ const searchUser = async (firstName, lastName, userName) => {
 };
 
 
+=======
+>>>>>>> 27644d8ea97281bed390c56840de4cd52212b747
 export default {
   login,
   register,
@@ -154,7 +185,11 @@ export default {
   updateUserInfo,
   getUserByEmail,
   handleGoogleLogin,
+<<<<<<< HEAD
   getRandomUsers,
   followUser,
   searchUser,
+=======
+  followUser,
+>>>>>>> 27644d8ea97281bed390c56840de4cd52212b747
 };
