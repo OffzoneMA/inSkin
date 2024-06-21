@@ -1,0 +1,16 @@
+{
+  "carouselData": [
+    {
+      "image": "../src/assets/images/Avatar2.png",
+      "name": "Mary Cruz"
+    },
+    {
+      "image": "../src/assets/images/Avatar2.png",
+      "name": "tom cat"
+    },
+    {
+      "image": "../src/assets/images/Avatar2.png",
+      "name": "Elle Fanning"
+    }
+  ]
+}

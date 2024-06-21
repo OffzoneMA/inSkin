@@ -1,0 +1,33 @@
+import { create } from "apisauce";
+import cache from "../utilities/cache";
+
+const settings = require('../config/settings')
+
+const apiClient = create({
+  baseURL: settings.apiUrl,
+});
+
+// Add caching to the GET API calls
+const get = apiClient.get;
+apiClient.get = async (url, params, axiosConfig) => {
+  const response = await get(url, params, axiosConfig);
+
+  // Cache a successful response
+  if (response.ok) {
+    cache.store(url, response.data);
+    return response;
+  }
+
+  // Return a previously cached response
+  const data = await cache.get(url);
+  return data ? { ok: true, data: data } : response;
+};
+
+apiClient.addAsyncRequestTransform(async (request) => {
+  const authStorage = require("../utilities/authStorage").default; // Import authStorage when needed
+  const token = await authStorage.getToken();
+  if (!token) return;
+  request.headers["Authorization"] = "Bearer ".concat(token);
+});
+
+export default apiClient;

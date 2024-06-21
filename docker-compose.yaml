@@ -1,0 +1,53 @@
+# version: '3.7'
+services:
+  mongo:
+    image: mongo:latest
+    volumes:
+      - data-volume:/data/db
+    ports:
+      - '27017:27017'
+    env_file:
+        - ./server/.env.staging
+    logging:
+      driver: local
+    networks:
+      - app-network
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.staging
+    restart: always
+    command: npm run staging
+    volumes:
+      - ./server/:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - '8000:8000'
+    depends_on:
+      - mongo
+    networks:
+      - app-network
+    env_file: ./server/.env.staging
+
+  expo: 
+    container_name: expo-container
+    build: ./client # Specify the directory of the Dockerfile
+    ports: # Specify port-forwarding
+      - 19000:19000
+      - 19001:19001
+      - 19002:19002
+      # - 8081:8081
+      - 8082:8082
+
+    volumes:
+      - ./client/:/usr/src/app # Link host directory to container=
+      - /usr/src/app/node_modules
+    
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  data-volume:

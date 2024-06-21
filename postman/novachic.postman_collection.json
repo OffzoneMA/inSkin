@@ -1,0 +1,545 @@
+{
+	"info": {
+		"_postman_id": "fb064df6-aa65-40fb-b78b-f30db4ad14b5",
+		"name": "novachic",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29049422"
+	},
+	"item": [
+		{
+			"name": "put user info",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"_id\": \"653aeb27f2c51f15f877f594\",\r\n  \"password\": \"user1Password\", // Provide current password for verification\r\n  \"newPassword\": \"newPassword1\", // Leave this field empty if you don't want to update the password\r\n  \"firstName\": \"UpdatedFirstName\",\r\n  \"lastName\": \"UpdatedLastName\",\r\n  \"userName\": \"UpdatedUserName\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{API_URL}}/auth/update-user-info",
+					"protocol": "http",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"auth",
+						"update-user-info"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "post product images",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "barcode",
+							"value": "45654",
+							"type": "text"
+						},
+						{
+							"key": "images",
+							"type": "file",
+							"src": [
+								"mario.png",
+								"spider.png"
+							]
+						},
+						{
+							"key": "userId",
+							"value": "6517645e1776a81824a64e4a",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{API_URL}}/products/add-product",
+					"protocol": "http",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"products",
+						"add-product"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get profile image and visualize it",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Parse the response JSON\r",
+							"const responseData = pm.response.json();\r",
+							"\r",
+							"// Extract the image data from the response\r",
+							"const imageData = responseData.data.data;\r",
+							"\r",
+							"// Convert the image data from bytes to a base64 string\r",
+							"const base64ImageData = imageData.map(byte => String.fromCharCode(byte)).join('');\r",
+							"const imageUrl = 'data:' + responseData.contentType + ';base64,' + btoa(base64ImageData);\r",
+							"\r",
+							"// Display the image in Postman response body\r",
+							"pm.visualizer.set(\r",
+							"    `\r",
+							"    <div>\r",
+							"        <h3>${responseData.name}</h3>\r",
+							"        <img src=\"${imageUrl}\" alt=\"${responseData.name}\" />\r",
+							"    </div>\r",
+							"    `,\r",
+							"    {}\r",
+							");\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "http://{{API_URL}}/auth/profile-image/6527dfd779335935f822fd8f",
+					"protocol": "http",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"auth",
+						"profile-image",
+						"6527dfd779335935f822fd8f"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "put profile image",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "image",
+							"type": "file",
+							"src": "taxes_codes.jpg"
+						},
+						{
+							"key": "_id",
+							"value": "6527dfd779335935f822fd8f",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{API_URL}}/auth/update-profile-image",
+					"protocol": "http",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"auth",
+						"update-profile-image"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "post tea image",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "image",
+							"type": "file",
+							"src": "mario.png"
+						},
+						{
+							"key": "name",
+							"value": "test",
+							"type": "text"
+						},
+						{
+							"key": "description",
+							"value": "test",
+							"type": "text"
+						},
+						{
+							"key": "keywords",
+							"value": "test",
+							"type": "text"
+						},
+						{
+							"key": "origin",
+							"value": "test",
+							"type": "text"
+						},
+						{
+							"key": "brew_time",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "temperature",
+							"value": "1",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{API_URL}}/products/tea",
+					"protocol": "http",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"products",
+						"tea"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get tea image and visualize it",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Parse the response JSON",
+							"const responseData = pm.response.json();",
+							"",
+							"// Extract the image data from the response",
+							"const imageData = responseData[0].data.data;",
+							"",
+							"// Convert the image data from bytes to a base64 string",
+							"const base64ImageData = imageData.map(byte => String.fromCharCode(byte)).join('');",
+							"const imageUrl = 'data:' + responseData[0].contentType + ';base64,' + btoa(base64ImageData);",
+							"",
+							"// Display the image in Postman response body",
+							"pm.visualizer.set(",
+							"    `",
+							"    <div>",
+							"        <h3>${responseData[0].name}</h3>",
+							"        <img src=\"${imageUrl}\" alt=\"${responseData[0].name}\" />",
+							"    </div>",
+							"    `,",
+							"    {}",
+							");",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true,
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "name",
+							"value": "test",
+							"contentType": "",
+							"type": "text"
+						},
+						{
+							"key": "image",
+							"type": "file",
+							"src": "mario.png"
+						},
+						{
+							"key": "description",
+							"value": "test",
+							"type": "text"
+						},
+						{
+							"key": "keywords",
+							"value": "test",
+							"type": "text"
+						},
+						{
+							"key": "origin",
+							"value": "test",
+							"type": "text"
+						},
+						{
+							"key": "brew_time",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "temperature",
+							"value": "1",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://192.168.11.100:8000/products/tea/images",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"11",
+						"100"
+					],
+					"port": "8000",
+					"path": [
+						"products",
+						"tea",
+						"images"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get product by barcode",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{API_URL}}/products/get-product-bybarcode/30070349",
+					"protocol": "http",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"products",
+						"get-product-bybarcode",
+						"30070349"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get brands",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{API_URL}}/brands/",
+					"protocol": "http",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"brands",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "put product comment",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{   \"_id\": \"65202b3f43ca1636e8db1386\",\r\n    \"userId\": \"65202b3e43ca1636e8db1382\",\r\n    \"text\": \"Awesome\",\r\n    \"review\": \"5\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{API_URL}}/products/add-comment/",
+					"protocol": "http",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"products",
+						"add-comment",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get product comments",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{API_URL}}/products/product-comments/65202b3f43ca1636e8db1386",
+					"protocol": "http",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"products",
+						"product-comments",
+						"65202b3f43ca1636e8db1386"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get brands by ids",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{API_URL}}/brands/get-brands-byids?ids=6527dfd779335935f822fd92,6527dfd779335935f822fd91,6527dfd779335935f822fd92,6527dfd779335935f822fd91",
+					"protocol": "http",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"brands",
+						"get-brands-byids"
+					],
+					"query": [
+						{
+							"key": "ids",
+							"value": "6527dfd779335935f822fd92,6527dfd779335935f822fd91,6527dfd779335935f822fd92,6527dfd779335935f822fd91"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get brand by id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{API_URL}}/brands/get-brand-byid/653aeb27f2c51f15f877f596",
+					"protocol": "http",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"brands",
+						"get-brand-byid",
+						"653aeb27f2c51f15f877f596"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get users by ids",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{API_URL}}/auth/get-users-byids?ids=6527dfd779335935f822fd8f,6527dfd779335935f822fd90,6527dfd779335935f822fd90",
+					"protocol": "http",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"auth",
+						"get-users-byids"
+					],
+					"query": [
+						{
+							"key": "ids",
+							"value": "6527dfd779335935f822fd8f,6527dfd779335935f822fd90,6527dfd779335935f822fd90"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get all comments",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{API_URL}}/products/all-comments",
+					"protocol": "http",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"products",
+						"all-comments"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
