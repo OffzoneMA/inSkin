@@ -31,14 +31,9 @@ const add_product = (
   
 
 // GET all products
-<<<<<<< HEAD
-const getAllProducts = () => client.get("/products");
-
-=======
 const getAllProducts = () => client.get("/products/users-with-products");
 const getmyproduct = () => client.get("/products/my-products");
 const getfollowedproducts=()=>client.get("/products/followed-products")
->>>>>>> 27644d8ea97281bed390c56840de4cd52212b747
 // GET a single product by ID
 const getProductById = async (id) => {
   try {
@@ -107,9 +102,6 @@ export default {
     addCommentToProduct,
     getProductComments,
     getAllComments,
-<<<<<<< HEAD
-=======
     getfollowedproducts,
     getmyproduct,
->>>>>>> 27644d8ea97281bed390c56840de4cd52212b747
 };

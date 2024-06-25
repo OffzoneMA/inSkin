@@ -12,7 +12,7 @@ import {
   Text
 } from "react-native";
 import CustomButton from "../../components/Button";
-
+import HomeHeader from "../../components/HomeHeader";
 import Page from "../../components/Page";
 import Heading from "../../components/Heading";
 import Label from "../../components/Label";
@@ -32,7 +32,7 @@ import { useTheme, Icon } from "@ui-kitten/components";
 import authApi from "../../api/auth";
 
 
-function DiscoverHome({ navigation }) {
+function DiscoverHome1({ navigation }) {
 
   // const toast = useToast();
 
@@ -47,7 +47,7 @@ function DiscoverHome({ navigation }) {
       const result = await authApi.getRandomUsers();
   
       // Ajoutez des logs pour inspecter le résultat
-      console.log("Résultat brut de l'API:", result);
+      //console.log("Résultat brut de l'API:", result);
   
       // Vérifiez si result est un tableau
       if (Array.isArray(result)) {
@@ -197,6 +197,7 @@ const UserItem = ({ user}) => (
 
 return (
   <Page >
+     <HomeHeader/>
     {/* <Heading>Browse</Heading> */}
     <View style={{ alignItems: 'center', width:'262px', height:'76px', marginTop:'161px', marginLeft:'84px', marginRight:'84px',marginBottom: "695px", gap:10 }}>
         <Text style={{ color: '#333333', fontWeight: 500, textAlign: 'center' ,fontSize: 20 ,lineHeight: 24.2}}>Welcome to INSKINE</Text>
@@ -291,5 +292,5 @@ const styles = StyleSheet.create({
 });
 
 
-export default DiscoverHome; 
+export default DiscoverHome1; 
 

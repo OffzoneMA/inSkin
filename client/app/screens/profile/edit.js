@@ -1,10 +1,3 @@
-import React, { useContext } from "react";
-import { StyleSheet, View, Image, ScrollView, TouchableOpacity } from "react-native";
-import { useTheme, Text, Icon } from "@ui-kitten/components";
-import AuthContext from "../../contexts/auth";
-import authStorage from "../../utilities/authStorage";
-//import { useToast } from "react-native-toast-notifications";
-
 import React, { useContext , useLayoutEffect} from "react";
 import { StyleSheet, View, Image, ScrollView,Text, TouchableOpacity,TextInput } from "react-native";
 import { useTheme,  Icon, MenuItem, OverflowMenu } from "@ui-kitten/components";
@@ -34,8 +27,6 @@ import * as Yup from "yup";
 // Components
 import Page from "../../components/Page";
 import Button from "../../components/Button";
-import TextInput from "../../components/TextInput";
-
 import jwt_decode from "jwt-decode"
 
 const validationSchema = Yup.object({
@@ -254,32 +245,13 @@ function ProfileEdit({ navigation }) {
 
   return (
     <Page>
-      <View style={styles.profileContainer}>
-        <View style={[styles.profilePictureContainer, { borderColor: theme["color-primary-default"] }]}>
-          <View style={[styles.profileIconWrapper, { overflow: 'hidden', backgroundColor: theme["background-basic-color-1"] }]}>
-            {selectedImageUri ? ( // Step 3: Conditionally render selected image or default icon
-              <Image 
-                source={{ uri: selectedImageUri }} /* style={styles.profilePicture} */ 
-                style={[styles.profilePicture, {  flex: 1, width: null, height: null }]} // Use flex to fit the parent container
-              />
-            ) : (
-              <Icon
-                name={userProfile.profilePicture}
-                style={[styles.profilePicture, {top: 10}]} fill={theme["color-primary-disabled-border"]}
-              />
-            )}
-          </View>
-          {/* Floating button for uploading profile picture */}
-          
-          <TouchableOpacity
-            onPress={modifyProfileImage}
-            style={[styles.actionButtonIcon, { borderColor: theme["background-basic-color-2"], borderWidth: 3, borderRadius: 5, bottom: -10, right: -15, position: "absolute", margin: 5, padding: 8, borderRadius: 100,width: 40, height: 40, backgroundColor: theme["background-basic-color-1"] }]}>
-              <Icon name="edit-outline" fill={theme["color-primary-default"]} style={styles.actionButtonIcon} />
-          </TouchableOpacity>
-        </View>
-        </View>
 
         <KeyboardAwareScrollView contentContainerStyle={{ flex: 1, paddingHorizontal: 10 }}>
+        <View >
+             
+             <Text style={{ fontSize: 18, marginVertical: 10}}>Edit or confirm your personal information</Text>
+            
+          </View>
           <Formik
             initialValues={{
               _id: userProfile._id,
@@ -338,70 +310,45 @@ function ProfileEdit({ navigation }) {
                     onBlur={() => setFieldTouched("lastName")}
                     errorVisible={touched.lastName}
                     />
+                    </View>
+                    <Text style={style.label}>Email Address</Text>
+                    <View style={[style.action]}>
                   <TextInput
-                    placeholder="Current Password"
-                    autoCompleteType="password"
-                    keyboardType="default"
+                  style={style.textInput}
+                    placeholder="Email Address"
+                    autoCompleteType="email"
+                    keyboardType="email-address"
                     returnKeyType="next"
+                    textContentType="emailAddress"
                     autoCapitalize="none"
-                    autoCorrect={false}
-                    secureTextEntry={true}
-                    value={values.currentPassword}
-                    onChangeText={handleChange("currentPassword")}
-                    errorMessage={errors.currentPassword}
-                    onBlur={() => setFieldTouched("currentPassword")}
-                    errorVisible={touched.currentPassword}
+                    value={values.email}
+                    onChangeText={handleChange("email")}
+                    errorMessage={errors.email}
+                    onBlur={() => setFieldTouched("email")}
+                    errorVisible={touched.email}
                   />
-                  <TextInput
-                    placeholder="New Password"
-                    autoCompleteType="password"
-                    keyboardType="default"
-                    returnKeyType="done"
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                    secureTextEntry={true}
-                    value={values.newPassword}
-                    onChangeText={handleChange("newPassword")}
-                    errorMessage={errors.newPassword}
-                    onBlur={() => setFieldTouched("newPassword")}
-                    errorVisible={touched.newPassword}
-                  />
-                  <TextInput
-                    placeholder="Confirm New Password"
-                    autoCompleteType="password"
-                    keyboardType="default"
-                    returnKeyType="done"
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                    secureTextEntry={true}
-                    value={values.newPasswordConfirmation}
-                    onChangeText={handleChange("newPasswordConfirmation")}
-                    errorMessage={errors.newPasswordConfirmation}
-                    onBlur={() => setFieldTouched("newPasswordConfirmation")}
-                    errorVisible={touched.newPasswordConfirmation}
-                  />
-
-                
-
-                </ScrollView>
-                <View style={{flexDirection: "row", justifyContent: "space-between"}}>
-                    <Button loading={updateUserInfoApi.loading} title="OK" onPress={handleSubmit} style={{flex: 2, marginRight: 2}}>
-                        Save
+                  </View>
+                  
+               <View style={{flexDirection: "row", justifyContent: "space-between"}}>
+                    <Button loading={updateUserInfoApi.loading} title="OK" onPress={handleSubmit} style={{flex: 2, marginRight: 2,borderRadius: 20}}>
+                       Confirm
                     </Button>
-                    <Button onPress={onCancelClick} style={{flex: 1, marginLeft: 2, backgroundColor: "#8F9BB3", borderColor: "#8F9BB3"}}>
-                        Cancel
-                    </Button>
+                    
                 </View>
+                </ScrollView>
+                
                 
                 
               </>
             )}
           </Formik>
           </KeyboardAwareScrollView>
+           
+        
+      
     </Page>
   );
 }
-
 
 const styles = StyleSheet.create({
   profileContainer: {
@@ -495,7 +442,6 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     marginVertical: 10,
   },
-
   headerRightButton: {
     marginRight: 60,
   },

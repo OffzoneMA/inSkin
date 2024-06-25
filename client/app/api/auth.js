@@ -65,9 +65,6 @@ const updateProfileImage = (userId, image) => {
     },
   });
 };
-<<<<<<< HEAD
-
-=======
 const comparePassword = async (userId, currentPassword) => {
   try {
     const response = await client.post("/auth/compare-password", {
@@ -80,7 +77,6 @@ const comparePassword = async (userId, currentPassword) => {
     throw error;
   }
 };
->>>>>>> 27644d8ea97281bed390c56840de4cd52212b747
 const getProfileImage = (userId) => {
   return client.get(`/auth/profile-image/${userId}`);
 };
@@ -101,8 +97,6 @@ const getUsersByIds = async (ids) => {
       throw new Error("Failed to fetch brands by IDs");
   }
 };
-<<<<<<< HEAD
-=======
 const followUser = async (email) => {
   try {
     console.log("email",email )
@@ -113,7 +107,6 @@ const followUser = async (email) => {
     throw error; // Renvoyez l'erreur pour que l'appelant la gère
   }
 };
->>>>>>> 27644d8ea97281bed390c56840de4cd52212b747
 const getUserByEmail = async (email) => {
   try {
     const response = await client.get(`/auth/get-users-by-emails?email=${email}`);
@@ -134,10 +127,7 @@ const handleGoogleLogin = async () => {
     // Gérer les erreurs, par exemple afficher un message à l'utilisateur
   }
 };
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> aichaBranch
+
 
 const getRandomUsers = async () => {
   try {
@@ -149,15 +139,7 @@ const getRandomUsers = async () => {
   }
 };
 
-const followUser = async (targetUserId) => {
-  try {
-    const response = await client.post("/auth/follow-user", { targetUserId });
-    return response.data;
-  } catch (error) {
-    console.error("Error following user:", error);
-    throw error;
-  }
-};
+
 
 const searchUser = async (firstName, lastName, userName) => {
   try {
@@ -176,11 +158,7 @@ const searchUser = async (firstName, lastName, userName) => {
 };
 
 
-<<<<<<< HEAD
-=======
->>>>>>> 27644d8ea97281bed390c56840de4cd52212b747
-=======
->>>>>>> aichaBranch
+
 export default {
   login,
   register,
@@ -191,17 +169,12 @@ export default {
   updateUserInfo,
   getUserByEmail,
   handleGoogleLogin,
-<<<<<<< HEAD
-<<<<<<< HEAD
   getRandomUsers,
   followUser,
   searchUser,
-=======
-  followUser,
->>>>>>> 27644d8ea97281bed390c56840de4cd52212b747
-=======
+
   getRandomUsers,
   followUser,
   searchUser,
->>>>>>> aichaBranch
+
 };

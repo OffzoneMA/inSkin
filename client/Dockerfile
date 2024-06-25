@@ -21,8 +21,4 @@ EXPOSE 19002
 EXPOSE 8081
 
 # Set up a default command
-<<<<<<< HEAD
 CMD [ "npm", "start" ]
-=======
-CMD ["npm", "start"]
->>>>>>> aichaBranch

@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { createStackNavigator } from "@react-navigation/stack";
-import ProfileHome from "../screens/profile/home";
-import ProfileEdit from "../screens/profile/edit";
-import ProfileSaved from "../screens/profile/saved";
-import ProfileAbout from "../screens/profile/about";
-import ProfileSettings from "../screens/profile/settings";
 import { Icon, useTheme } from '@ui-kitten/components';
 import ProfileHome from "../screens/profile/home";
 import ProfileEdit from "../screens/profile/edit";

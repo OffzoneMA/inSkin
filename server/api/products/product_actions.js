@@ -10,21 +10,15 @@ const mongoose = require("mongoose");
 const multer = require("multer");
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
-<<<<<<< HEAD
-=======
 
 
->>>>>>> aichaBranch
 const bodyParser = require('body-parser');
 
 router.use(bodyParser.json());
 
-<<<<<<< HEAD
-=======
 
 // const upload = multer();
 
->>>>>>> aichaBranch
 // Debug middleware to log incoming requests
 router.use((req, res, next) => {
   console.log('Request received: ', req.method, req.url);
@@ -92,10 +86,6 @@ router.post(
   })
 );
 
-<<<<<<< HEAD
-
-=======
->>>>>>> aichaBranch
 
 // POST a new product
 router.post(

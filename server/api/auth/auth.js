@@ -38,10 +38,6 @@ const { error } = require("winston");
 //   }
 // });
 
-<<<<<<< HEAD
-=======
-
->>>>>>> aichaBranch
 ///OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK
 router.post(
   "/login",
@@ -76,10 +72,6 @@ router.post(
   })
 );
 
-<<<<<<< HEAD
-
-=======
->>>>>>> aichaBranch
 /// OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK
 
 router.put('/change-password', auth, async (req, res) => {
@@ -232,7 +224,6 @@ router.put(
   })
 );
 
-<<<<<<< HEAD
 /// OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK
 
 router.post(
@@ -266,10 +257,6 @@ router.post(
   })
 );
 
-=======
-
-/// OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK
->>>>>>> aichaBranch
 router.post(
   "/register",
   asyncMiddleware(async (req, res) => {
@@ -288,10 +275,6 @@ router.post(
 
     });
     console.log("ncmt 5")
-<<<<<<< HEAD
-
-=======
->>>>>>> aichaBranch
     if (foundUser) {
       res.status(400).send("A user is already registered with this email!");
       return;
@@ -299,10 +282,6 @@ router.post(
     console.log("cmt 6")
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
     console.log("cmt 7")
-<<<<<<< HEAD
-
-=======
->>>>>>> aichaBranch
     // Generate unique username
     var userName;
     while (true) {
@@ -326,10 +305,6 @@ router.post(
     //const imageBuffer = await getImageBufferFromURL(imageURL);
     console.log("cmt 10")
     console.log("cmt 11")
-<<<<<<< HEAD
-
-=======
->>>>>>> aichaBranch
     const newUser = new User({
       firstName: req.body.firstName,
       lastName: req.body.lastName,
@@ -341,12 +316,8 @@ router.post(
         contentType: 'image/jpg' // Set the content type accordingly
       }
     });
-<<<<<<< HEAD
 
     console.log("cmt 12");
-=======
-    console.log("cmt 12")
->>>>>>> aichaBranch
     await newUser.save();
     const token = newUser.generateAuthToken();
     console.log("Registration Successful!");
@@ -364,84 +335,11 @@ router.get(
   })
 );
 
-<<<<<<< HEAD
-=======
-// Route to update profile image
-// router.put(
-//   "/update-profile-image",
-//   auth, 
-//   upload.single('image'),
-//   asyncMiddleware(async (req, res) => {
-//     const userId = req.body._id; // Assuming you have the user ID in the request object
-    
-//     const updatedUser = await User.findOneAndUpdate(
-//       { _id: userId },
-//       {
-//         $set: {
-//           profileImage: {
-//             data: req.file.buffer,
-//             contentType: req.file.mimetype
-//           }
-//         }
-//       },
-//       { new: true } // This option ensures that the updated document is returned
-//     );
-
-//     if (!updatedUser) {
-//       return res.status(404).send("User not found");
-//     }
-
-//     res.status(200).send("Profile image updated successfully");
-//   })
-// );
-
-// router.put(
-//   "/update-profile-image",
-//   auth, 
-//   upload.single('image'),
-//   asyncMiddleware(async (req, res) => {
-//     const userId = req.body._id;
-
-//     if (!req.file) {
-//       return res.status(400).send("No image file provided");
-//     }
-
-//     console.log('File received:', req.file);
-//     console.log('User ID:', userId);
-
-//     try {
-//       const updatedUser = await User.findOneAndUpdate(
-//         { _id: userId },
-//         {
-//           $set: {
-//             profileImage: {
-//               data: req.file.buffer,
-//               contentType: req.file.mimetype
-//             }
-//           }
-//         },
-//         { new: true }
-//       );
-
-//       if (!updatedUser) {
-//         return res.status(404).send("User not found");
-//       }
-
-//       res.status(200).send("Profile image updated successfully");
-//     } catch (error) {
-//       console.error("Error updating profile image:", error);
-//       res.status(500).send("Error updating profile image");
-//     }
-//   })
-// );
-
->>>>>>> aichaBranch
 
 /// OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK
 
 const mongoose = require('mongoose');
 
-<<<<<<< HEAD
 router.put(
   "/update-profile-image",
   auth,
@@ -495,8 +393,6 @@ router.put(
 
 /// OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK
 
-=======
->>>>>>> aichaBranch
 router.put(
   "/update-profile-image",
   auth,
@@ -548,10 +444,6 @@ router.put(
 );
 
 
-<<<<<<< HEAD
-=======
-/// OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK
->>>>>>> aichaBranch
 router.get(
   "/profile-image/:id",
   auth, // Ensure the user is authenticated to access this route
@@ -577,14 +469,8 @@ router.get(
   })
 );
 
-<<<<<<< HEAD
-
-/// OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK
-// GET multiple users by IDs
-=======
 // GET multiple users by IDs 
 /// OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK
->>>>>>> aichaBranch
 router.get(
   "/get-users-byids", 
   auth,
@@ -610,45 +496,6 @@ router.get(
 }));
 
 /// OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK
-<<<<<<< HEAD
-
-router.post(
-  "/follow",
-  auth, // Assurez-vous que l'utilisateur est authentifié pour accéder à cette route
-  asyncMiddleware(async (req, res) => {
-    try {
-      const userId = req.user._id; // ID de l'utilisateur authentifié qui suit un autre utilisateur
-      console.log("ID de l'utilisateur authentifié qui suit un autre utilisateur", userId)
-      const userToFollowEmail = req.body.email; // Email de l'utilisateur à suivre
-      console.log("Email de l'utilisateur à suivre :", userToFollowEmail)
-      
-      // Vérifiez si l'utilisateur à suivre existe
-      const userToFollow = await User.findOne({ email: userToFollowEmail });
-      console.log("L'utilisateur à suivre :", userToFollow);
-      if (!userToFollow) {
-        return res.status(404).json({ message: "User to follow not found" });
-      }
-
-      // Vérifiez si l'utilisateur authentifié suit déjà l'utilisateur à suivre
-      if (userToFollow.followers.includes(userId)) {
-        return res.status(400).json({ message: "You are already following this user" });
-      }
-
-      // Mettez à jour les tableaux de suiveurs et de suivis pour les deux utilisateurs
-      await User.findByIdAndUpdate(userId, { $push: { following: userToFollow._id } });
-      await User.findByIdAndUpdate(userToFollow._id, { $push: { followers: userId } });
-
-      res.status(200).json({ message: "User followed successfully" });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Internal Server Error" });
-    }
-  })
-);
-
-
-=======
->>>>>>> aichaBranch
 router.get(
   "/get-users-by-emails",
   auth,
@@ -673,10 +520,6 @@ router.get(
     }
   })
 
-<<<<<<< HEAD
-
-=======
->>>>>>> aichaBranch
 );
 
 ///OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK
@@ -987,42 +830,5 @@ router.post(
     }
   })
 );
-<<<<<<< HEAD
-
-
-
-
-passport.use(new GoogleStrategy({
-    clientID:    process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "http://localhost:8000/auth/auth/google/callback",
-    passReqToCallback   : true
-  },
-  function(request, accessToken, refreshToken, profile, done) {
-    User.findOrCreate({ googleId: profile.id }, function (err, user) {
-      return done(err, user);
-    });
-  }
-));
-passport.serializeUser((user,done)=>{
-  done(null,user)
-});
-passport.deserializeUser((user,done)=>{
-  done(null,user)
-});
-router.use(session({ secret: 'cats', resave: false, saveUninitialized: true }));
-router.use(passport.initialize());
-router.use(passport.session());
-router.get('/google', passport.authenticate('google', { scope: ['email', 'profile'] }));
-
-router.get('/auth/google/callback',
-  passport.authenticate('google', { failureRedirect: '/login' }),
-  function(req, res) {
-    // Rediriger ou effectuer d'autres actions après une authentification réussie
-    res.redirect('/');
-  });
-
-=======
->>>>>>> aichaBranch
 
 module.exports = router;

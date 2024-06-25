@@ -1,9 +1,6 @@
-<<<<<<< HEAD
 
 version: '3.7'
-=======
-# version: '3.7'
->>>>>>> aichaBranch
+
 services:
   mongo:
     image: mongo:latest
@@ -44,10 +41,6 @@ services:
       - 19002:19002
       # - 8081:8081
       - 8082:8082
-<<<<<<< HEAD
-=======
-
->>>>>>> aichaBranch
     volumes:
       - ./client/:/usr/src/app # Link host directory to container=
       - /usr/src/app/node_modules

@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+
 import React, { useState, useContext, useEffect, useLayoutEffect } from "react";
 import {
   FlatList,
@@ -11,18 +11,14 @@ import {
   TextInput,
 } from "react-native";
 
-import Page from "../../components/Page";
-import Heading from "../../components/Heading";
-import TextInput from "../../components/TextInput";
+
 import { MaterialIcons } from '@expo/vector-icons';
 import Page from "../../components/Page";
 import Heading from "../../components/Heading";
 import Label from "../../components/Label";
 import SubHeading from "../../components/SubHeading";
 import Paragraph from "../../components/Paragraph";
-
 import { useTheme, Icon } from "@ui-kitten/components";
-
 import StarRating from 'react-native-star-rating-widget';
 
 import { MaterialCommunityIcons } from "@expo/vector-icons";

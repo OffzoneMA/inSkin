@@ -1,10 +1,7 @@
 import React from "react";
-import { createStackNavigator } from "@react-navigation/stack";
+
 import AppTabNavigator from "./appTab";
-import ProductScreen from "../screens/product/home"; // Import your Product screen component here
-import { useTheme } from "@ui-kitten/components";
 import { createStackNavigator, HeaderBackButton } from "@react-navigation/stack";
-import AppTabNavigator from "./appTab";
 import NotificationScreen from "./NotificationScreen";
 import home from "../screens/scan/addproduct";
 import ProductScreen from "../screens/product/home"; // Importez votre composant d'écran de produit ici

@@ -2,20 +2,9 @@ import React from "react";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import BrowseNavigator from "./browse";
 import ProfileNavigator from "./profile";
-
 import ProfileNavigator1 from "./profile";
-import ProfileNavigator from "./ProfileNavigator";
-
 import SearchUser from "../screens/search/search";
 import DiscoverHomeWithFollowers from "../screens/browse/homeWithFollowers";
-import ScanNavigator from "./scan";
-import { useTheme ,Icon} from "@ui-kitten/components";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { SafeAreaView, Dimensions,View,Text, Image } from "react-native";
-import { useState } from "react";
-import {renderProfileImage} from "../screens/profile/ProfilePicture"
-import { encode } from 'base-64';
-import { useFocusEffect } from "@react-navigation/native"; 
 import postNavigator from "./post"
 import NotificationScreen from "./NotificationScreen";
 import ScanNavigator from "./scan";
@@ -23,7 +12,7 @@ import { useTheme ,Icon} from "@ui-kitten/components";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { SafeAreaView, Dimensions,View,Text, Image, TouchableOpacity } from "react-native";
 import { useState } from "react";
-import {renderProfileImage} from "../screens/profile/ProfilePicture"
+import {renderProfileImage} from "../screens/profile/ProfilePicture";
 import { encode } from 'base-64';
 import { useNavigation } from "@react-navigation/native";
 import { useFocusEffect } from "@react-navigation/native"; 
@@ -53,13 +42,8 @@ export default function AppTabNavigator() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
   <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 10,backgroundColor:'white'}}>
-  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-    {renderHeaderLogo()}
-  </View>
-  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-    {renderProfileImage1()}
-    {renderNotificationIcon()}
-  </View>
+  
+  
 </View>
       <Tab.Navigator
         initialRouteName="Home"
