@@ -9,9 +9,19 @@ import ProfileAbout from "../screens/profile/about";
 import ProfileSettings from "../screens/profile/settings";
 import Changepassword from "../screens/profile/changepassword";
 import Newpassword from "../screens/profile/newpassword";
+import PersonalDetailScreen from '../screens/PersonalDetailScreen';
 import { TouchableOpacity } from 'react-native';
 import ScanNavigator from "../screens/scan/home";
-
+import MyProfileScreen from '../screens/MyProfileScreen';
+import SocialMediaListScreen from '../screens/SocialMediaListScreen';
+import SettingScreen from '../screens/SettingScreen';
+import ChangePasswordScreen from '../screens/ChangePasswordScreen';
+import LegalInfoScreen from '../screens/LegalInfoScreen'
+import { Route } from '../constants/constants';
+import SupportScreen from '../screens/SupportScreen';
+import NotificationOptionsScreen from '../screens/NotificationOptionsScreen';
+import PushNotificationScreen from '../screens/PushNotificationScreen'
+import FeedDetailScreen from '../screens/FeedDetailScreen'
 const Stack = createStackNavigator();
 
 
@@ -19,8 +29,8 @@ export default function ProfileNavigator() {
   const theme = useTheme();
   return (
     <Stack.Navigator
-    screenOptions={{ 
-     
+    screenOptions={{
+      headerShown: false,
     }}
       initialRouteName="ProfileHome"
     >
@@ -35,6 +45,12 @@ export default function ProfileNavigator() {
         options={{ title: "Edit" }}
         component={ProfileEdit}
       />
+      <Stack.Screen
+        name="MyProfileScreen"
+        options={{ title: "MyProfileScreen" }}
+        component={MyProfileScreen}
+      />
+      
       <Stack.Screen
 
         name="ProfileEdit1"
@@ -71,6 +87,15 @@ export default function ProfileNavigator() {
         options={{ title: "ScanNavigator" }}
         component={ScanNavigator}
       />
+      <Stack.Screen name={Route.SocialMediaListScreen} component={SocialMediaListScreen} />
+      <Stack.Screen name={Route.SettingScreen} component={SettingScreen} />
+      <Stack.Screen name={Route.PersonalDetailScreen} component={PersonalDetailScreen} />
+      <Stack.Screen name={Route.ChangePasswordScreen} component={ChangePasswordScreen} />
+      <Stack.Screen name={Route.LegalInfoScreen} component={LegalInfoScreen} />
+      <Stack.Screen name={Route.SupportScreen} component={SupportScreen} />
+      <Stack.Screen name={Route.NotificationOptionsScreen} component={NotificationOptionsScreen} />
+      <Stack.Screen name={Route.PushNotificationScreen} component={PushNotificationScreen} />
+      <Stack.Screen name={Route.FeedDetailScreen} component={FeedDetailScreen} />
     </Stack.Navigator>
   );
 }

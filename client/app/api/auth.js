@@ -9,9 +9,6 @@ const updateUserInfo = async (
   lastName,
   currentPassword,
   newPassword,
-  /* reader_type = null,
-  reader_goals = [],
-  reader_genres = [] */
 ) => {
   try {
     const response = await client.put("/auth/update-user-info", {
@@ -20,9 +17,6 @@ const updateUserInfo = async (
       lastName,
       currentPassword,
       newPassword,
-      /* reader_type,
-      reader_goals,
-      reader_genres, */
     });
 
     return response;
@@ -80,7 +74,50 @@ const comparePassword = async (userId, currentPassword) => {
 const getProfileImage = (userId) => {
   return client.get(`/auth/profile-image/${userId}`);
 };
+const getfavoriteproducts=()=>client.get("/auth/favorite-products")
+const allfavoriteproducts=()=>client.get("/auth/allfavorite-products")
 
+const favoriteproductsbycategory=(categoryName)=>client.get(`/auth/favorite-products-by-category/${categoryName}`)
+const getCategories=()=>client.get("/auth/getCategories")
+const addToFavorites = (userId, productId, category) => 
+    client.post('/auth/favorites', {
+      userId,
+      productId,
+      category
+    });
+const getFavorites = async (id) => {
+  try {
+    console.log("iddddd",id);
+    const response = await client.get(`/auth/favorites/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to fetch product by ID");
+  }
+};
+const favoriteswithproductid = async(id)=>{
+  try{
+    const response= await client.get( `/auth/favoriteswithproductid/${id}`);
+    return response.data;
+
+  } catch(error){
+    console.error(error);
+    throw new Error("Failed to fetch product by ID");
+
+  }
+}
+const removlistFavoris = async (userId, productId) => {
+  try {
+    const response = await client.delete(`/auth/removlistFavoris/${productId}`,{
+      userId,
+    });
+    console.log("response",response);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to fetch product by ID");
+  }
+};
 const getUsersByIds = async (ids) => {
   try {
       // Join the array of brand IDs into a comma-separated string
@@ -172,9 +209,15 @@ export default {
   getRandomUsers,
   followUser,
   searchUser,
-
+  addToFavorites,
   getRandomUsers,
-  followUser,
+  getFavorites,
   searchUser,
+  removlistFavoris,
+  favoriteswithproductid,
+  getfavoriteproducts,
+  getCategories,
+  favoriteproductsbycategory,
+  allfavoriteproducts
 
 };

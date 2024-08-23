@@ -14,7 +14,11 @@ import {
 import { NavigationContainer } from "@react-navigation/native";
 import AuthContext from "./app/contexts/auth";
 import authStorage from "./app/utilities/authStorage";
-import * as SplashScreen from 'expo-splash-screen'; // Import SplashScreen
+import * as SplashScreen from 'expo-splash-screen';
+
+// Redux imports
+import { Provider } from 'react-redux';
+import { store } from "./app/redux/store"; // Assurez-vous que le chemin vers votre store est correct
 
 // Navigation
 import OnboardingNavigator from "./app/navigation/onboarding";
@@ -22,9 +26,10 @@ import AuthNavigator from "./app/navigation/auth";
 import AppNavigator from "./app/navigation/appNav";
 import SafeScreen from "./app/components/SafeScreen";
 import OfflineNotice from "./app/components/OfflineNotice";
-//import { ToastProvider } from 'react-native-toast-notifications'
 
 export default function App() {
+  
+  
   const [haveFontsLoaded] = useFonts({
     "Jost-Regular": require("./app/assets/fonts/Jost-Regular.ttf"),
     "Jost-SemiBold": require("./app/assets/fonts/Jost-SemiBold.ttf"),
@@ -34,10 +39,15 @@ export default function App() {
     "Jost-Light": require("./app/assets/fonts/Jost-Light.ttf"),
     "Jost-Medium": require("./app/assets/fonts/Jost-Medium.ttf"),
     "Jost-Thin": require("./app/assets/fonts/Jost-Thin.ttf"),
+    'Inter-Regular': require('./app/assets/fonts/Inter-Regular.ttf'),
+    'regular': require('./app/assets/fonts/Inter-Regular.ttf'),
+    'medium': require('./app/assets/fonts/Inter-Medium.ttf'),
+    'semiBold': require('./app/assets/fonts/Inter-SemiBold.ttf'),
+    'bold': require('./app/assets/fonts/Inter-Bold.ttf'),
+    'extraBold': require('./app/assets/fonts/Inter-ExtraBold.ttf'),
   });
 
   const systemThemeStyle = useColorScheme();
-
   const [user, setUser] = useState();
   const [theme, setTheme] = useState(systemThemeStyle);
   const [isReady, setIsReady] = useState(false);
@@ -49,31 +59,25 @@ export default function App() {
   };
 
   const computeInitialRoute = async () => {
-    
-      const value = await AsyncStorage.getItem("hasOnboarded");
-      
+    const value = await AsyncStorage.getItem("hasOnboarded");
+    if (value) setInitialRoute("Auth");
   };
 
   const startUp = async () => {
-    // Prevent the splash screen from auto-hiding
     await SplashScreen.preventAutoHideAsync();
-
     await restoreUser();
     await computeInitialRoute();
-
-    // Use SplashScreen to hide the splash screen
     await SplashScreen.hideAsync();
-
     setIsReady(true);
   };
 
   useEffect(() => {
-    startUp(); // Call startUp when the component mounts
+    startUp();
   }, []);
 
   if (haveFontsLoaded && isReady) {
     return (
-      <>
+      <Provider store={store}>
         <IconRegistry icons={EvaIconsPack} />
         <AuthContext.Provider value={{ user, setUser }}>
           <ThemeContext.Provider value={{ theme, setTheme }}>
@@ -85,14 +89,7 @@ export default function App() {
                   : { ...eva.dark, ...darkTheme }
               }
             >
-              {/* <ToastProvider
-                placement="bottom"
-                successColor="#71B515"
-                dangerColor="#DB2E5E"
-                duration={3000}
-                swipeEnabled={true}
-              > */}
-                <SafeScreen>
+              <SafeScreen>
                   <OfflineNotice />
                   <NavigationContainer screenOptions={{ headerShown: false }}>
                     {user ? (
@@ -104,13 +101,13 @@ export default function App() {
                     )}
                   </NavigationContainer>
                 </SafeScreen>
-              {/* </ToastProvider> */}
             </ApplicationProvider>
           </ThemeContext.Provider>
         </AuthContext.Provider>
-      </>
+      </Provider>
     );
   }
+  
 
-  return null; // Return null while loading
+  return null;
 }

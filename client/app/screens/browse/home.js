@@ -1,10 +1,24 @@
-import React, { useState } from "react";
+import React, { useState , useEffect,useContext} from "react";
 import { MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import HomeProductListView from './HomeProductListView';
 import { deviceWidth } from '../../constants/constants';
+import Icon from 'react-native-vector-icons/Ionicons';
 import AppText from "../../components/AppText";
 import {colors, images} from "../../constants";
+import ProductItemView from '../../components/ProductItemView'
+import FavoriteListData from '../../../data/favoriteData.json'
+import FavoriteFilterData from '../../../data/favoriteFilterData.json'
+import ProductListEmptyView from '../../components/ProductListEmptyView'
+import { LocalesMessages } from '../../constants/locales'
+import AddCategoryPopup from '../../components/Popups/AddCategoryPopup'
+import ActionModal from '../FavoriteScreen/ActionModal'
+import { LocalizationContext } from '../../contexts/LocalizationContext'
+import { useNavigation } from '@react-navigation/native'
+import { Route } from '../../constants/constants'
+import FilterModal from '../FavoriteScreen/FilterModal';
+import { Alert } from 'react-native';
+
 import {
   SafeAreaView,
   View,
@@ -25,17 +39,18 @@ import SubHeading from "../../components/SubHeading";
 import Paragraph from "../../components/Paragraph";
 
 import productActionsApi from "../../api/product_actions";
+import brandActions from "../../api/brand_actions";
 import authApi from "../../api/auth";
 //import { useToast } from "react-native-toast-notifications";
 import HomeHeader from "../../components/HomeHeader";
 import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEffect from React Navigation
 
-import { useTheme, Icon } from "@ui-kitten/components";
+import { useTheme} from "@ui-kitten/components";
 
 import StarRating from 'react-native-star-rating-widget';
 
 import { encode } from 'base-64';
-
+import AuthContext from "../../contexts/auth";
 function DiscoverHome({ navigation }) {
   //const toast = useToast();
   const [comments, setComments] = useState([]);
@@ -44,11 +59,22 @@ function DiscoverHome({ navigation }) {
   const [followedProducts, setFollowedProducts] = useState([]);
   const theme = useTheme();
   const [isFollowingAccounts, setIsFollowingAccounts] = useState();
+  const [favoriteList, setFavoriteList] = useState([])
+  const [showFilterModal, setShowFilterModal] = useState(false);
+  const authContext = useContext(AuthContext);
+  const [showAddEditCategoryModal, setShowAddEditCategoryModal] = useState(false)
+  const [selectedCategoryTitleForEdit, setSelectedCategoryTitleForEdit] = useState('')
+  const [showActionModal, setShowActionModal] = useState(false)
+  const [isSearchFilterApplied, setIsSearchFilterApplied] = useState(false)
+  const { user } = useContext(AuthContext);
+  const [productId, setProductId] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [bookmarkedProducts, setBookmarkedProducts] = useState({});
+  const [favoriteList2, setFavoriteList2] = useState([]);
+  const [favoriteList1, setFavoriteList1] = useState([]);
   const getAllComments = async () => {
     try {
       const result = await productActionsApi.getAllProducts();
-      console.log("les produit wiam ", result)
-     
       if (!result.ok) {
         //toast.show(result.data, { type: "danger" });
       } else {
@@ -63,17 +89,24 @@ function DiscoverHome({ navigation }) {
       setIsRefreshing(false); // Set refreshing state to false after data fetch is completed
     }
   };
+  const getBrandById=async(_id)=>{
+    try{
+      const result= await brandActions.getBrandById(_id);
+     
+    }catch (error) {
+      console.error("Error getting product data: ", error);
+    }
+  }
   const getfollowedproducts = async () => {
     try {
       const result = await productActionsApi.getfollowedproducts();
-      console.log("les produit des compte suivi ", result)
       setProduct(result);
-      
+      getBrandById(result.productBrand)
       if (!result.ok) {
         
       } else {
         // Trier les produits par date de création
-        const sortedProducts = result.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      const sortedProducts = result.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       setFollowedProducts(sortedProducts); 
       }
     } catch (error) {
@@ -82,11 +115,89 @@ function DiscoverHome({ navigation }) {
       setIsRefreshing(false); // Set refreshing state to false after data fetch is completed
     }
   };
+  const handleRemoveFavorite = async (productId1) => {
+    try {
+      const userId = user._id; // Assurez-vous que user.userId est correctement défini
+      console.log(" userId", userId);
+      console.log("productId", productId1);
+      const updatedFavorites = await authApi.removlistFavoris(userId, productId1);
+      console.log("supprission de favorie",updatedFavorites)
+      
+      if(updatedFavorites){
+        setBookmarkedProducts(prevState => ({
+          ...prevState,
+          [productId]: false // Marque le produit comme favori
+        }));
+      alert('Produit retiré des favoris');
+      getfavoriteproducts();
+      }
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+  const getfavoriteproducts = async () => {
+    try {
+      const result = await authApi.allfavoriteproducts()
+      console.log("rs",result);
+      if (result.ok) {
 
-  // Fetch products when the component mounts and when the screen comes into focus
+        const uniqueCategories = result.data.reduce((acc, current) => {
+          const x = acc.find(item => item.category === current.category);
+          if (!x) {
+            return acc.concat([{
+              ...current,
+              id: acc.length + 1, // Génère un ID unique pour chaque élément
+              isSelected: false,
+            }]);
+          } else {
+            console.log("Catégorie déjà présente:", current.category);
+            return acc; // Si la catégorie est déjà présente, on ne l'ajoute pas
+          }
+        }, []);
+        const favorites = result.data.reduce((acc, item) => {
+            acc[item.productId] = true;
+            return acc;
+          }, {});
+          console.log("favorites",favorites);
+        setBookmarkedProducts(favorites);
+        setFavoriteList2(uniqueCategories)
+      }
+      
+    } catch (error) {
+      console.error("Error getting product data: ", error);
+    }
+  };
+  
+  const handleAddFavorite = async (productId, selectedCategory) => {
+    try {
+      
+      if (!user._id|| !productId || !selectedCategory) {
+        console.error("Missing required parameters");
+        return;
+      }
+      // const result = await authApi.getFavorites(user._id);
+      // console.log("liste des favoris ",result);
+      const updatedFavorites = await authApi.addToFavorites(user._id, productId, selectedCategory);
+      if(updatedFavorites.ok){
+        setBookmarkedProducts(prevState => ({
+          ...prevState,
+          [productId]: true 
+        }));
+        console.log('Produit ajouté aux favoris avec succès!');
+        Alert.alert('Succès', 'Produit ajouté aux favoris avec succès!');
+      }
+      
+      
+    } catch (error) {
+      console.error('Erreur lors de l\'ajout aux favoris:', error);
+    }
+  };
+  
+  
   useFocusEffect(
     React.useCallback(() => {
-      setIsRefreshing(true); // Set refreshing state to true when the screen comes into focus
+      getfavoriteproducts();
+      setIsRefreshing(true); 
       getAllComments();
       getfollowedproducts();
     }, [])
@@ -102,13 +213,20 @@ function DiscoverHome({ navigation }) {
   const getProductById = async (_id) => {
     try {
       const result = await productActionsApi.getProductById(_id);
-      console.log("les produit desponible ",result)
+      console.log("les produits disponibles ", {
+        _id: result._id,
+        barcode: result.barcode,
+        productDetails: result.productDetails,
+        // Filtrage des images si elles sont volumineuses
+        images: result.images ? result.images.map(img => ({ _id: img._id, contentType: img.contentType })) : [],
+      });
       navigation.navigate('Product', { productId: result._id });
-  
     } catch (error) {
       console.error("Error getting product data: ", error);
     }
-  }
+  };
+  
+  
   const handleDelete = (userId) => {
     // Filtrer les commentaires pour exclure celui avec l'ID utilisateur spécifié
     const updatedComments = comments.filter(comment => comment.userId !== userId);
@@ -175,7 +293,7 @@ function DiscoverHome({ navigation }) {
     </TouchableOpacity>
   );
   const FollowedProductItem = ({ item }) => (
-    <View style={styles.cardContainer}>
+    <View style={styles.card}>
     <TouchableOpacity 
       activeOpacity={0.7} 
       style={[styles.item1, { backgroundColor: '#F4F4F4' }]} 
@@ -195,29 +313,23 @@ function DiscoverHome({ navigation }) {
         )}
         
        
-        <View style={styles.productNameContainer}>
-        <View
-            style={{
-              marginTop: 8,
-            }}>
-            <SubHeading style={styles.productNameText
-              
-            }        
-              >{item.productName}</SubHeading>
-            </View>
-            <View style={styles.productActionButtonContainer}>
-            <TouchableOpacity >
-              <Image source={images.bookmark} style={[styles.actionButton, { marginRight: 13 }]} />
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Image source={images.message} style={styles.actionButton} />
-            </TouchableOpacity>
-          </View>
+        <View style={styles.postDetails}>
+              <View style={styles.postDetails}>
+                  <Text style={styles.postTitle}> {item.productName}</Text>
+              </View>
+              <View style={styles.iconContainer}>
+          <TouchableOpacity style={styles.iconButton}>
+            <Icon name="bookmark-outline" size={22} color="#000" />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.iconButton}>
+            <Icon name="chatbubble-outline" size={22} color="#000" />
+          </TouchableOpacity>
+        </View>
             </View>
           
           {item.comments && item.comments.length > 0 && (
             <View>
-              <Paragraph>Comments:</Paragraph>
+             
               {item.comments.map((comment, index) => (
                 <View key={index}>
                   <SubHeading>{comment.text}</SubHeading>
@@ -258,8 +370,7 @@ function DiscoverHome({ navigation }) {
       )}
       <SafeAreaView>
         <FlatList
-        horizontal
-        
+         horizontal
           data={comments}
           renderItem={({ item }) => <Item item={item}  handleDelete={handleDelete} />}
           keyExtractor={(item) => item._id}
@@ -273,20 +384,99 @@ function DiscoverHome({ navigation }) {
             />
           }
         />
-         <FlatList
-          data={followedProducts}
-          renderItem={({ item }) => <FollowedProductItem item={item}  handleDelete={handleDelete} />}
-          keyExtractor={(item) => item.productId}
-          
-          refreshControl={
-            <RefreshControl
-              refreshing={isRefreshing}
-              onRefresh={onRefresh}
-              colors={[theme['color-primary-default']]} // Array of colors
-              progressBackgroundColor={theme["background-basic-color-2"]} // Background color of the indicator
+        
+        <FlatList
+            data={followedProducts}
+            renderItem={({ item }) => {
+              return <HomeProductListView item={item} onPressBookMark={() => {
+                if (bookmarkedProducts[item.productId]) {
+                  // Si l'icône est marquée (le produit est déjà dans les favoris)
+                  handleRemoveFavorite(item.productId); // Appeler la fonction pour retirer des favoris
+                } else {
+                  // Si l'icône n'est pas marquée (le produit n'est pas encore dans les favoris)
+                  setProductId(item.productId); // Mettre à jour l'état avec l'ID du produit
+                  setShowAddEditCategoryModal(true); // Afficher le modal pour ajouter une catégorie
+                }
+              }}
+              onPressproduct={()=> {getProductById(item.productId);}}
+              isBookmarked={bookmarkedProducts[item.productId] || false}
+              />
+            }}
+            showsVerticalScrollIndicator={false}
+          />
+        <FlatList
+        data={isSearchFilterApplied ? FavoriteFilterData.favoriteList : favoriteList}
+        numColumns={2}
+        horizontal={false}
+        style={styles.body}
+        showsVerticalScrollIndicator={false}
+        renderItem={({ item, index }) => {
+          return (
+            <ProductItemView
+              key={index}
+              isFromFavoriteList={true}
+              item={item}
+              onPressOption={() => setShowActionModal(true)}
+              onPressItem={() => {
+                navigation.navigate(Route.FavoriteDetailScreen, {
+                  listName: item.favoriteListName,
+                })
+              }}
             />
-          }
-        />
+          )
+        }}
+        
+      />
+      <AddCategoryPopup
+        listecategorie={favoriteList2} 
+        isVisible={showAddEditCategoryModal}
+        editTitle={selectedCategoryTitleForEdit}
+        isFromFavorite={true}
+        onPressClose={() => {
+          setShowAddEditCategoryModal(false)
+        }}
+        onPressAdd1={() => {
+          handleAddFavorite(productId, selectedCategory);
+        }}
+        onPressAdd={(selectedCategory) => {
+          console.log("principale selectedCategory",selectedCategory)
+          handleAddFavorite(productId, selectedCategory);
+        }}
+        onChangeText={(text) => setSelectedCategory(text)}
+       
+      />
+      <FilterModal
+        isVisible={showFilterModal}
+        onPressClose={() => {
+          setShowFilterModal(false)
+        }}
+        onApplyPress={() => {
+          setIsSearchFilterApplied(true)
+        }}
+      />
+      <ActionModal
+        isVisible={showActionModal}
+        onPressClose={() => setShowActionModal(false)}
+        onPressEditCategory={() => {
+          setShowActionModal(false)
+          setSelectedCategoryTitleForEdit(FavoriteFilterData.favoriteList[0].favoriteListName)
+          setTimeout(() => {
+            setShowAddEditCategoryModal(true)
+          }, 800)
+        }}
+        onPressDeleteCategory={() => {
+          setShowActionModal(false)
+          const options = [
+            { text: translate(LocalesMessages.cancel) },
+            {
+              text: translate(LocalesMessages.confirm),
+              style: 'destructive',
+              onPress: () => {},
+            },
+          ]
+          Alert.alert('', translate(LocalesMessages.areYouSureDeleteCategory), options)
+        }}
+      />
         
 
        
@@ -372,6 +562,113 @@ const styles = StyleSheet.create({
     height: 20,
     resizeMode: 'contain',
     tintColor: colors.black,
+  },
+  container: {
+    padding: 16,
+    backgroundColor: '#fff',
+  },
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    marginBottom: 16,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 2 },
+  },
+  postImage: {
+    width: '100%',
+    height: 200,
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
+  },
+  postDetails: {
+    padding: 12,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 2,
+  },
+  titleRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  titleBrandContainer: {
+    flexDirection: 'column',
+  },
+  postTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    
+  },
+  postBrand: {
+    fontSize: 14,
+    color: '#888',
+    marginLeft: 60,
+  },
+  
+  iconContainer: {
+    flexDirection: 'row',
+  },
+  iconButton: {
+    marginLeft: 16,
+  },
+  userInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
+  userAvatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginRight: 10,
+  },
+  userName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  postDate: {
+    fontSize: 14,
+    color: '#888',
+    marginLeft:20,
+    marginTop:2,
+  },
+  starContainer: {
+    flexDirection: 'row',
+    marginTop: 2,
+  },
+  postContent: {
+    // fontSize: 16,
+    // color: '#555',
+    marginTop: 10,
+    fontSize: 14,
+    color: '#333',
+    marginBottom: 10,
+    marginLeft:20,
+  },
+  reactions: {
+    flexDirection: 'row',
+    // justifyContent: 'space-between',
+    alignItems: 'center',
+    // marginTop: 4,
+    marginLeft:18,
+  },
+  reaction: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginStart:4,
+    marginRight:14,
+  },
+  reactionText: {
+    marginLeft: 5,
+    fontSize: 14,
+    color: '#333',
   },
 });
 

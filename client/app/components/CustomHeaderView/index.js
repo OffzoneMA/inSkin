@@ -46,7 +46,7 @@ const CustomHeaderView = ({
         <View style={styles.blankView} />
       )}
       {title ? (
-        <AppText localizedText={title} fontFamily='medium' style={[styles.titleText, titleStyle]} />
+        <AppText text={title} fontFamily='medium' style={[styles.titleText, titleStyle]} />
       ) : (
         <></>
       )}

@@ -1,6 +1,7 @@
 
 import React, { useState, useContext, useEffect, useLayoutEffect } from "react";
 import {
+  SafeAreaView,
   FlatList,
   StyleSheet,
   View,
@@ -10,21 +11,24 @@ import {
   Text,
   TextInput,
 } from "react-native";
-
-
+import AppText from '../../components/AppText'
+import { LocalesMessages } from '../../constants/locales'
+import Icon from 'react-native-vector-icons/Ionicons';
+import { colors, images } from '../../constants';
 import { MaterialIcons } from '@expo/vector-icons';
+import CustomHeaderView from '../../components/CustomHeaderView'
 import Page from "../../components/Page";
 import Heading from "../../components/Heading";
 import Label from "../../components/Label";
 import SubHeading from "../../components/SubHeading";
 import Paragraph from "../../components/Paragraph";
-import { useTheme, Icon } from "@ui-kitten/components";
+import { useTheme } from "@ui-kitten/components";
 import StarRating from 'react-native-star-rating-widget';
-
+import ProductReviewCard from '../../components/ProductReviewCard'
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-
+import RatingView from '../../components/RatingView'
 import productActionsApi from "../../api/product_actions";
-
+import AppCommentTextArea from '../../components/AppCommentTextArea';
 import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEffect from React Navigation
 import { useNavigation } from "@react-navigation/native";
 import brandActionsApi from "../../api/brand_actions";
@@ -32,17 +36,20 @@ import style from '../style';
 import authApi from "../../api/auth";
 import AuthContext from "../../contexts/auth";
 import { encode } from 'base-64';
+import { ScrollView } from "react-native-gesture-handler";
+import useApi from "../../hooks/useApi";
+import { styles } from "./styles";
+import AddCategoryPopup from '../../components/Popups/AddCategoryPopup';
 function ProductHome({ route }) {
-
+  const [selectedImageUri, setSelectedImageUri] = useState(null);
+  const getProfileImageApi = useApi(authApi.getProfileImage);
   const theme = useTheme();
   const navigation = useNavigation();
-
   const { productId } = route.params;
-
   const [productRating, setProductRating] = useState(0);
-
+  const [productIds, setProductId] = useState(null);
   const [comments, setComments] = useState([]);
-
+  const [showAddEditCategoryModal, setShowAddEditCategoryModal] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const { user } = useContext(AuthContext);
@@ -53,9 +60,103 @@ function ProductHome({ route }) {
 
   const [brand, setBrand] = useState(null);
   const [product, setProduct] = useState(null);
-
+  const [isBookmarked, setIsBookmarked] = React.useState(false)
+  const [showCategoryModal, setShowCategoryModal] = React.useState(false)
   const [isSaved, setIsSaved] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [favoriteList2, setFavoriteList2] = useState([]);
+  const [selectedCategoryTitleForEdit, setSelectedCategoryTitleForEdit] = useState('')
+  const [bookmarkedProducts, setBookmarkedProducts] = useState({});
+  console.log("resultatah avant dhdh",isBookmarked);
+  const getfavoriteproducts = async () => {
+    try {
+      console.log("resultatah initiale",isBookmarked);
+      const result = await authApi.allfavoriteproducts()
+      console.log("result",result);
+      if (result.ok) {
+        const uniqueCategories = result.data.reduce((acc, current) => {
+          const x = acc.find(item => item.category === current.category);
+          if (!x) {
+            return acc.concat([{
+              ...current,
+              id: acc.length + 1, // Génère un ID unique pour chaque élément
+              isSelected: false,
+            }]);
+          } else {
+            console.log("Catégorie déjà présente:", current.category);
+            return acc; // Si la catégorie est déjà présente, on ne l'ajoute pas
+          }
+        }, []);
+        // const favorites = result.data.reduce((acc, item) => {
+        //     acc[item.productId] = true;
+        //     return acc;
+        //   }, {});
+        const favoriteProductIds = result.data.map(item => item.productId)
+        if (favoriteProductIds.includes(productId)) {
+          setIsBookmarked(true);  // Si le produit est trouvé, le marquer comme favori
+        } else {
+          setIsBookmarked(false); // Sinon, le marquer comme non favori
+        }
+        console.log("resultatah",isBookmarked);
+        setFavoriteList2(uniqueCategories)
+      }
+      
+    } catch (error) {
+      console.error("Error getting product data: ", error);
+    }
+  };
+  const handleRemoveFavorite = async (productId1) => {
+    try {
+      const userId = user._id; // Assurez-vous que user.userId est correctement défini
+      console.log(" userId", userId);
+      console.log("productId", productId1);
+      const updatedFavorites = await authApi.removlistFavoris(userId, productId1);
+      console.log("supprission de favorie",updatedFavorites)
+      if(updatedFavorites.ok){
+        setIsBookmarked(false);
+        console.log("setIsBookmarked",isBookmarked);
+      alert('Produit retiré des favoris');
+      getfavoriteproducts();
+      }
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+  const handleAddFavorite = async (productId, selectedCategory) => {
+    try {
+      
+      if (!user._id|| !productId || !selectedCategory) {
+        console.error("Missing required parameters");
+        return;
+      }
+      // const result = await authApi.getFavorites(user._id);
+      // console.log("liste des favoris ",result);
+      const updatedFavorites = await authApi.addToFavorites(user._id, productId, selectedCategory);
+      if(updatedFavorites.ok){
+        setIsBookmarked(true);
+        console.log('Produit ajouté aux favoris avec succès!');
+        
+      }
+      
+      
+    } catch (error) {
+      console.error('Erreur lors de l\'ajout aux favoris:', error);
+    }
+  };
+  
+  
+  useFocusEffect(
+    React.useCallback(() => {
+      getfavoriteproducts();
+      setIsRefreshing(true); 
+      
+      
+      
+    }, [])
+  );
 
+
+  
   function calculateProductRating(comments) {
     if (!comments || comments.length === 0) {
         return 0; // Default average rating if there are no comments or comments is empty
@@ -72,26 +173,31 @@ function ProductHome({ route }) {
 
   const getProductComments = async () => {
     try {
+      console.log("productId",productId)
       const result = await productActionsApi.getProductComments(productId);
-
+       console.log("resullltttt",result);
       if (!result.ok) {
         //toast.show(result.data, { type: "danger" });
       } else {
-        //toast.show(result.data.message, { type: "success" });
-
-        // Extract user IDs from comments
-        const userIds = result.data.map(comment => comment.userId);
-        
+        const userIds = result.data.map(comment => comment.userId).filter(id => id);
+        console.log("userids",userIds);
         const usernamesIds = await authApi.getUsersByIds(userIds);
-
+        console.log("mais moi ",usernamesIds)
         // Create a list of comments with usernames
         const comments = result.data.map(comment => {
           const user = usernamesIds.find(u => u._id === comment.userId);
+          
+          console.log("user",user);
           return {
               ...comment,
-              userName: user ? user.userName : 'Unknown User' // Handle the case if user is not found
+              userName: user ? user.userName : 'Unknown User' ,// Handle the case if user is not found
+              profileImage: user && user.profileImage && user.profileImage.data ? user.profileImage : 'Unknown User',
+              
+              firstName:user ? user.firstName : 'Unknown User' ,
           };
+          
         });
+        console.log("comments", comments);
         calculateProductRating(comments);
         const sortedComments = comments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         setComments(sortedComments);
@@ -135,8 +241,7 @@ function ProductHome({ route }) {
         return;
       }
 
-      const result = await productActionsApi
-      .addCommentToProduct(
+      const result = await productActionsApi.addCommentToProduct(
         productId,
         user._id,
         commentText,
@@ -149,17 +254,11 @@ function ProductHome({ route }) {
         
       //console.log(result);
       if (!result.ok) {
-        //toast.show(result.data, { type: "danger" });
-
+        // Gérer les erreurs de l'API
+        console.error("Erreur lors de l'ajout du commentaire : ", result.problem);
       } else {
-        //toast.show(result.data.message, { type: "success" });
-        /* const brandName = result.data.brands.map(brand => ({
-          value: brand._id, // Use _id as the key
-          label: brand.name // Use name as the value
-        })); */
-        //const brandName = result.data.brand;
-        //setBrandsNames(brandsNames);
-        
+        // Afficher un message de succès
+        console.log("Commentaire ajouté avec succès !");
       }
     } catch (error) {
       console.error("Error fetching data: ", error);
@@ -169,6 +268,7 @@ function ProductHome({ route }) {
   const getProductById = async (_id) => {
     try {
       const result = await productActionsApi.getProductById(_id);
+      console.log("les infor sur produit choisi",result)
 
       setProduct(result);
 
@@ -247,252 +347,260 @@ function ProductHome({ route }) {
       setIsLiked(!isLiked);
       // Add logic here to handle liking/unliking the item in your data or API
     };
-  
-    return (
-      <View style={{ marginVertical: 5, flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
-              <View style={{ flex: 1, flexDirection:"column" }}>
-
-        <Text>{item.userName}</Text>
-        <StarRating
-          rating={item.review}
-          onChange={() => {}}
-          animationConfig={{scale: 1}}
-          starSize={18}
-          starStyle={{marginHorizontal: 0}}
-        />
-        {item.text !== "" ? <Paragraph style={{marginLeft: 4}}>{item.text}</Paragraph> : null}
-      </View>
-
-        <View style={{ padding: 5 }}>
-          <TouchableOpacity
-            onPress={handleLikePress}
-            style={{ borderRadius: 5}}
-            activeOpacity={0.5} // Customize the opacity when pressed
-          >
-            {isLiked ? (
-              <MaterialCommunityIcons
-              name={"heart"}
-              size={20}
-              color={theme["notification-error"]}
-            />
-            ) : (
-              <MaterialCommunityIcons
-            name={"heart-outline"}
-            size={20}
-            color={theme["color-primary-disabled-border"]}
-
-                      />
-            )}
-            
-          </TouchableOpacity>
+    
+   
+  };  
+  const formatNumber = (num) => {
+    if (num >= 1000) {
+      return (num / 1000).toFixed(1) + 'K'; // Formater en K avec une décimale
+    }
+    return num.toString();
+  };
+  const renderComment1 = (comment, index) => (
+    <View key={index} style={styles.comment}>
+      <Image source={{ uri: comment.avatar }} style={styles.commentAvatar} />
+      <View style={styles.commentContent}>
+        <Text style={styles.commentName}>{comment.text}</Text>
+        <Text style={styles.commentDate}>{comment.date}</Text>
+        <Text style={styles.commentText}>{comment.comment}</Text>
+        <View style={styles.reactions}>
+          <View style={styles.reaction}>
+            <Text style={styles.reactionText}><Icon name="caret-up" size={20} color="#EA6479" /> {formatNumber(comment.upvotes)}</Text>
+          </View>
+          <View style={styles.reaction}>
+            <Text style={styles.reactionText}><Icon name="caret-down" size={20} color="#EA6479" /> {formatNumber(comment.downvotes)}</Text>
+          </View>
         </View>
       </View>
-    );
-  };  
+    </View>
+  );
+  const renderComment = (item, index) => {
+    // Format the date to only show YYYY-MM-DD
+    const formattedDate = new Date(item.createdAt).toLocaleDateString('en-CA'); // en-CA format gives YYYY-MM-DD
+    let imageUrl = null;
+    if (item.profileImage && item.profileImage.data && item.profileImage.data.data) {
+        const imageData = item.profileImage.data.data;
+        const base64ImageData = imageData.map(byte => String.fromCharCode(byte)).join('');
+        imageUrl = 'data:' + item.profileImage.contentType + ';base64,' + encode(base64ImageData);
+    }
 
+    return (
+      <View style={styles.reviewContainer}>
+        <View
+          style={{
+          flexDirection: 'row',
+        }}>
+           {imageUrl ? (
+                 <Image 
+                source={{ uri: imageUrl }}
+                style={styles.reviewerImage}
+            />
+        ) : (
+            <Image 
+                source={images.userAvatar} // Utilisez une image par défaut si imageUrl est null
+                style={styles.reviewerImage}
+            />
+        )}
+        
+        <View
+          style={{
+            marginLeft: 13,
+          }}>
+              <AppText
+            text={item.firstName}
+            style={styles.reviewerName}
+            size={'font14px'}
+            fontFamily='medium'
+          />
+          <AppText text={formattedDate} style={styles.reviewDateText} size={'font14px'} />
+          </View>
+        </View>
+        
+        {item.text !== "" ? <AppText text={item.text} style={styles.reviewText} numberOfLines={5} size={'font14px'} /> : null}
+
+        <View style={styles.reviewLikeUnLikeContainer}>
+        <TouchableOpacity>
+          <Image source={images.upTriangle} style={styles.reviewLikeImage} />
+        </TouchableOpacity>
+        <AppText text='12k' size='font12px' style={styles.reviewCountText} />
+        <TouchableOpacity>
+          <Image
+            source={images.upTriangle}
+            style={[
+              styles.reviewLikeImage,
+              {
+                marginLeft: 5,
+                transform: [{ rotate: '180deg' }],
+                opacity: 0.8,
+              },
+            ]}
+          />
+        </TouchableOpacity>
+        <AppText text='8k' size='font12px' style={styles.reviewCountText} />
+      </View>
+      </View>
+    );
+  };
   const handleSavedPress = () => {
     setIsSaved(!isSaved);
     // Add logic here to handle liking/unliking the item in your data or API
   };
   
   return (
-    <Page>
-      <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
-      {product ? (
-          <Heading style={{color: theme["color-primary-default"]}}>{product.barcode}</Heading>
-      ) : (
-        <Heading>...</Heading>
+    <SafeAreaView style={styles.container}>
+      <ScrollView  automaticallyAdjustKeyboardInsets
+        showsVerticalScrollIndicator={false}
+        style={styles.scrollView}
+        keyboardDismissMode='interactive'>
+           <CustomHeaderView
+          title={LocalesMessages.countraMix}
+          leftButtonImage={images.backButton}
+          leftButtonOnPress={() => {
+            navigation.goBack()
+          }}
+          rightButtonImage={images.share}
+          rightButtonOnPress={() => {}}
+          isFromProfileMenu={false}
+        />
+      {product && product.images && Array.isArray(product.images) && product.images.length > 0 ? (
+    <View >
+      {product.images[0] && product.images[0].contentType && product.images[0].data && product.images[0].data.data && product.images[0].data.data.length > 0 && (
+        <Image 
+          source={{ uri: 'data:' + product.images[0].contentType + ';base64,' + encode(product.images[0].data.data.map(byte => String.fromCharCode(byte)).join('')) }}
+          style={styles1.productImage}
+
+        />  
       )}
-      <View style={{flexDirection: "row"}}>
-        <TouchableOpacity
-            onPress={()=>{
-            }}
-            style={{ borderRadius: 5}}
-            activeOpacity={0.5} // Customize the opacity when pressed
-          >
-          <Icon
-            name="share-outline"
-            width={24} // Set the width of the icon
-            height={24} // Set the height of the icon
-            fill={theme["color-primary-active-border"]} // Set the color of the icon
-          />
-        </TouchableOpacity>
-
-        
-        <View style={{ marginRight: 10 }} />
-        <TouchableOpacity
-            onPress={handleSavedPress}
-            style={{ borderRadius: 5}}
-            activeOpacity={0.5} // Customize the opacity when pressed
-          >
-          <MaterialCommunityIcons
-            name={isSaved ? 'bookmark' : 'bookmark-outline'}
-            size={24}
-            color={isSaved ? theme['color-primary-active-border'] : theme['color-primary-disabled-border']}
-          />
-        </TouchableOpacity>
-        
-        </View>
-      </View>
-
-      <View style={{ flexDirection: "column", alignItems: "center",justifyContent: "center" }}>
-        <Paragraph>{productRating}</Paragraph>
-        <StarRating
+    </View>
+  ) : (
+    <View style={{ height: 100, width: 100, alignSelf: "center" }}></View>
+  )}
+     <View style={styles.productRatingContainer}>
+     <View style={styles.flexRowWithCenterItem}>
+     <RatingView rating={productRating} startImageStyle={styles.ratingStarImage} />
+     {/* <StarRating
           rating={productRating}
           onChange={() => {}}
           animationConfig={{scale: 1}}
           starSize={20}
           starStyle={{marginHorizontal: 0}}
-        />
+        /> */}
+        <AppText
+              text={productRating}
+              style={[styles.likeCountFont, { color: colors.black }]}
+              size='font14px'
+            />
       </View>
-      
-      <View style={{ flexDirection: "column" }}>
-        
-            {product && product.images && Array.isArray(product.images) && product.images.length > 0 ? (
-              <View style={{ maxHeight: 200 }}>
-              <FlatList
-                data={product.images}
-                keyExtractor={(item, index) => index.toString()}
-                horizontal={false}
-                numColumns={3}
-                renderItem={({ item, index }) => (
-                  <View style={{ marginVertical: 5, marginRight: 10 }}>
-                    <View style={{ position: 'relative' }}>
-                      
-                    {item && item.contentType && item.data && item.data.data && item.data.data.length > 0 && (
-                      <Image 
-                        source={{ uri: 'data:' + item.contentType + ';base64,' + encode(item.data.data.map(byte => String.fromCharCode(byte)).join('')) }}
-                        style={{ width: 100, height: 100, borderRadius: 10 }}
-                      />
-                    )}
-                    </View>
-                  </View>
-                )}
-              />
-
-            </View>
-            ) : brand && brand.image && brand.image.data && brand.image.data.data ? (
-              <View style={{ height: 100, width: 100, alignSelf: "center" }}>
-              <View style={{ flex: 1, justifyContent: "center", borderRadius: 5, overflow: "hidden", backgroundColor: "gray" }}>
-              <Image 
-                source={{ uri: 'data:' + brand.image.contentType + ';base64,' + encode(brand.image.data.data.map(byte => String.fromCharCode(byte)).join('')) }}
-                style={{flex: 1, width: null, height: null}} 
-              />
-              </View>
-              </View>
-            ) : (
-              <View style={{ height: 100, width: 100, alignSelf: "center" }}>
-              <View style={{ flex: 1, borderRadius: 5, overflow: "hidden", backgroundColor: theme["color-primary-disabled-border"] }}>
-
-              </View>
-              </View>
-            )}
-        
-          <View style={{ flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
-            {product ? (
-            <SubHeading>{product.productDetails.name}</SubHeading>
+      <View style={styles.flexRowWithCenterItem}>
+            <Image source={images.thumbsUp} style={styles.thumbsUpImage} />
+            <AppText text="30" style={styles.likeCountFont} size='font12px' />
+            <Image source={images.eye} style={styles.eyeImage} />
+            <AppText text="40" style={styles.likeCountFont} size='font12px' />
+            <Image source={images.productShare} style={styles.productShareImage} />
+            <AppText text="60" style={styles.likeCountFont} size='font12px' />
+          </View>
+    </View>
+    <View style={styles.productDetailsContainer}>
+          <View style={{ maxWidth: '60%' }}>
+          {product ? (
+            <AppText
+              text={product.productDetails.name}
+              style={styles.productName}
+              size={'font20px'}
+              fontFamily='medium'
+            />
+            
             ) : (
               <SubHeading>...</SubHeading>
             )}
-            
-            
             {brand ? (
-              <Paragraph>{brand.name}</Paragraph>
+              <AppText
+              text={brand.name}
+              style={styles.productSubDesc}
+              size={'font14px'}
+              
+            />
             )  : (
-              <Paragraph>No brand available</Paragraph>
+              <Text style={styles.productBrand}>No brand available</Text>
             )} 
-          
-        </View>
-      </View>
-
-      <View style={{ marginVertical: 5, flexDirection: "row", alignItems: "center" }}>
-        <View style={{ borderRadius: 5, flexDirection: "row", marginRight: 5 }}>
-          <Icon
-            name="eye-outline"
-            width={24} // Set the width of the icon
-            height={24} // Set the height of the icon
-            fill={theme["color-primary-disabled-border"]} // Set the color of the icon
-          />
-          <Paragraph style={{color: theme["color-primary-disabled-border"]}}>5450</Paragraph>
-        </View>
-        <View  style={{ borderRadius: 5, flexDirection: "row", marginRight: 5 }}>
-          <Icon
-            name="share-outline"
-            width={24} // Set the width of the icon
-            height={24} // Set the height of the icon
-            fill={theme["color-primary-disabled-border"]} // Set the color of the icon
-          />
-          <Paragraph style={{color: theme["color-primary-disabled-border"]}}>5450</Paragraph>
-        </View>
-        <View style={{ borderRadius: 5, flexDirection: "row", marginRight: 5 }}>
-
-          <MaterialCommunityIcons
-            name={"cube-scan"}
-            size={24}
-            color={theme["color-primary-disabled-border"]}
-          />
-          <Paragraph style={{color: theme["color-primary-disabled-border"]}}>5450</Paragraph>
-        </View>
-        <TouchableOpacity activeOpacity={0.5} onPress={()=>{}} style={{ borderRadius: 5, flexDirection: "row", marginLeft: 'auto' }}>
-
-          
-          <Icon
-            name="funnel-outline"
-            width={24} // Set the width of the icon
-            height={24} // Set the height of the icon
-            fill={theme["color-primary-active-border"]} // Set the color of the icon
-          />
-        </TouchableOpacity>
-      </View>
-      
-      <View style={{ flex: 1 }}>
-          <FlatList
-            data={comments}
-            renderItem={({ item }) => <Item item={item} />}
-            keyExtractor={(item, index) => {return item._id}}
-            refreshControl={
-            <RefreshControl
-              refreshing={isRefreshing}
-              onRefresh={onRefresh}
-              colors={[theme['color-primary-default']]} // Array of colors
-              progressBackgroundColor={theme["background-basic-color-2"]} // Background color of the indicator
-            />
-          }
-          />
-      </View>
-      <View style={[styles.commentContainer, { flexDirection: "column", height: 100, alignItems: "center", justifyContent: "center", marginTop: 10, backgroundColor: theme["background-basic-color-1"] }]}>
-        
-        <View style={{ paddingHorizontal: 7, paddingVertical: 0, flexDirection: "row", alignItems: "center", height: 48 }}>
-          <View style={{flex: 1, height: 48}}>
-            <TextInput
-              placeholder="Comment..."
-              keyboardType="default"
-              returnKeyType="next"
-              autoCapitalize="none"
-              value={commentText}
-              onChangeText={setCommentText}
-            />
           </View>
-          <View style={{padding: 3}}>
-
+          <View style={styles.flexRowWithCenterItem}>
             <TouchableOpacity
-              onPress={()=>{
-                addCommentToProduct();
-              }} 
-              style={[styles.button, {backgroundColor: theme["color-primary-default"]}]}
-              activeOpacity={0.7} // Customize the opacity when pressed
-            >
-              <MaterialCommunityIcons
-                name={"send"}
-                size={24}
-                style={{marginLeft: 2, color: theme["background-basic-color-2"]}}
-
+              onPress={() => {
+                if (isBookmarked) {
+                  // Si l'icône est marquée (le produit est déjà dans les favoris)
+                  handleRemoveFavorite(productId); // Appeler la fonction pour retirer des favoris
+                } else {
+                  // Si l'icône n'est pas marquée (le produit n'est pas encore dans les favoris)
+                  setProductId(productId); // Mettre à jour l'état avec l'ID du produit
+                  setShowAddEditCategoryModal(true); // Afficher le modal pour ajouter une catégorie
+                }
+              }}>
+              <Image
+                source={isBookmarked ? images.bookmark_selected : images.bookmark}
+                style={styles.bookmarkImage}
               />
             </TouchableOpacity>
+            <TouchableOpacity>
+              <Image source={images.heart} style={styles.heartImage} />
+            </TouchableOpacity>
           </View>
-        </View>
 
-        <StarRating
+    </View>
+    <View
+          style={{
+            marginTop: 22,
+          }}>
+          <AppText
+            text={LocalesMessages.description}
+            style={styles.productName}
+            size={'font18px'}
+          />
+          <AppText
+            text="wiahdhdhcvdieryftddfdy hdfudi0thr7rtgcgdrstsysu"
+            style={[styles.productSubDesc, { marginTop: 8 }]}
+            size={'font14px'}
+          />
+        </View>
+        <View
+          style={[
+            styles.flexRowWithCenterItem,
+            { marginTop: 24, justifyContent: 'space-between' },
+          ]}>
+          <AppText
+            text={LocalesMessages.comments}
+            style={styles.productName}
+            size={'font18px'}
+            fontFamily='medium'
+          />
+          <TouchableOpacity style={styles.flexRowWithCenterItem}>
+            <AppText
+              text={LocalesMessages.mostRecent}
+              style={styles.mostRecentText}
+              size={'font14px'}
+            />
+            <Image source={images.arrowThin} style={styles.arrowIcon} />
+          </TouchableOpacity>
+        </View>
+        <View
+          style={{
+            marginTop: 22,
+          }}>
+         {comments.map((comment, index) => renderComment(comment, index))}
+          <AppCommentTextArea
+            placeholderText={LocalesMessages.addAComment}
+            textValue={commentText}
+            onChangeText={text => {
+              setCommentText(text)
+            }}
+            onPressSendButton={() => { addCommentToProduct(); }}
+          />
+          <View style={styles.assessmentRatingContainer}>
+            <AppText
+              text={LocalesMessages.yourAssessment}
+              size={'font12px'}
+            />
+            <StarRating
           rating={commentRating}
           onChange={setCommentRating}
           style={{marginTop: 5}}
@@ -500,13 +608,35 @@ function ProductHome({ route }) {
           starSize={35}
           starStyle={{marginHorizontal: 0, marginVertical: 0}}
         />
-      </View>
+          </View>
+        </View>
+
+        </ScrollView>
       
-    </Page>
+        <AddCategoryPopup
+        listecategorie={favoriteList2} 
+        isVisible={showAddEditCategoryModal}
+        editTitle={selectedCategoryTitleForEdit}
+        isFromFavorite={false}
+        onPressClose={() => {
+          setShowAddEditCategoryModal(false)
+        }}
+        onPressAdd1={() => {
+          handleAddFavorite(productId, selectedCategory);
+        }}
+        onPressAdd={(selectedCategory) => {
+          console.log("principale selectedCategory",selectedCategory)
+          handleAddFavorite(productId, selectedCategory);
+        }}
+        onChangeText={(text) => setSelectedCategory(text)}
+       
+      />
+      
+    </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
+const styles1 = StyleSheet.create({
   button: {
     justifyContent: "center",
     alignItems: 'center',
@@ -529,6 +659,165 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
+  },
+  userAvatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginRight: 10,
+  },
+  container: {
+    flex: 1,
+    padding: 16,
+    backgroundColor: 'white',
+  },
+  productImage: {
+    width: '100%',
+    height: 300,
+    borderRadius: 8,
+    resizeMode: 'contain',
+  },
+  star: {
+      marginVertical: 8,
+      flexDirection: 'row',
+      // justifyContent: 'space-around',
+      marginLeft:2,
+
+  },
+  productInfo: {
+    marginTop: 10,
+  //   alignItems: 'center',
+  },
+  productTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+  },
+  productBrand: {
+    fontSize: 16,
+    color: 'gray',
+  },
+  starContainer: {
+    flexDirection: 'row',
+  },
+  productStats: {
+    flexDirection: 'row',
+    marginVertical: 3,
+    justifyContent: 'space-between',
+    width: '40%',
+    marginLeft: 40,
+  },
+  productStat: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    fontSize: 14,
+  },
+  productDescription: {
+    // marginTop: 2,
+    fontSize: 16,
+    color: 'gray',
+  },
+  descriptionHeader: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginVertical: 6,
+  },
+  product:{
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+  },
+  iconContainer: {
+      flexDirection: 'row',
+      // justifyContent: 'space-around',
+      width: '18%',
+      marginTop:14,
+  },
+  iconButton: {
+      marginLeft: 6,
+  },
+  commentsHeader: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginVertical: 16,
+  },
+  comment: {
+    flexDirection: 'row',
+    marginVertical: 8,
+  },
+  commentAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+  },
+  commentContent: {
+    marginLeft: 8,
+    flex: 1,
+  },
+  
+  commentName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+
+  commentDate: {
+    fontSize: 14,
+    color: '#888',
+    marginLeft:3,
+    marginTop:2,
+  },
+
+  commentText:{
+    fontSize: 14,
+    marginVertical: 6,
+    color: '#888',
+  },
+
+  reactions: {
+    flexDirection: 'row',
+    // justifyContent: 'space-between',
+    alignItems: 'center',
+    // marginTop: 4,
+  },
+  reaction: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight:10,
+  },
+
+  reactionText: {
+    marginLeft: 5,
+    fontSize: 14,
+    color: '#888',
+  },
+
+  commentInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+    backgroundColor: 'white',
+    // borderRadius: 10,
+    // shadowColor: '#000',
+    // shadowOffset: { width: 0, height: 2 },
+    // shadowOpacity: 0.2,
+    // shadowRadius: 2,
+    // elevation: 2,
+    margin: 10,
+  },
+
+  commentInput: {
+    flex: 1,
+    height: 45,
+    borderColor: '#e0e0e0',
+    borderWidth: 1,
+    borderRadius: 4,
+    paddingHorizontal: 10,
+    marginRight: 8,
+  },
+  
+  sendButton: {
+    backgroundColor: '#EA6479',
+    borderRadius: 6,
+    padding: 10,
   },
 });
 

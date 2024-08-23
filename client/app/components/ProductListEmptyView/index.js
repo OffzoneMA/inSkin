@@ -17,14 +17,14 @@ const ProductListEmptyView = ({
     <View style={[styles.mainContainer, mainContainerStyle]}>
       <Image source={images.noDataSymbol} style={styles.symbolImage} />
       <AppText
-        localizedText={LocalesMessages.oops}
+        text={LocalesMessages.oops}
         size='font20px'
         fontFamily='medium'
         color={colors.lightBlackSecondary}
         style={styles.oopsText}
       />
       <AppText
-        localizedText={emptyMessage}
+        text={emptyMessage}
         size='font12px'
         color={colors.tabBarGray}
         style={styles.oopsText}

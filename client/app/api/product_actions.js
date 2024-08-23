@@ -13,7 +13,7 @@ const add_product = (
 ) => {
   
   const formData = new FormData();
-  
+  console.log("userid", userId)
   formData.append("barcode", barcode);
   formData.append("userId", userId); // Include userId in the FormData
   // Iterate over the images array and append each image object to the FormData
@@ -34,6 +34,7 @@ const add_product = (
 const getAllProducts = () => client.get("/products/users-with-products");
 const getmyproduct = () => client.get("/products/my-products");
 const getfollowedproducts=()=>client.get("/products/followed-products")
+const getfavoriteproducts=()=>client.get("/products/favorite-products")
 // GET a single product by ID
 const getProductById = async (id) => {
   try {
@@ -104,4 +105,5 @@ export default {
     getAllComments,
     getfollowedproducts,
     getmyproduct,
+    getfavoriteproducts,
 };

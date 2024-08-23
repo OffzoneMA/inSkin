@@ -6,8 +6,13 @@ import styles from './styles'
 
 const CategoryOptionView = ({ value, selectedCategory, onPressOption }) => {
   const isSelected = selectedCategory == value.id
+  
   return (
-    <TouchableOpacity key={value.id} style={styles.touchContainer} onPress={onPressOption}>
+    <TouchableOpacity key={value.id} style={styles.touchContainer} onPress={() => {
+      console.log("Selected Category ID:", value.id);
+      console.log("Selected Category Text:", value.category);
+      onPressOption(value.category); // Appeler la fonction de rappel
+    }}>
       <View
         style={[
           styles.mainContainer,
@@ -21,7 +26,7 @@ const CategoryOptionView = ({ value, selectedCategory, onPressOption }) => {
           style={styles.radioImage}
         />
         <AppText
-          text={value.title}
+          text={value.category}
           size='font15px'
           color={colors.inputTextColor}
           style={styles.titleText}

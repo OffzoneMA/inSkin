@@ -8,21 +8,22 @@ import { LocalesMessages } from '../../../constants/locales'
 import AppButton from '../../../components/AppButton'
 import FavoriteListData from '../../../../data/favoriteData.json'
 
-const FilterModal = ({ isVisible = false, onPressClose, onApplyPress }) => {
+const FilterModal = ({ isVisible = false, onPressClose, onApplyPress,  listecategorie }) => {
   const mainCategoryList = FavoriteListData.favoriteList.map(value => {
     return {
       ...value,
       isSelected: false,
     }
   })
-  const [categoryList, setCategoryList] = useState(mainCategoryList)
+  
+  const [categoryList, setCategoryList] =  useState(listecategorie || []);
   const renderItem = ({ item, index }) => {
     return (
       <TouchableOpacity
         style={styles.categoryContainer}
         onPress={() => {
           const arrFiltered = categoryList.map(value => {
-            if (value.favoriteListName == item.favoriteListName) {
+            if (value.category == item.category) {
               value.isSelected = !item.isSelected
             }
             return {
@@ -31,7 +32,7 @@ const FilterModal = ({ isVisible = false, onPressClose, onApplyPress }) => {
           })
           setCategoryList(arrFiltered)
         }}>
-        <AppText text={item.favoriteListName} size='font14px' color={colors.lightBlack} />
+        <AppText text={item.category} size='font14px' color={colors.lightBlack} />
         <Image
           source={item.isSelected ? images.selectedcheckBox : images.checkBox}
           style={styles.checkBoxImage}
@@ -39,6 +40,8 @@ const FilterModal = ({ isVisible = false, onPressClose, onApplyPress }) => {
       </TouchableOpacity>
     )
   }
+ 
+  
   return (
     <ReactNativeModal
       isVisible={isVisible}
@@ -49,20 +52,20 @@ const FilterModal = ({ isVisible = false, onPressClose, onApplyPress }) => {
       onBackdropPress={onPressClose}
       swipeDirection={'down'}
       onModalWillShow={() => {
-        setCategoryList(mainCategoryList)
+        setCategoryList(listecategorie || []);
       }}
       style={styles.modal}>
       <View style={styles.mainContainer}>
         <View style={styles.dividerTop} />
         <AppText
-          localizedText={LocalesMessages.filter}
+          text={LocalesMessages.filter}
           size='font18px'
           style={styles.title}
           fontFamily='medium'
         />
         <View style={styles.headerContainer}>
           <AppText
-            localizedText={LocalesMessages.category}
+            text={LocalesMessages.category}
             size='font16px'
             fontFamily='medium'
             color={colors.lightBlackSecondary}

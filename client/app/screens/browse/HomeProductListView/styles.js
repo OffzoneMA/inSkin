@@ -71,9 +71,42 @@ export const styles = StyleSheet.create({
   },
   productNameText: {
     lineHeight: 24,
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
   },
   productChanelText: {
     lineHeight: 18,
+  },
+  userInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
+  postBrand: {
+    fontSize: 14,
+    color: '#888',
+    marginLeft: 60,
+  },
+  userAvatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginRight: 10,
+  },
+  postDetails: {
+    padding: 12,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 2,
+  },
+  iconContainer: {
+    flexDirection: 'row',
+  },
+  iconButton: {
+    marginLeft: 16,
   },
   commentUserNameText: {
     lineHeight: 18,

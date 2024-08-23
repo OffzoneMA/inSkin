@@ -1,4 +1,4 @@
-import { Image, TouchableOpacity, View } from 'react-native'
+import { Image, TouchableOpacity, View , Text} from 'react-native'
 import React from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { Route } from '../../../constants/constants'
@@ -7,24 +7,41 @@ import AppText from '../../../components/AppText'
 import RatingView from '../../../components/RatingView'
 import { styles } from './styles'
 import { LocalesMessages } from '../../../constants/locales'
-
-const HomeProductListView = ({ item, onPressBookMark }) => {
+import Icon from 'react-native-vector-icons/Ionicons';
+import { useFocusEffect } from "@react-navigation/native";
+const HomeProductListView = ({ item, onPressBookMark,onPressproduct,isBookmarked }) => {
   const navigation = useNavigation()
-  return (
-    <>
-      <View style={styles.cardContainer}>
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={() => {
-            navigation.navigate(Route.FeedDetailScreen)
-          }}>
-          <Image source={images.productCardImage} style={styles.productImage} />
-        </TouchableOpacity>
-        <View style={styles.productNameContainer}>
-          <View
-            style={{
-              marginTop: 8,
-            }}>
+  const imageSource = item.images && item.images.length > 0 
+  ? { uri: `data:${item.images[0].contentType};base64,${item.images[0].data}` }
+  : null; // Si `item.images` est vide ou non défini, imageSource est `null`
+  const imageSourcep = item. profileImage && item. profileImage.length > 0 
+  ? { uri: `data:${item. profileImage[0].contentType};base64,${item. profileImage[0].data}` }
+  : null;
+  const comments = item.comments && item.comments.length > 0 
+    ? item.comments 
+    : [];
+    
+    
+  
+return (
+  <>
+    <View style={styles.cardContainer}>
+      <TouchableOpacity
+        activeOpacity={0.8}
+        onPress={onPressproduct}
+      >
+        {imageSource ? (
+          <Image
+            source={imageSource}
+            style={styles.productImage}
+          />
+        ) : (
+          <Image source={images.homeCarouselAvatar} style={styles.productImage} /> // Message à afficher si aucune image n'est disponible
+        )}
+      </TouchableOpacity>
+        <View style={styles.postDetails}>
+        <View style={styles.postDetails}>
+              
             <AppText
               text={item.productName}
               style={styles.productNameText}
@@ -32,40 +49,53 @@ const HomeProductListView = ({ item, onPressBookMark }) => {
               fontFamily='medium'
             />
             <AppText
-              localizedText={LocalesMessages.chanel}
+              text="chanel"
               color={colors.tabBarGray}
-              style={styles.productChanelText}
+              style={styles.postBrand}
               size='font12px'
             />
           </View>
-          <View style={styles.productActionButtonContainer}>
-            <TouchableOpacity onPress={onPressBookMark}>
-              <Image source={images.bookmark} style={[styles.actionButton, { marginRight: 13 }]} />
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Image source={images.message} style={styles.actionButton} />
-            </TouchableOpacity>
-          </View>
+          <View style={styles.iconContainer}>
+          <TouchableOpacity style={styles.iconButton}  onPress={onPressBookMark}>
+          <Icon
+            name={isBookmarked ? 'bookmark' : 'bookmark-outline'}
+            size={22}
+            color={isBookmarked ? 'blue' : '#000'}
+      />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.iconButton}>
+            <Icon name="chatbubble-outline" size={22} color="#000" />
+          </TouchableOpacity>
         </View>
-        <View style={styles.productDescContainer}>
-          <Image source={images.homeCarouselAvatar} style={styles.commentUserAvatar} />
-          <View style={{ marginLeft: 16 }}>
-            <View style={{ flexDirection: 'row' }}>
-              <AppText
-                text={item.comments[0].name}
-                style={styles.commentUserNameText}
-                size='font12px'
-              />
-              <AppText
-                text={item.comments[0].date}
-                style={styles.commentDataText}
-                size='font10px'
-              />
-            </View>
-            <RatingView rating={4} startImageStyle={styles.ratingViewContainer} />
-          </View>
         </View>
-        <AppText text={item.comments[0].comment} size='font12px' style={styles.commentText} />
+        <View style={styles.userInfo}>
+        
+        {imageSourcep ? (
+          <Image
+            source={imageSourcep}
+            style={styles.userAvatar}
+          />
+        ) : (
+          <Image source={images.userAvatar} style={styles.userAvatar} /> // Message à afficher si aucune image n'est disponible
+        )}
+        <View>
+         <View style={styles.iconContainer}>
+          <Text style={styles.userName}>{item.userName}</Text>
+          <Text style={styles.postDate}>{item.createdAt}</Text>
+          </View>
+           <RatingView rating={4} startImageStyle={styles.ratingViewContainer} />
+        </View>
+      </View>
+      {comments.map((comment, index) => (
+          <View key={index} style={styles.commentContainer}>
+            <AppText
+              text={comment.text} // Affichage du texte du commentaire
+              style={styles.commentText}
+              size='font14px'
+            />
+            
+          </View>
+        ))}
         <View style={styles.productLikeContainer}>
           <TouchableOpacity>
             <Image source={images.upTriangle} style={styles.productLikeButton} />

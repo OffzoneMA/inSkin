@@ -29,7 +29,7 @@ const AppTextInput = ({
     <View style={[{ marginVertical: 10 }, mainContainerStyle]}>
       {labelTitle ? (
         <AppText
-          localizedText={labelTitle}
+          text={labelTitle}
           size='font14px'
           fontFamily='medium'
           color={colors.lightBlackSecondary}
@@ -74,7 +74,7 @@ const AppTextInput = ({
           <TextInput
             value={value}
             style={[styles.textInput, { marginLeft: leftImageSource ? 8 : 0 }, textInputStyle]}
-            placeholder={placeholderText ? translate(placeholderText) : ''}
+            placeholder={placeholderText}
             placeholderTextColor={colors.lightGray}
             secureTextEntry={isForPassword && isShowPassword}
             keyboardType={isPhoneNumber ? 'phone-pad' : 'default'}

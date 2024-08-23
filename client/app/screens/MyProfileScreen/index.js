@@ -56,7 +56,7 @@ const MyProfileScreen = () => {
         showsVerticalScrollIndicator={false}>
         <View style={styles.mainContainer}>
           <AppText
-            localizedText={LocalesMessages.profile}
+            text={LocalesMessages.profile}
             size='font20px'
             fontFamily='semiBold'
             color={colors.lightBlack}

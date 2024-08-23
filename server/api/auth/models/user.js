@@ -113,6 +113,17 @@ const userSchema = new mongoose.Schema({
         {
           type: String 
         },
+  favorites: [{
+        productId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Product", // Référence au modèle Product
+            required: false,
+          },
+        category: {
+            type: String,
+            required: true,
+          },
+        }],     
 });
 
 
@@ -151,7 +162,14 @@ function validateUser(user) {
       contentType: Joi.string().required(),
     }),
     isAdmin: Joi.boolean(),
+    favorites: Joi.array().items(
+      Joi.object({
+        productId: Joi.string().hex().length(24).required(),
+        category: Joi.string().required(),
+      })
+    ),
   });
+  
   
   return schema.validate(user);
 }

@@ -21,23 +21,6 @@ const axios = require('axios');
 const{v4:uuidv4}=require("uuid");
 const { error } = require("winston");
 
-// let transporter = nodemailer.createTransport({
-//   service:"gmail",
-//   auth:{
-//     user:process.env.AUTH_EMAIL,
-//     pass:process.env.AUTH_PASS,
-//   },
-// });
-
-// transporter.verify((error,success)=>{
-//   if(error){
-//     console.log(error);
-
-//   }else{
-//     console.log("Ready for message", success);
-//   }
-// });
-
 ///OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK
 router.post(
   "/login",
@@ -185,16 +168,10 @@ router.put(
     try {
       const userId = req.body._id;
       const foundUser = await User.findById(userId);
-
-      // User doesn't exist
       if (!foundUser) {
         res.status(400).send("User does not exist!");
         return;
       }
-
-      // Compare passwords if provided
-
-      // Update user properties
       foundUser.firstName = req.body.firstName || foundUser.firstName;
       foundUser.lastName = req.body.lastName || foundUser.lastName;
 
@@ -546,8 +523,250 @@ router.get(
     }
   })
 );
+router.get(
+  "/favorite-products",
+  auth,
+  asyncMiddleware(async (req, res) => {
+    try {
+      const userId = req.user._id;
+      console.log("userId", userId);
+
+      const favoriteProducts = await User.aggregate([
+        {
+          $match: { _id: mongoose.Types.ObjectId(userId) }
+        },
+        {
+          $unwind: "$favorites" // Décompose le tableau des favoris en documents distincts
+        },
+        {
+          $lookup: {
+            from: "products", // Nom de la collection des produits
+            localField: "favorites.productId",
+            foreignField: "_id",
+            as: "favoriteProduct"
+          }
+        },
+        {
+          $unwind: "$favoriteProduct" // Décompose le tableau des produits favoris en documents distincts
+        },
+        {
+          $project: {
+            _id: 0,
+            productId: "$favoriteProduct._id",
+            images: "$favoriteProduct.images",
+            category: "$favorites.category",
+            createdAt: "$favoriteProduct.createdAt" // Assurez-vous que vous avez le champ createdAt
+          }
+        },
+        {
+          $sort: {
+            category: 1, // Trier par catégorie pour le regroupement
+            createdAt: -1 // Trier par date de création pour obtenir le produit le plus récent
+          }
+        },
+        {
+          $group: {
+            _id: "$category", // Grouper par catégorie
+            product: {
+              $first: { // Obtenir le premier produit dans chaque groupe, c'est-à-dire le plus récent
+                productId: "$productId",
+                images: "$images",
+              }
+            }
+          }
+        },
+        {
+          $project: {
+            _id: 0,
+            category: "$_id", // Renommer _id en category
+            productId: "$product.productId",
+            images: "$product.images"
+          }
+        }
+      ]);
+
+      console.log("favoriteProducts", favoriteProducts);
+      res.json(favoriteProducts);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.get(
+  "/allfavorite-products",
+  auth,
+  asyncMiddleware(async (req, res) => {
+    try {
+      const userId = req.user._id;
+
+      // Pipeline MongoDB simplifié
+      const favoriteProducts = await User.aggregate([
+        {
+          $match: { _id: mongoose.Types.ObjectId(userId) }
+        },
+        {
+          $unwind: "$favorites" // Décompose le tableau des favoris en documents distincts
+        },
+        {
+          $lookup: {
+            from: "products", // Nom de la collection des produits
+            localField: "favorites.productId",
+            foreignField: "_id",
+            as: "favoriteProduct"
+          }
+        },
+        {
+          $unwind: "$favoriteProduct" // Décompose le tableau des produits favoris en documents distincts
+        },
+        {
+          $project: {
+            _id: 0, // On peut également conserver l'id si besoin
+            productId: "$favoriteProduct._id",
+            productName: "$favoriteProduct.name",
+            productBrand: "$favoriteProduct.brand",
+            productDescription: "$favoriteProduct.description",
+            images: "$favoriteProduct.images"
+          }
+        }
+      ]);
+
+      // Log des produits favoris pour vérification
+      console.log("favoriteProducts", favoriteProducts);
+
+      // Envoi de la réponse avec les produits favoris
+      res.json(favoriteProducts);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.get(
+  "/favorite-products-by-category/:categoryName",
+  auth,
+  asyncMiddleware(async (req, res) => {
+    try {
+      const userId = req.user._id;
+      const { categoryName } = req.params; // Récupère le nom de la catégorie depuis les paramètres de la requête
+
+      // Étape 1: Trouver tous les produits favoris de l'utilisateur
+      const favoriteProducts = await User.aggregate([
+        {
+          $match: { _id: mongoose.Types.ObjectId(userId) }
+        },
+        
+        {
+          $unwind: "$favorites" // Décompose le tableau des favoris
+        },
+        {
+          $lookup: {
+            from: "products", // Nom de la collection des produits
+            localField: "favorites.productId",
+            foreignField: "_id",
+            as: "favoriteProduct"
+          }
+        },
+        {
+          $unwind: "$favoriteProduct" // Décompose le tableau des produits favoris
+        },
+        {
+          $match: { "favorites.category": categoryName } // Filtre par nom de catégorie
+        },
+        {
+          $project: {
+            _id: 0,
+            productId: "$favoriteProduct._id",
+            productName: "$favoriteProduct.productDetails.name",
+            productBrand: "$favoriteProduct.brand",
+            productDescription: "$favoriteProduct.description",
+            images: "$favoriteProduct.images",
+            category: "$favorites.category",
+            createdAt:"$favoriteProduct.createdAt",
+            // review: "$comments.review",
+            comment: "$favoriteProduct.comments.review", // Projette le champ review des commentaires
+            commentDate: "$favoriteProduct.comments.createdAt",
+          }
+        }
+      ]);
+
+      if (favoriteProducts.length === 0) {
+        return res.status(404).json({ error: "No favorite products found for the specified category" });
+      }
+
+      console.log("Favorite Products by Category:", favoriteProducts);
+      res.json(favoriteProducts);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
 
 
+
+
+
+router.get(
+  "/getCategories",
+  auth,
+  asyncMiddleware(async (req, res) => {
+    try {
+      const userId = req.user._id;
+      console.log("userId",userId);
+      const user = await User.findById(userId);
+      if (!user) {
+        return { error: 'Utilisateur non trouvé.' };
+      }
+  
+      // Récupérer toutes les catégories des favoris
+      const categories = user.favorites.map(favorite => favorite.category);
+  
+      // Filtrer pour ne garder que les catégories uniques
+      const uniqueCategories = [...new Set(categories)];
+  
+      return { categories: uniqueCategories };
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+router.post(
+  "/follow",
+  auth, // Assurez-vous que l'utilisateur est authentifié pour accéder à cette route
+  asyncMiddleware(async (req, res) => {
+    try {
+      const userId = req.user._id; // ID de l'utilisateur authentifié qui suit un autre utilisateur
+      console.log("ID de l'utilisateur authentifié qui suit un autre utilisateur", userId)
+      const userToFollowEmail = req.body.email; // Email de l'utilisateur à suivre
+      console.log("Email de l'utilisateur à suivre :", userToFollowEmail)
+      
+      // Vérifiez si l'utilisateur à suivre existe
+      const userToFollow = await User.findOne({ email: userToFollowEmail });
+      console.log("L'utilisateur à suivre :", userToFollow);
+      if (!userToFollow) {
+        return res.status(404).json({ message: "User to follow not found" });
+      }
+
+      // Vérifiez si l'utilisateur authentifié suit déjà l'utilisateur à suivre
+      if (userToFollow.followers.includes(userId)) {
+        return res.status(400).json({ message: "You are already following this user" });
+      }
+
+      // Mettez à jour les tableaux de suiveurs et de suivis pour les deux utilisateurs
+      await User.findByIdAndUpdate(userId, { $push: { following: userToFollow._id } });
+      await User.findByIdAndUpdate(userToFollow._id, { $push: { followers: userId } });
+
+      res.status(200).json({ message: "User followed successfully" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+  })
+);
 
 
 router.post(
@@ -757,6 +976,109 @@ router.put('/desactivate-account/:id', auth, async (req, res) => {
   } catch (error) {
       console.error(error);
       res.status(500).send('Something went wrong');
+  }
+});
+router.post('/favorites', async (req, res) => {
+  try {
+    const { userId, productId, category } = req.body;
+
+console.log("uesrid",userId);
+console.log("productId",productId);
+console.log("category",category);
+    // Trouver l'utilisateur
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+    // Vérifier si le produit est déjà dans les favoris
+    const isFavorite = user.favorites.some(favorite => 
+      favorite.productId.equals(productId)
+    );
+   console.log("Vérifier si le produit est déjà dans les favoris",isFavorite);
+    if (!isFavorite) {
+      user.favorites.push({ productId, category });
+      await user.save();
+      res.status(200).json(user.favorites);
+    } else{
+      res.status(400).send("le produit est déjà dans les favoris");
+      console.log(" le produit est déjà dans les favoris");
+    }
+
+   
+  } catch (error) {
+    res.status(500).send('Server error');
+  }
+});
+router.delete('/removlistFavoris/:productId', async (req, res) => {
+  const { userId } = req.query;
+  const { productId } = req.params;
+  try {
+    console.log("userid ", userId);
+      const user = await User.findById(userId);
+      if (!user) {
+          return res.status(404).json({ message: 'Utilisateur non trouvé' });
+      }
+      // Vérifier si le produit est dans les favoris
+      const favoriteIndex = user.favorites.findIndex(fav => fav.productId.toString() === productId.toString());
+      if (favoriteIndex === -1) {
+          return res.status(400).json({ message: 'Produit non trouvé dans les favoris' });
+      }
+
+      // Retirer le produit des favoris
+      user.favorites.splice(favoriteIndex, 1);
+      await user.save();
+
+      res.status(200).json({ favorites: user.favorites });
+  } catch (error) {
+      res.status(500).json({ message: 'Erreur serveur', error });
+  }
+});
+
+router.get('/favorites/:userId', async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const user = await User.findById(userId).populate('favorites.productId');
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+    // Grouper les favoris par catégorie
+    const favoritesByCategory = user.favorites.reduce((acc, favorite) => {
+      if (!acc[favorite.category]) {
+        acc[favorite.category] = [];
+      }
+      acc[favorite.category].push(favorite.productId);
+      return acc;
+    }, {});
+  console.log("favoritesByCategory",favoritesByCategory);
+    res.json(favoritesByCategory);
+  } catch (error) {
+    res.status(500).send('Server error');
+  }
+});
+
+router.get('/favoriteswithproductid/:userId', async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const user = await User.findById(userId).populate('favorites.productId');
+
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+
+    // Grouper les favoris par catégorie en incluant uniquement les IDs des produits
+    const favoritesByCategory = user.favorites.reduce((acc, favorite) => {
+      if (!acc[favorite.category]) {
+        acc[favorite.category] = [];
+      }
+      // Ajoutez uniquement les IDs des produits
+      acc[favorite.category].push(favorite.productId._id);
+      return acc;
+    }, {});
+
+    console.log("favoritesByCategory", favoritesByCategory);
+    res.json(user);
+  } catch (error) {
+    res.status(500).send('Server error');
   }
 });
 

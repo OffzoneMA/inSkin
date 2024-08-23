@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
     height: 93,
   },
   imageLoadButtonContainer: {
-    width: 32,
+    width: 56,
     height: 32,
     position: 'absolute',
     bottom: 0,
@@ -44,6 +44,19 @@ const styles = StyleSheet.create({
   },
   postCountText: {
     marginLeft: 16,
+  },
+  profileIconWrapper: {
+    borderRadius: 98,
+    flex: 1,
+  },
+  profilePictureContainer: {
+    borderRadius: 100,
+    marginBottom: 10,
+    borderWidth: 2,
+    padding: 2,
+    width: 80,
+    height: 80,
+    marginRight: 15,
   },
 })
 export default styles

@@ -12,11 +12,11 @@ const AppCommentTextArea = ({
   onChangeText,
   textValue,
 }) => {
-  const { translate } = useContext(LocalizationContext);
+  
   return (
     <View style={[styles.container, mainContainerStyle]}>
       <TextInput
-        placeholder={placeholderText ? translate(placeholderText) : ''}
+        placeholder={placeholderText ? placeholderText : ''}
         placeholderTextColor={colors.lightBlack}
         style={styles.textInputStyle}
         multiline
