@@ -7,6 +7,7 @@ import PersonalDetailScreen from '../screens/PersonalDetailScreen'
 import LegalInfoScreen from '../screens/LegalInfoScreen'
 import WebViewScreen from '../screens/WebViewScreen'
 import ChangePasswordScreen from '../screens/ChangePasswordScreen'
+import MyPostNavigator from './MyPostNavigator'
 import SupportScreen from '../screens/SupportScreen'
 
 const Stack = createNativeStackNavigator()

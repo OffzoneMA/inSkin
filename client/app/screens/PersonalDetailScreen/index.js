@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState,useContext } from 'react'
 import { SafeAreaView, View } from 'react-native'
 import CustomHeaderView from '../../components/CustomHeaderView'
 import { colors, images } from '../../constants'
@@ -15,7 +15,35 @@ import { useAppDispatch } from '../../redux/store'
 import { updateUserProfile } from '../../redux/slices/app/appSlice'
 import { Route } from '../../constants/constants'
 import useScreenTracking from '../../hooks/screenTracking'
-
+import authApi from "../../api/auth";
+import useApi from "../../hooks/useApi";
+import { encode } from 'base-64';
+import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEffect from React Navigation
+import { Formik } from "formik";
+import * as Yup from "yup";
+import jwt_decode from "jwt-decode"
+import AuthContext from "../../contexts/auth";
+import authStorage from "../../utilities/authStorage";
+const validationSchema = Yup.object({
+  firstName: Yup.string().required().label("First Name"),
+  lastName: Yup.string().required().label("Last Name"),
+  email: Yup.string().required().email().label("Email"),
+  currentPassword: Yup.string()
+        .when('newPassword', {
+          is: (newPassword) => newPassword == undefined || newPassword.length == 0,
+          then: (schema) => schema.label("Current Password"),
+          otherwise: (schema) => schema.required('Current password is required').label("Old Password"),
+        }),
+  newPassword: Yup.string().min(4)
+        .when('newPasswordConfirmation', {
+          is: (newPasswordConfirmation) => newPasswordConfirmation == undefined || newPasswordConfirmation.length == 0,
+          then: (schema) => schema.label("New Password"),
+          otherwise: (schema) => schema.required('New password is required').label("New Password"),
+        }),
+  newPasswordConfirmation: Yup.string()
+    .oneOf([Yup.ref("newPassword"), null], "Passwords must match")
+    .label("Confirm New Password")
+});
 const PersonalDetailScreen = () => {
   const navigation = useNavigation()
   const userProfileSelector = useSelector(selectUserProfile)
@@ -34,11 +62,72 @@ const PersonalDetailScreen = () => {
         firstName: firstName || '',
         lastName: lastName || '',
         email: email?.trim(),
-        phoneNumber: phoneNumber || '',
       }),
     )
     navigation.goBack()
   }
+  
+  const updateUserInfoApi = useApi(authApi.updateUserInfo);
+  const authContext = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
+  const saveHandler = async ({
+    _id,
+    firstName,
+    lastName,
+    currentPassword,
+    newPassword,
+  }) => {
+    var readerType;
+    var readerGoals;
+    var readerGenres;
+    try {
+      readerType = route.params.readerType;
+      readerGoals = route.params.readerGoals;
+      readerGenres = route.params.readerGenres;
+    } catch (e) {
+      readerType = null;
+      readerGoals = [];
+      readerGenres = [];
+    }
+
+    
+
+    const result = await updateUserInfoApi.request(
+      _id,
+      firstName.trim(),
+      lastName.trim(),
+      currentPassword,
+      newPassword,
+      readerType,
+      readerGoals,
+      readerGenres
+    );
+
+    if (!result.ok) {
+     console.log("ne change pas",result)
+      return;
+    }
+
+    //toast.show(result.data.message, {type: "success"});
+
+    setTimeout(() => {
+      var { user } = jwt_decode(result.headers["bearer-token"]);
+      authContext.setUser(user);
+      authStorage.removeToken();
+      authStorage.storeToken(result.headers["bearer-token"]);
+
+      navigation.goBack();
+    }, 300);
+  };
+
+  const userProfile = {
+    profilePicture:"person",
+    _id: user ? user._id : null,
+    userName: user ? user.userName : null,
+    firstName: user ? user.firstName : null,
+    lastName: user ? user.lastName : null,
+    email: user ? user.email : null,
+  };
   return (
     <SafeAreaView style={styles.safeArea}>
       <KeyboardAwareScrollView
@@ -55,7 +144,7 @@ const PersonalDetailScreen = () => {
           />
           <View style={styles.subMainContainer}>
             <AppText
-              localizedText={LocalesMessages.editConfirmYourPersonalInformation}
+              text={LocalesMessages.editConfirmYourPersonalInformation}
               size='font15px'
               fontFamily='medium'
               color={colors.lightBlackSecondary}
@@ -63,21 +152,21 @@ const PersonalDetailScreen = () => {
             <View style={styles.textInputMainContainer}>
               <AppTextInput
                 labelTitle={LocalesMessages.userName}
-                value={userName}
+                value={userProfile.userName}
                 onChangeText={text => {
                   setUserName(text)
                 }}
               />
               <AppTextInput
                 labelTitle={LocalesMessages.firstName}
-                value={firstName}
+                value={userProfile.firstName}
                 onChangeText={text => {
                   setFirstName(text)
                 }}
               />
               <AppTextInput
                 labelTitle={LocalesMessages.lastName}
-                value={lastName}
+                value={userProfile.lastName}
                 onChangeText={text => {
                   setLastName(text)
                 }}
@@ -85,25 +174,25 @@ const PersonalDetailScreen = () => {
               <AppTextInput
                 labelTitle={LocalesMessages.emailAddress}
                 leftImageSource={images.email}
-                value={email}
+                value={userProfile.email}
                 onChangeText={text => {
                   setEmail(text)
                 }}
               />
-              <AppTextInput
+              {/* <AppTextInput
                 labelTitle={LocalesMessages.phoneNumber}
                 isPhoneNumber={true}
                 value={phoneNumber}
                 onChangeText={text => {
                   setPhoneNumber(text)
                 }}
-              />
+              /> */}
             </View>
             <AppButton
               localizedText={LocalesMessages.confirm}
               buttonStyle={styles.confirmButton}
               labelStyle={[styles.confirmButtonText]}
-              onPress={onPressSubmit}
+              onPress={saveHandler}
             />
           </View>
         </View>

@@ -17,7 +17,7 @@ const FavoriteHeaderView = ({
     <View style={styles.mainContainer}>
       <View style={[styles.titleContainer, { alignItems: isEmptyList ? 'center' : 'flex-start' }]}>
         <AppText
-          localizedText={LocalesMessages.favorites}
+          text={LocalesMessages.favorites}
           size='font18px'
           fontFamily='medium'
         />
@@ -31,7 +31,7 @@ const FavoriteHeaderView = ({
             <TouchableOpacity onPress={onClearFilterPress} style={styles.removeFilterContainer}>
               <AppIconButton imageSource={images.clearFilter} imageStyle={styles.clearFilterIcon} />
               <AppText
-                localizedText={LocalesMessages.clearFilter}
+                text={LocalesMessages.clearFilter}
                 size='font16px'
                 color={colors.tabBarGray}
                 style={styles.clearFilter}
@@ -42,7 +42,7 @@ const FavoriteHeaderView = ({
         ) : (
           <TouchableOpacity onPress={onFilterPress} style={styles.filterButtonContainer}>
             <AppText
-              localizedText={LocalesMessages.filter}
+              text={LocalesMessages.filter}
               size='font18px'
               color={colors.tabBarGray}
             />

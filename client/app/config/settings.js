@@ -5,8 +5,8 @@ import {
 
 const settings = {
   dev: {
-    //apiUrl: "http://192.168.0.151:8000",
-    apiUrl: "http://192.168.235.223:8000",
+    apiUrl: "http://192.168.0.151:8000",
+    //apiUrl: "http://192.168.45.223:8000",
 
   },
   staging: {

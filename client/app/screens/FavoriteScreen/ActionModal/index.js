@@ -24,7 +24,7 @@ const ActionModal = ({
       <View style={styles.mainContainer}>
         <View style={styles.headerContainer}>
           <AppText
-            localizedText={LocalesMessages.action}
+            text={LocalesMessages.action}
             size='font15px'
             fontFamily='medium'
             color={colors.inputTextColor}

@@ -36,6 +36,13 @@ export const RouteNavigator = Object.freeze({
   MyPostNavigator: 'MyPostNavigator',
   ProfileNavigator: 'ProfileNavigator',
   TabNavigator: 'TabNavigator',
+  AppTabNavigator:'AppTabNavigator',
+  BrowseNavigator: "BrowseNavigator",
+  SearchUser: "SearchUser",
+  DiscoverHomeWithFollowers: "DiscoverHomeWithFollowers",
+  DiscoverHome1: "DiscoverHome1",
+  
+ 
 })
 
 /***
@@ -61,35 +68,48 @@ export const Route = Object.freeze({
   PushNotificationScreen: 'PushNotificationScreen',
   SearchScreen: 'SearchScreen',
   MyPostScreen: 'MyPostScreen',
+  BrowseNavigator:' BrowseNavigator',
+  AppTabNavigator:'AppTabNavigator',
+  SearchUser: "SearchUser",
+  DiscoverHomeWithFollowers: "DiscoverHomeWithFollowers",
+  DiscoverHome1: "DiscoverHome1",
+  ProfileNavigator: "ProfileNavigator",
+  FavoriteNavigator: 'FavoriteNavigator',
 })
 
 export const myProfileOptions = [
   {
+    rightImage:images.arrowIcon,
     leftImage: images.personalDetail,
     titleText: LocalesMessages.personalDetail,
     descText: LocalesMessages.personalDetailDesc,
   },
   {
+    rightImage:images.arrowIcon,
     leftImage: images.socialMediaProfile,
     titleText: LocalesMessages.socialMediaProfile,
     descText: LocalesMessages.socialMediaProfileDesc,
   },
   {
+    rightImage:images.arrowIcon,
     leftImage: images.notificationsProfile,
     titleText: LocalesMessages.notifications,
     descText: LocalesMessages.notificationsDesc,
   },
   {
+    rightImage:images.arrowIcon,
     leftImage: images.settingLegal,
     titleText: LocalesMessages.settings,
     descText: LocalesMessages.settingsDesc,
   },
   {
+    rightImage:images.arrowIcon,
     leftImage: images.settingLegal,
     titleText: LocalesMessages.legal,
     descText: LocalesMessages.legalDesc,
   },
   {
+    rightImage:images.arrowIcon,
     leftImage: images.logout,
     titleText: LocalesMessages.logout,
     isHideDivider: true,

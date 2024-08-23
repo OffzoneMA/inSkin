@@ -6,17 +6,11 @@ const productSchema = new mongoose.Schema({
       type: String, // You can store barcode information here
       required: true,
     },
-    // userId: {
-    //   type: mongoose.Schema.Types.ObjectId,
-    //   ref: "User", // Reference to the User model
-    //   required: true,
-    // },
-    
-    // brand: {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: "Brand",
-    //     required: true
-    // },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User", // Reference to the User model
+      required: true,
+    },
     images: [
       {
         data: Buffer,
@@ -84,8 +78,7 @@ const Product = mongoose.model("Product", productSchema);
 function validateProduct(product) {
   const schema = Joi.object({
     barcode: Joi.string().required(),
-    // userId: Joi.string().hex().length(24).required(), // Assuming userId is required
-    // brand: Joi.string().required(),
+    userId: Joi.string().hex().length(24).required(), // Assuming userId is required
     images: Joi.array().items(
       Joi.object({
           data: Joi.binary().required(),
@@ -94,9 +87,9 @@ function validateProduct(product) {
     ),
 
     productDetails: Joi.object({
-      name: Joi.string().allow('').required(),
-      brand: Joi.string().hex().length(24).allow(null).required(),
-      description: Joi.string().allow('').required()
+      name: Joi.string().allow(''),
+      brand: Joi.string().hex().length(24).allow(null),
+      description: Joi.string().allow(''),
     }),
 
     comments: Joi.array().items(

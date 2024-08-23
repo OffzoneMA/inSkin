@@ -6,7 +6,7 @@ WORKDIR /usr/src/app
 # Install Dependencies
 COPY package.json package-lock.json ./
 # RUN npm install -g npm@10.8.0
-RUN npm install
+#RUN npm install
 
 # Install expo-cli globally
 RUN npm install --global expo-cli

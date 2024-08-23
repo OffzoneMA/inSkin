@@ -46,6 +46,7 @@ export const appImages = {
   messageSent: require('../assets/icons/messageSent.png'),
   productShare: require('../assets/icons/productShare.png'),
   heart: require('../assets/icons/heart.png'),
+  
   arrowThin: require('../assets/icons/arrowThin.png'),
   radio_unselect: require('../assets/icons/radio_unselect.png'),
   radio_select: require('../assets/icons/radio_select.png'),

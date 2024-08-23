@@ -1,20 +1,21 @@
 import React, { useContext , useLayoutEffect} from "react";
-import { StyleSheet, View, Image, ScrollView,Text, TouchableOpacity,TextInput } from "react-native";
+import { StyleSheet, View, SafeAreaView,Image, ScrollView,Text, TouchableOpacity,TextInput } from "react-native";
 import { useTheme,  Icon, MenuItem, OverflowMenu } from "@ui-kitten/components";
 import AuthContext from "../../contexts/auth";
 import authStorage from "../../utilities/authStorage";
-
+import CustomHeaderView from '../../components/CustomHeaderView'
+import { colors, images } from '../../constants';
 import { useNavigation } from '@react-navigation/native'; // Importer le hook useNavigation
-
+import AppText from '../../components/AppText'
 //import { useToast } from "react-native-toast-notifications";
 import style from "../style";
 import * as ImagePicker from "expo-image-picker";
 
 import { useState } from "react";
-
+import AppButton from '../../components/AppButton'
 import authApi from "../../api/auth";
 import useApi from "../../hooks/useApi";
-
+import { LocalesMessages } from '../../constants/locales';
 import { encode } from 'base-64';
 
 import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEffect from React Navigation
@@ -23,13 +24,14 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 
 import { Formik } from "formik";
 import * as Yup from "yup";
-
+import AppTextInput from '../../components/AppTextInput'
 // Components
 import Page from "../../components/Page";
 import Button from "../../components/Button";
 import jwt_decode from "jwt-decode"
 
 const validationSchema = Yup.object({
+  userName : Yup.string().required().label("User Name"),
   firstName: Yup.string().required().label("First Name"),
   lastName: Yup.string().required().label("Last Name"),
   email: Yup.string().required().email().label("Email"),
@@ -53,11 +55,9 @@ const validationSchema = Yup.object({
 
 function ProfileEdit({ navigation }) {
   const updateUserInfoApi = useApi(authApi.updateUserInfo);
-
   const authContext = useContext(AuthContext);
   const { user } = useContext(AuthContext);
   //const toast = useToast();
-
   const theme = useTheme();
   
   const [alertBox, setAlertBox] = useState(null);
@@ -69,48 +69,48 @@ function ProfileEdit({ navigation }) {
   const navigation1 = useNavigation(); // Utiliser le hook useNavigation pour obtenir l'objet de navigation
   const [menuVisible, setMenuVisible] = React.useState(false);
   const [selectedLang, setSelectedLang] = React.useState('fr');
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerTitle: 'Personal details', // Définir le titre au centre de la barre de navigation
-      headerLeft: () => (
-        <TouchableOpacity  onPress={() => navigation.goBack()}>
-          <View style={styles.iconWrapper}>
-          <Icon name='chevron-left' style={styles.headerIcon} />
-          </View>
-        </TouchableOpacity>
-      ), 
-      headerRight: () => (
-        <OverflowMenu
-          visible={menuVisible}
-          anchor={() => (
-            <TouchableOpacity onPress={() => setMenuVisible(true)}>
-              <View style={styles.languageIconWrapper}>
-                <Icon name='more-vertical' style={styles.languageIcon} />
-              </View>
-            </TouchableOpacity>
-          )}
-          onBackdropPress={() => setMenuVisible(false)}
-        >
-          <MenuItem
-            title='Fr'
-            onPress={() => {
-              setSelectedLang('fr');
-              setMenuVisible(false);
-              // Logique pour changer la langue
-            }}
-          />
-          <MenuItem
-            title='Eng'
-            onPress={() => {
-              setSelectedLang('en');
-              setMenuVisible(false);
-              // Logique pour changer la langue
-            }}
-          />
-        </OverflowMenu>
-      ),
-    });
-  }, [navigation]);
+  // useLayoutEffect(() => {
+  //   navigation.setOptions({
+  //     headerTitle: 'Personal details', // Définir le titre au centre de la barre de navigation
+  //     headerLeft: () => (
+  //       <TouchableOpacity  onPress={() => navigation.goBack()}>
+  //         <View style={styles.iconWrapper}>
+  //         <Icon name='chevron-left' style={styles.headerIcon} />
+  //         </View>
+  //       </TouchableOpacity>
+  //     ), 
+  //     headerRight: () => (
+  //       <OverflowMenu
+  //         visible={menuVisible}
+  //         anchor={() => (
+  //           <TouchableOpacity onPress={() => setMenuVisible(true)}>
+  //             <View style={styles.languageIconWrapper}>
+  //               <Icon name='more-vertical' style={styles.languageIcon} />
+  //             </View>
+  //           </TouchableOpacity>
+  //         )}
+  //         onBackdropPress={() => setMenuVisible(false)}
+  //       >
+  //         <MenuItem
+  //           title='Fr'
+  //           onPress={() => {
+  //             setSelectedLang('fr');
+  //             setMenuVisible(false);
+  //             // Logique pour changer la langue
+  //           }}
+  //         />
+  //         <MenuItem
+  //           title='Eng'
+  //           onPress={() => {
+  //             setSelectedLang('en');
+  //             setMenuVisible(false);
+  //             // Logique pour changer la langue
+  //           }}
+  //         />
+  //       </OverflowMenu>
+  //     ),
+  //   });
+  // }, [navigation]);
   
   const getProfileImage = async () => {
     try {
@@ -231,11 +231,11 @@ function ProfileEdit({ navigation }) {
       getProfileImage();
     }, [])
   );
-
   // Placeholder for user profile data
   const userProfile = {
     profilePicture:"person",
     _id: user ? user._id : null,
+    userName:user ? user.userName : null,
     firstName: user ? user.firstName : null,
     lastName: user ? user.lastName : null,
     email: user ? user.email : null,
@@ -244,17 +244,29 @@ function ProfileEdit({ navigation }) {
 
 
   return (
-    <Page>
-
-        <KeyboardAwareScrollView contentContainerStyle={{ flex: 1, paddingHorizontal: 10 }}>
-        <View >
-             
-             <Text style={{ fontSize: 18, marginVertical: 10}}>Edit or confirm your personal information</Text>
-            
-          </View>
-          <Formik
+    <SafeAreaView style={styles.safeArea}>
+        <KeyboardAwareScrollView contentContainerStyle={styles.scrollView}
+        showsVerticalScrollIndicator={false}>
+        <View style={styles.mainContainer} >
+        <CustomHeaderView
+            leftButtonImage={images.backButton}
+            title={LocalesMessages.personalDetailSmall}
+            leftButtonOnPress={() => {
+              navigation.goBack()
+            }}
+            isFromProfileMenu={true}
+          />
+            <View style={styles.subMainContainer}>
+            <AppText
+              text={LocalesMessages.editConfirmYourPersonalInformation}
+              size='font15px'
+              fontFamily='medium'
+              color={colors.lightBlackSecondary}
+            />
+            <Formik
             initialValues={{
               _id: userProfile._id,
+              userName: userProfile.userName,
               firstName: userProfile.firstName,
               lastName: userProfile.lastName,
               email: userProfile.email,
@@ -275,78 +287,60 @@ function ProfileEdit({ navigation }) {
               values,
             }) => (
               <>
-                <ScrollView>
-                <Text style={style.label}>First Name</Text>
-                <View style={[style.action]}>
-                <TextInput
-                    style={style.textInput}
-                    placeholder="First Name"
-                    autoCompleteType="name"
-                    keyboardType="default"
-                    returnKeyType="next"
-                    textContentType="givenName"
-                    autoCapitalize="none"
-                    value={values.firstName}
-                    onChangeText={handleChange("firstName")}
-                    errorMessage={errors.firstName}
-                    onBlur={() => setFieldTouched("firstName")}
-                    errorVisible={touched.firstName}
-                    />
-                </View>
-                   
-                    <Text style={style.label}>Last  Name</Text>
-                    <View style={[style.action]}>
-                    <TextInput
-                    style={style.textInput}
-                    placeholder="Last Name"
-                    autoCompleteType="name"
-                    keyboardType="default"
-                    returnKeyType="next"
-                    textContentType="familyName"
-                    autoCapitalize="none"
-                    value={values.lastName}
+                 <View style={styles.textInputMainContainer}>
+                 <AppTextInput
+                labelTitle={LocalesMessages.userName}
+                value={values.userName}
+                onChangeText={handleChange("userName")}
+               
+              />
+              <AppTextInput
+                labelTitle={LocalesMessages.firstName}
+                value={values.firstName}
+                onChangeText={handleChange("firstName")}
+              />
+              <AppTextInput
+                labelTitle={LocalesMessages.lastName}
+                value={values.lastName}
                     onChangeText={handleChange("lastName")}
                     errorMessage={errors.lastName}
                     onBlur={() => setFieldTouched("lastName")}
                     errorVisible={touched.lastName}
-                    />
-                    </View>
-                    <Text style={style.label}>Email Address</Text>
-                    <View style={[style.action]}>
-                  <TextInput
-                  style={style.textInput}
-                    placeholder="Email Address"
-                    autoCompleteType="email"
-                    keyboardType="email-address"
-                    returnKeyType="next"
-                    textContentType="emailAddress"
-                    autoCapitalize="none"
-                    value={values.email}
+              />
+              <AppTextInput
+                labelTitle={LocalesMessages.emailAddress}
+                leftImageSource={images.email}
+                value={values.email}
                     onChangeText={handleChange("email")}
                     errorMessage={errors.email}
                     onBlur={() => setFieldTouched("email")}
                     errorVisible={touched.email}
-                  />
-                  </View>
-                  
-               <View style={{flexDirection: "row", justifyContent: "space-between"}}>
-                    <Button loading={updateUserInfoApi.loading} title="OK" onPress={handleSubmit} style={{flex: 2, marginRight: 2,borderRadius: 20}}>
-                       Confirm
-                    </Button>
+              />
                     
-                </View>
-                </ScrollView>
+                 </View>
+                
+               
+               
+                    <AppButton
+                localizedText={LocalesMessages.confirm}
+                buttonStyle={styles.confirmButton}
+              labelStyle={[styles.confirmButtonText]}
+              onPress={handleSubmit}
+            />
+               
+              
                 
                 
                 
               </>
             )}
           </Formik>
+            </View>
+
+          </View>
+          
           </KeyboardAwareScrollView>
-           
-        
-      
-    </Page>
+          </SafeAreaView>
   );
 }
 
@@ -473,6 +467,30 @@ const styles = StyleSheet.create({
     fontSize: 24,
     width: 50,
     height: 24,
+  },
+  safeArea: {
+    flex: 1,
+    backgroundColor: colors.white,
+  },
+  mainContainer: {
+    paddingHorizontal: 20,
+    paddingVertical: 20,
+  },
+  subMainContainer: {
+    marginTop: 37,
+  },
+  scrollView: {
+    flexGrow: 1,
+  },
+  textInputMainContainer: {
+    marginVertical: 30,
+  },
+  confirmButton: {
+    height: 72,
+    borderRadius: 100,
+  },
+  confirmButtonText: {
+    fontSize: 20,
   },
 });
 

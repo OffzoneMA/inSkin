@@ -44,7 +44,6 @@ router.get(
   asyncMiddleware(async (req, res) => {
     try {
       const brandId = req.params.id;
-  
       // Query the database to find a product by ID
       const brand = await Brand.findById(brandId);
   

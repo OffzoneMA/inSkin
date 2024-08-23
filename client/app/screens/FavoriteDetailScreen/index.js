@@ -13,16 +13,31 @@ import ProductListEmptyView from '../../components/ProductListEmptyView'
 import AddCategoryPopup from '../../components/Popups/AddCategoryPopup'
 import ActionModal from '../FavoriteScreen/ActionModal'
 import { LocalizationContext } from '../../contexts/LocalizationContext'
-
+import authApi from "../../api/auth";
+import { useFocusEffect } from "@react-navigation/native";
 const FavoriteDetailScreen = () => {
   const navigation = useNavigation()
   const { translate } = useContext(LocalizationContext)
   const route = useRoute()
   const listName = route.params.listName ?? ''
   const [productList, setProductList] = useState([])
+  const [averageRating,setAverageRating]=useState(0)
   const [showAddEditCategoryModal, setShowAddEditCategoryModal] = useState(false)
   const [showActionModal, setShowActionModal] = useState(false)
   const productData = useSelector(selectProductDetailData)
+  const [productRating, setProductRating] = useState(0);
+  function calculateProductRating(array) {
+    if (!Array.isArray(array) || array.length === 0) {
+      return 0; // Retourne 0 si le tableau est vide ou non valide
+  }
+  const sum = array.reduce((accumulator, value) => {
+    return accumulator + value;
+}, 0);
+
+  console.log("sum",sum);
+  const average = sum / array.length; 
+  return average;
+}
   const onShareProduct = async () => {
     try {
       const result = await Share.share({
@@ -42,6 +57,25 @@ const FavoriteDetailScreen = () => {
       Alert.alert(error.message);
     }
   };
+
+  const favoriteproductsbycategory = async (listName1) => {
+    try {
+      
+      const result = await authApi.favoriteproductsbycategory(listName1);
+      const sortedProducts = result.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      setProductList(sortedProducts);
+    } catch (error) {
+      console.error("Error getting product data: ", error);
+    }
+  };
+  useFocusEffect(
+    React.useCallback(() => {
+      favoriteproductsbycategory(listName);
+      // getCategories();
+      // getFavorite(user._id)
+      
+    }, [])
+  );
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -74,6 +108,19 @@ const FavoriteDetailScreen = () => {
             fontFamily='medium'
           />
         </View>
+        {productList.length === 0 && (
+          
+          <ProductListEmptyView
+          emptyMessage={LocalesMessages.youDontHaveAnyFavorites}
+          mainContainerStyle={styles.emptyViewMainContainer}
+          buttonTitle={LocalesMessages.scanAddProduct}
+          buttonStyle={{ width: 200 }}
+          onPressScanProduct={() => {
+           
+          }}
+        />
+        
+      )}
         <FlatList
           data={productList}
           numColumns={2}
@@ -87,22 +134,11 @@ const FavoriteDetailScreen = () => {
                 key={index}
                 item={item}
                 onPressOption={() => setShowActionModal(true)}
+                averageRating={calculateProductRating(item.comment)}
               />
             )
           }}
-          ListEmptyComponent={() => {
-            return (
-              <ProductListEmptyView
-                emptyMessage={LocalesMessages.youDontHaveAnyFavorites}
-                mainContainerStyle={styles.emptyViewMainContainer}
-                buttonTitle={LocalesMessages.scanAddProduct}
-                buttonStyle={{ width: 200 }}
-                onPressScanProduct={() => {
-                  setProductList(productData)
-                }}
-              />
-            )
-          }}
+         
         />
       </View>
       <AddCategoryPopup
@@ -128,14 +164,14 @@ const FavoriteDetailScreen = () => {
         onPressDeleteCategory={() => {
           setShowActionModal(false)
           const options = [
-            { text: translate(LocalesMessages.cancel) },
+            { text: LocalesMessages.cancel },
             {
-              text: translate(LocalesMessages.confirm),
+              text: LocalesMessages.confirm,
               style: 'destructive',
               onPress: () => {},
             },
           ]
-          Alert.alert('', translate(LocalesMessages.areYouSureDeleteProduct), options)
+          Alert.alert('', LocalesMessages.areYouSureDeleteProduct, options)
         }}
       />
     </SafeAreaView>

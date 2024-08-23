@@ -43,7 +43,7 @@ const ProfileOptionView = props => {
             ]}>
             {titleText ? (
               <AppText
-                localizedText={titleText}
+                text={titleText}
                 size='font16px'
                 fontFamily='medium'
                 color={colors.lightBlackSecondary}
@@ -55,8 +55,8 @@ const ProfileOptionView = props => {
             )}
             {descText ? (
               <AppText
-                localizedText={!isFromSocialLink ? descText : ''}
-                text={isFromSocialLink ? descText : ''}
+                text={!isFromSocialLink ? descText : ''}
+                
                 size='font12px'
                 color={colors.tabBarGray}
                 style={[styles.descText, descTextStyle]}

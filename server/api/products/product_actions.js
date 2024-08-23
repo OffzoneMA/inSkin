@@ -96,6 +96,7 @@ router.post(
 
     // Validate the incoming request data
     const { error } = validate(req.body);
+    console.log(error);
     if (error) {
       res.status(400).send(error.details[0].message);
       return;
@@ -126,6 +127,7 @@ router.post(
       productDetails: req.body.productDetails,
       comments: req.body.comments,
     });
+
 
     // Save the product to the database
     await product.save();
@@ -166,6 +168,7 @@ router.get(
 
     // Query the database to find a product by ID
     const product = await Product.findById(productId);
+    console.log("product",Product)
 
     // Check if the product exists
     if (!product) {
@@ -240,7 +243,6 @@ router.get(
     try {
       // Find the product by ID in the database
       const product = await Product.findById(req.params.id);
-
       if (!product) {
         // If the product with the given ID doesn't exist, return 404 Not Found
         return res.status(404).json({ error: "Product not found" });
@@ -300,6 +302,7 @@ router.get(
             userName:"$user.userName",
             followers:"$user.followers",
             profileImage: "$user.profileImage",
+            favorites:"$user.favorites",
             products: "$products", // Garder le tableau de produits
           },
         },
@@ -342,6 +345,7 @@ router.get(
   asyncMiddleware(async (req, res) => {
     try {
       const userId = req.user._id;
+      console.log("userId",userId);
    
       const followedProducts = await Product.aggregate([
         {
@@ -370,9 +374,13 @@ router.get(
             _id: 0,
             productId: "$_id",
             productName: "$productDetails.name",
+            productBrand: "$productDetails.brand",
+            productdescription: "$productDetails.description",
             userId: 1,
             userName: "$user.userName",
             images: "$images",
+            createdAt:"$createdAt",
+            review:"$review",
             comments: 1, // Inclure tous les commentaires associés à chaque produit
           },
         },
@@ -386,20 +394,145 @@ router.get(
     }
   })
 );
-// GET products by the connected user
+router.get(
+  "/favorite-products",
+  auth,
+  asyncMiddleware(async (req, res) => {
+    try {
+      const userId = req.user._id;
+  console.log("userId",userId);
+      const favoriteProducts = await User.aggregate([
+        {
+          $match: { _id: mongoose.Types.ObjectId(userId) }
+        },
+        {
+          $unwind: "$favorites" // Décompose le tableau des favoris en documents distincts
+        },
+        {
+          $lookup: {
+            from: "products", // Nom de la collection des produits
+            localField: "favorites.productId",
+            foreignField: "_id",
+            as: "favoriteProduct"
+          }
+        },
+        {
+          $unwind: "$favoriteProduct" // Décompose le tableau des produits favoris en documents distincts
+        },
+        {
+          $project: {
+            _id: 0,
+            productId: "$favoriteProduct._id",
+            productName: "$favoriteProduct.name",
+            productBrand: "$favoriteProduct.brand",
+            productDescription: "$favoriteProduct.description",
+            images: "$favoriteProduct.images",
+            category: "$favorites.category",
+          }
+        }
+      ]);
+
+      res.json(favoriteProducts);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
 router.get(
   "/my-products",
   auth,
   asyncMiddleware(async (req, res) => {
     try {
+      const userId = req.user._id; // ID de l'utilisateur connecté
+
+      // Agrégation pour récupérer les produits publiés par l'utilisateur connecté
+      const publishedProducts = await Product.aggregate([
+        {
+          $match: {
+            userId: userId, // Filtrer les produits publiés par l'utilisateur connecté
+          },
+        },
+        {
+          $lookup: {
+            from: "users", // Nom de la collection des utilisateurs
+            localField: "userId",
+            foreignField: "_id",
+            as: "user",
+          },
+        },
+        {
+          $unwind: "$user", // Décomposer le tableau pour avoir un seul objet utilisateur
+        },
+        {
+          $lookup: {
+            from: "comments", // Nom de la collection des commentaires
+            localField: "_id", // Champ de correspondance dans le produit
+            foreignField: "productId", // Correspond à "productId" dans les commentaires
+            as: "comments",
+          },
+        },
+        {
+          $project: {
+            productId: "$_id",
+            productName: "$productDetails.name",
+            productBrand: "$productDetails.brand",
+            productDescription: "$productDetails.description",
+            userId: "$user._id", // Informations sur l'utilisateur
+            userName: "$user.name", // Nom de l'utilisateur
+            images: "$images",
+            createdAt: "$createdAt",
+            comments: {
+              // Extraire les informations des commentaires
+              $map: {
+                input: "$comments",
+                as: "comment",
+                in: {
+                  text: "$$comment.text",
+                  review: "$$comment.review",
+                  createdAt: "$$comment.createdAt",
+                },
+              },
+            },
+          },
+        },
+      ]);
+     console.log("publishedProducts",publishedProducts);
+      res.json(publishedProducts); // Retourner les produits publiés avec leurs détails
+    } catch (error) {
+      console.error("Erreur lors de la récupération des produits:", error);
+      res.status(500).json({ error: "Erreur interne du serveur." });
+    }
+  })
+);
+
+
+// GET products by the connected user
+router.get(
+  "/my-products1",
+  auth,
+  asyncMiddleware(async (req, res) => {
+    try {
       // Query the database to get products of the connected user
       const products = await Product.find({ userId: req.user.id });
+      console.log("products",products);
       // Check if there are no products
       if (!products || products.length === 0) {
         return res.status(404).json({ message: "No products found for the current user" });
       }
+      const newProductsArray = products.map(product => ({
+        productId: product._id,
+        productName: product.productDetails.name,
+        productBrand: product.productDetails.brand,
+        createdAt: product.createdAt,
+        text:  product.comments.text,
+        review:  product.comments.review,
+        comments: product.comments, // Inclure les commentaires si nécessaire
+        images: product.images // Inclure les images si nécessaire
+      }));
+      console.log("newProductsArray",newProductsArray)
       // Return the products as JSON response
-      res.status(200).json({ message: "User's products retrieved successfully", products });
+      res.json({newProductsArray});
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Internal Server Error" });

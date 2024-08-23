@@ -10,6 +10,7 @@ const STAR = {
 
 const RenderRating = ({ rating, style }) => {
   const ratings = [1, 2, 3, 4, 5]
+  console.log("rating", rating)
   const rateCount = Math.ceil(rating)
   const getImage = (obj) => {
     if (obj <= rateCount) {

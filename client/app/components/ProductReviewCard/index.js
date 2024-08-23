@@ -26,6 +26,7 @@ const ProductReviewCard = ({ item }) => {
           <AppText text={item.date} style={styles.reviewDateText} size={'font14px'} />
         </View>
       </View>
+      
       <AppText text={item.comment} style={styles.reviewText} numberOfLines={5} size={'font14px'} />
       <View style={styles.reviewLikeUnLikeContainer}>
         <TouchableOpacity>

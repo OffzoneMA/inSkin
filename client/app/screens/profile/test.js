@@ -1,19 +1,17 @@
 import React, { useContext } from "react";
-import { StyleSheet, View, Image, ScrollView, TouchableOpacity ,Alert} from "react-native";
+import { StyleSheet, View, Image, ScrollView, TouchableOpacity } from "react-native";
 import { useTheme, Text, Icon } from "@ui-kitten/components";
 import AuthContext from "../../contexts/auth";
 import authStorage from "../../utilities/authStorage";
-import { colors } from '../../constants';
 //import { useToast } from "react-native-toast-notifications";
 import { images } from '../../constants';
 import * as ImagePicker from "expo-image-picker";
 import AppIconButton from '../../components/AppIconButton';
 import { useState } from "react";
-import { Route, myProfileOptions } from '../../constants/constants'
+
 import authApi from "../../api/auth";
 import useApi from "../../hooks/useApi";
-import ProfileOptionView from '../../components/ProfileOptionView';
-import { LocalesMessages } from '../../constants/locales'
+
 import { encode } from 'base-64';
 
 import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEffect from React Navigation
@@ -202,68 +200,6 @@ function ProfileEdit1({ navigation }) {
       authStorage.removeToken();
     }, 300);
   };
-  const onPressPersonalDetail = () => {
-    navigation.navigate("ProfileEdit")
-    //navigation.navigate(Route.PersonalDetailScreen)
-  }
-  const onPressSocialMediaProfile = () => {
-    navigation.navigate(Route.SocialMediaListScreen)
-  }
-  const onPressNotifications = () => { Alert.alert(
-    LocalesMessages.logoutTitle, // Titre de l'alerte
-    LocalesMessages.areYouSureYouWantLeaveTheApp, // Message de l'alerte
-    [
-      {
-        text: LocalesMessages.cancel,
-        style: 'cancel', // Style du bouton "Annuler"
-      },
-      {
-        text: LocalesMessages.confirm,
-        style: 'destructive', // Style du bouton "Confirmer"
-        onPress: () => handleLogOut(), // Action lorsque l'utilisateur confirme
-      },
-    ],
-    { cancelable: true } // Permet de fermer l'alerte en cliquant en dehors
-  );}
-  const onPressSettings = () => {
-    navigation.navigate(Route.SettingScreen)
-  }
-  const onPressLegal = () => {
-    navigation.navigate(Route.LegalInfoScreen)
-  }
-  const onPressLogout = () => {
-    Alert.alert(
-      LocalesMessages.logoutTitle, // Titre de l'alerte
-      LocalesMessages.areYouSureYouWantLeaveTheApp, // Message de l'alerte
-      [
-        {
-          text: LocalesMessages.cancel,
-          style: 'cancel', // Style du bouton "Annuler"
-        },
-        {
-          text: LocalesMessages.confirm,
-          style: 'destructive', // Style du bouton "Confirmer"
-          onPress: () => handleLogOut(), // Action lorsque l'utilisateur confirme
-        },
-      ],
-      { cancelable: true } // Permet de fermer l'alerte en cliquant en dehors
-    );
-  };
-  const onPressOption = index => {
-    if (index == 0) {
-      onPressPersonalDetail()
-    } else if (index == 1) {
-      onPressSocialMediaProfile()
-    } else if (index == 2) {
-      onPressNotifications()
-    } else if (index == 3) {
-      onPressSettings()
-    } else if (index == 4) {
-      onPressLegal()
-    } else if (index == 5) {
-      onPressLogout()
-    }
-  }
 
   const menuItems = [
     {
@@ -365,24 +301,25 @@ function ProfileEdit1({ navigation }) {
               </View>
             </View>
         
-          
-           {menuItems.map((item, index) => {
-              return (
-                <ProfileOptionView
-                  key={index}
-                  leftImageSource={item.icon}
-                  titleText={item.text}
-                  descText={item.soustext}
-                  rightImageSource={images.arrowIcon}
-                  rightImageStyle={styles.optionArrowImage}
-                  onPress={() => {
-                    onPressOption(index)
-                  }}
-                  isHideDivider={item.isHideDivider}
-                />
-              )
-            })}
-        
+           <ScrollView>
+           {menuItems.map((item, index) => (
+             <View key={item.id}>
+               <TouchableOpacity style={styles.logoutButton} onPress={item.onPress}>
+               <View style={[styles.leftImageTitleContainer ]}>
+                   <Image source={item.icon} style={[styles.leftImage]} />
+                 </View>
+                 <View style={{ flexDirection: 'column' }}> 
+                    <Text style={styles.profileName}>{item.text}</Text>
+                    <Text style={styles.soustext}>{item.soustext}</Text>
+               </View>
+                 <View style={styles.secondaryIconWrapper}>
+                   <Icon name="arrow-ios-forward-outline" style={styles.logoutIcon} />
+                 </View>
+               </TouchableOpacity>
+               {index !== menuItems.length - 1 && <View style={[styles.separator, { backgroundColor: 'rgba(128, 128, 128, 0.4)' }]} />}
+             </View>
+           ))}
+         </ScrollView>
          
         
          </View>
@@ -425,10 +362,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
      alignItems: "center",
   },
-  optionArrowImage: {
-    transform: [{ rotate: '180deg' }],
-    tintColor: colors.lightBlackSecondary,
-  },
+ 
   imageLoadButtonContainer: {
     width: 56,
     height: 32,
@@ -485,7 +419,6 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: "bold",
     justifyContent: "center",
-    color: 'black',
   },
   leftImageTitleContainer: {
     flexDirection: 'row',

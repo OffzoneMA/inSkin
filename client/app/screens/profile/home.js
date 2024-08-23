@@ -1,6 +1,7 @@
 import React, { useContext, useLayoutEffect } from "react";
-import { StyleSheet, View, Image, ScrollView, SafeAreaView, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Image, ScrollView, SafeAreaView,FlatList, TouchableOpacity } from "react-native";
 import { useTheme, Text, Icon } from "@ui-kitten/components";
+import { LocalesMessages } from '../../constants/locales';
 import Page from "../../components/Page";
 import AuthContext from "../../contexts/auth";
 import authStorage from "../../utilities/authStorage";
@@ -9,14 +10,21 @@ import { useState } from "react";
 import authApi from "../../api/auth";
 import useApi from "../../hooks/useApi";
 import { encode } from 'base-64';
+import ProductItemView from '../../components/ProductItemView'
+import ProductListEmptyView from '../../components/ProductListEmptyView'
+import ProfileFollowerView from './ProfileFollowerView';
 import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEffect from React Navigation
-
+import CustomHeaderView from '../../components/CustomHeaderView';
+import { images } from '../../constants';
+import { selectProductDetailData } from '../../redux/selector/appSelectors'
+import { useSelector } from 'react-redux'
 function ProfileHome({ navigation }) {
   const authContext = useContext(AuthContext);
   const { user } = useContext(AuthContext);
   const theme = useTheme();
   const [selectedImageUri, setSelectedImageUri] = useState(null);
-
+  const productData = useSelector(selectProductDetailData)
+  const [productList, setProductList] = useState([])
   const getProfileImageApi = useApi(authApi.getProfileImage);
 
   const getProfileImage = async () => {
@@ -48,25 +56,7 @@ function ProfileHome({ navigation }) {
     }, [])
   );
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <TouchableOpacity
-          onPress={() => navigation.navigate('ProfileEdit1')}
-          style={styles.headerRightButton}
-        >
-           <View style={styles.iconWrapper}>
-            <Icon
-              name="menu-outline"
-              style={styles.headerIcon}
-              
-            />
-          </View>
-        </TouchableOpacity>
-      ),
-      headerTitle: '', // Hide the title
-    });
-  }, [navigation]);
+  
 
   const userProfile = {
     profilePicture: "person",
@@ -106,55 +96,49 @@ function ProfileHome({ navigation }) {
     },
   ];
 
+
   return (
-    <Page>
-      <SafeAreaView style={styles.safeArea}>
-        <ScrollView contentContainerStyle={styles.scrollView} showsVerticalScrollIndicator={false}>
-          <View style={styles.profileContainer} showsVerticalScrollIndicator={false}>
-            <View style={[styles.profilePictureContainer, { borderColor: theme["color-primary-default"] }]}>
-              <View style={[styles.profileIconWrapper, { overflow: 'hidden', backgroundColor: theme["background-basic-color-1"] }]}>
-                {selectedImageUri ? (
-                  <Image 
-                    source={{ uri: selectedImageUri }}
-                    style={[styles.profilePicture, { flex: 1, width: null, height: null }]}
-                  />
-                ) : (
-                  <Icon
-                    name={userProfile.profilePicture}
-                    style={[styles.profilePicture, { top: 10 }]}
-                    fill={theme["color-primary-disabled-border"]}
-                  />
-                )}
-              </View>
-              
-            </View>
-            <View style={styles.infoContainer}>
-              <View style={styles.nameContainer}>
-                <Text style={[styles.profileName, { fontSize: 13, fontWeight: 'normal' }]}>
-                  {userProfile.firstName}
-                </Text>
-                <Text style={[styles.profileName, { fontSize: 13, fontWeight: 'normal' }]}>
-                  {userProfile.lastName}
-                </Text>
-              </View>
-              <View style={styles.followersContainer}>
-                <TouchableOpacity style={styles.followersContainerButton}>
-                  <Text style={styles.followersNumber}>5</Text>
-                  <Text style={[styles.profileName, { fontSize: 13, fontWeight: 'normal' }]}>Followers</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.followersContainerButton}>
-                  <Text style={styles.followersNumber}>2</Text>
-                  <Text style={[styles.profileName, { fontSize: 13, fontWeight: 'normal' }]}>Posts</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
+    
+     <SafeAreaView style={styles.safeArea}>
+      <ScrollView contentContainerStyle={styles.scrollView} showsVerticalScrollIndicator={false} >
+        <View style={styles.mainContainer}>
+        <CustomHeaderView
+            rightButtonImage={images.myProfile}
+            rightButtonOnPress={() => {
+              navigation.navigate('ProfileEdit1')
+            }}
+          />
+          <ProfileFollowerView
+            onPressEditProfile={() => {
+              navigation.navigate("ProfileEdit")
+            }}
+            //navigation.navigate(Route.PersonalDetailScreen)
+          />
+            
+            <FlatList
+            data={productList}
+            scrollEnabled={false}
+            numColumns={2}
+            style={styles.flatList}
+            contentContainerStyle={styles.flatListContainer}
+            showsVerticalScrollIndicator={false}
+            renderItem={({ item, index }) => {
+              return <ProductItemView index={index} item={item} onPressOption={() => {}} />
+            }}
+            ListEmptyComponent={() => {
+              return (
+                <ProductListEmptyView
+                  emptyMessage={LocalesMessages.youHaveToCommentOrRateProduct}
+                  onPressScanProduct={() => {
+                    setProductList(productData)
+                  }}
+                />
+              )
+            }}
+          />
           </View>
         </ScrollView>
       </SafeAreaView>
-      <Button onPress={() => { navigation.navigate("ProfileEdit") }} style={styles.editProfileButton}>Edit Profile</Button>
-      <View style={[styles.separator, { backgroundColor: theme["color-primary-disabled"] }]}></View>
-     
-    </Page>
   );
 }
 
@@ -162,6 +146,9 @@ const styles = StyleSheet.create({
   profileContainer: {
     flexDirection: 'row',
     marginBottom: 5,
+  },
+  mainContainer: {
+    paddingHorizontal: 20,
   },
   profilePictureContainer: {
     borderRadius: 100,
@@ -276,6 +263,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(0,0,0,0.1)', // Add a background color to make the circle visible
+  },
+  scrollView: {
+    flexGrow: 1,
   },
 });
 

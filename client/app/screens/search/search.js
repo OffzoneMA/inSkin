@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { colors, images } from '../../constants';
 import {
   StyleSheet,
   View,
@@ -9,7 +10,7 @@ import {
   Image
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-
+import { encode } from 'base-64';
 // API
 import authApi from "../../api/auth";
 
@@ -28,18 +29,34 @@ const SearchUser = ({ navigation }) => {
     }
   };
 
+  const renderItem = ({ item }) => {
+    let imageUrl = null;
+    if (item.profileImage && item.profileImage.data && item.profileImage.data.data) {
+     
+      // Convertir les données binaires en base64
+      const imageData = item.profileImage.data.data;
+      const base64ImageData = imageData.map(byte => String.fromCharCode(byte)).join('');
+        imageUrl = 'data:' + item.profileImage.contentType + ';base64,' + encode(base64ImageData);
+    }
 
-  const renderItem = ({ item }) => (
-    <View style={styles.userCard}>
-      <Image source={{ uri: `data:${item.profileImage.contentType};base64,${item.profileImage.data}`}} style={styles.avatar} />
-      <View style={styles.userInfo}>
-        <Text style={styles.userName}>{item.firstName} {item.lastName}</Text>
-        <Text style={styles.userDetails}>{item.followers.length} Followers</Text>
-        <Text style={styles.userDetails}>{item.posts.length} Posts</Text> 
+    return (
+      <View style={styles.userCard}>
+        {imageUrl ? (
+          <Image source={{ uri: imageUrl }} style={styles.avatar} />
+        ) : (
+          <Image 
+                source={images.userAvatar} // Utilisez une image par défaut si imageUrl est null
+                style={styles.userAvatar}
+            />
+        )}
+        <View style={styles.userInfo}>
+          <Text style={styles.userName}>{item.firstName} {item.lastName}</Text>
+          <Text style={styles.userDetails}>{item.followers.length} Followers</Text>
+          <Text style={styles.userDetails}>{item.posts.length} Posts</Text>
+        </View>
       </View>
-    </View>
-  );
-
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -80,6 +97,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 8,
+  },
+  userAvatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginRight: 10,
   },
   searchButton: {
     width: 40,

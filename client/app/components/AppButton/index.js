@@ -34,7 +34,7 @@ const  AppButton = (props) => {
       ) : (
         <AppText
           size='font14px'
-          localizedText={localizedText}
+          text={localizedText}
           fontFamily='semiBold'
           style={[styles.appButtonLabelText, labelStyle]}>
           {label}
