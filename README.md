@@ -2,6 +2,9 @@
 
 
 
+
+
+
 expo-starter-kit
 
 <img src="./img/logo.png" alt="welcome" width="500"/>
