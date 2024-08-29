@@ -14,7 +14,7 @@ module.exports = function () {
   console.log(settings.databaseUrl +"?authSource=admin")
   mongoose
   // ?authSource=admin
-  .connect(`${settings.databaseUrl}/app`, {
+  .connect(`${settings.databaseUrl}`, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useFindAndModify: false,
