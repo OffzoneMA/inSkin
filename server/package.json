@@ -6,7 +6,7 @@
     "test:watch": "jest --watch",
     "test:unit": "jest --testPathPattern=test\\.js$",
     "test:integration": "jest --testPathPattern=spec\\.js$",
-    "start": "node start.js",
+    "start": "node index.js",
     "dev": "SET NODE_ENV=development& nodemon start.js",
     "staging": "NODE_ENV=staging&& nodemon start.js",
     "prod": "NODE_ENV=prod node&& start.js"
