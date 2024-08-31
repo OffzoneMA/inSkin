@@ -31,20 +31,20 @@ import {
   Button,
   Text
 } from "react-native";
-
+import AppButton from '../../components/AppButton'
 import Page from "../../components/Page";
 import Heading from "../../components/Heading";
 import Label from "../../components/Label";
 import SubHeading from "../../components/SubHeading";
 import Paragraph from "../../components/Paragraph";
-
+import Carousel from 'react-native-snap-carousel';
 import productActionsApi from "../../api/product_actions";
 import brandActions from "../../api/brand_actions";
 import authApi from "../../api/auth";
 //import { useToast } from "react-native-toast-notifications";
 import HomeHeader from "../../components/HomeHeader";
 import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEffect from React Navigation
-
+//import HomeCarousel from '../../components/HomeCarousel';
 import { useTheme} from "@ui-kitten/components";
 
 import StarRating from 'react-native-star-rating-widget';
@@ -72,9 +72,28 @@ function DiscoverHome({ navigation }) {
   const [bookmarkedProducts, setBookmarkedProducts] = useState({});
   const [favoriteList2, setFavoriteList2] = useState([]);
   const [favoriteList1, setFavoriteList1] = useState([]);
+  const addlikeToProduct = async () => {
+    try {
+      const result = await productActionsApi.addlikeToProduct(
+        productId,
+        user._id,
+        commentRating
+      );
+      if (!result.ok) {
+        console.error("Erreur lors de l'ajout du like : ", result.problem);
+      } else {
+        // Afficher un message de succès
+        console.log("like ajouté avec succès !");
+      }
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+    }
+  };
+
   const getAllComments = async () => {
     try {
       const result = await productActionsApi.getAllProducts();
+      console.log("user with product",result);
       if (!result.ok) {
         //toast.show(result.data, { type: "danger" });
       } else {
@@ -101,13 +120,14 @@ function DiscoverHome({ navigation }) {
     try {
       const result = await productActionsApi.getfollowedproducts();
       setProduct(result);
-      getBrandById(result.productBrand)
+      //getBrandById(result.productBrand)
       if (!result.ok) {
         
       } else {
         // Trier les produits par date de création
       const sortedProducts = result.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       setFollowedProducts(sortedProducts); 
+      console.log("sortProduct", sortedProducts)
       }
     } catch (error) {
       console.error("Error fetching data: ", error);
@@ -137,11 +157,13 @@ function DiscoverHome({ navigation }) {
   };
   const getfavoriteproducts = async () => {
     try {
-      const result = await authApi.allfavoriteproducts()
-      console.log("rs",result);
+      const result = await authApi.allfavoriteproducts();
+      const result1 = await authApi.getfavoriteproducts();
+      console.log("rresults",result);
+      console.log("rresults1",result1);
       if (result.ok) {
 
-        const uniqueCategories = result.data.reduce((acc, current) => {
+        const uniqueCategories = result1.data.reduce((acc, current) => {
           const x = acc.find(item => item.category === current.category);
           if (!x) {
             return acc.concat([{
@@ -150,7 +172,6 @@ function DiscoverHome({ navigation }) {
               isSelected: false,
             }]);
           } else {
-            console.log("Catégorie déjà présente:", current.category);
             return acc; // Si la catégorie est déjà présente, on ne l'ajoute pas
           }
         }, []);
@@ -158,7 +179,6 @@ function DiscoverHome({ navigation }) {
             acc[item.productId] = true;
             return acc;
           }, {});
-          console.log("favorites",favorites);
         setBookmarkedProducts(favorites);
         setFavoriteList2(uniqueCategories)
       }
@@ -170,14 +190,12 @@ function DiscoverHome({ navigation }) {
   
   const handleAddFavorite = async (productId, selectedCategory) => {
     try {
-      
-      if (!user._id|| !productId || !selectedCategory) {
+      if (!user._id || !selectedCategory) {
         console.error("Missing required parameters");
         return;
       }
-      // const result = await authApi.getFavorites(user._id);
-      // console.log("liste des favoris ",result);
       const updatedFavorites = await authApi.addToFavorites(user._id, productId, selectedCategory);
+      console.log("updatedFavorites",updatedFavorites);
       if(updatedFavorites.ok){
         setBookmarkedProducts(prevState => ({
           ...prevState,
@@ -187,7 +205,6 @@ function DiscoverHome({ navigation }) {
         Alert.alert('Succès', 'Produit ajouté aux favoris avec succès!');
       }
       
-      
     } catch (error) {
       console.error('Erreur lors de l\'ajout aux favoris:', error);
     }
@@ -196,16 +213,19 @@ function DiscoverHome({ navigation }) {
   
   useFocusEffect(
     React.useCallback(() => {
+      onRefresh();
       getfavoriteproducts();
-      setIsRefreshing(true); 
-      getAllComments();
       getfollowedproducts();
+      setIsRefreshing(true); 
+      getAllComments(); 
     }, [])
   );
 
   const onRefresh = () => {
-    setIsRefreshing(true); // Set refreshing state to true when the user pulls down to refresh
+    setIsRefreshing(true); 
+    getfollowedproducts();
     getAllComments();
+    
    
   };
   
@@ -228,7 +248,6 @@ function DiscoverHome({ navigation }) {
   
   
   const handleDelete = (userId) => {
-    // Filtrer les commentaires pour exclure celui avec l'ID utilisateur spécifié
     const updatedComments = comments.filter(comment => comment.userId !== userId);
     setComments(updatedComments); // Mettre à jour l'état avec la nouvelle liste de commentaires
   };
@@ -237,6 +256,7 @@ function DiscoverHome({ navigation }) {
       console.log(email)
       const response = await authApi.followUser(email); 
       console.log("User followed successfully:", response);
+      onRefresh();
       setIsFollowingAccounts(true);
       const updatedComments = comments.map(comment => {
         if (comment.email === email) {
@@ -251,47 +271,56 @@ function DiscoverHome({ navigation }) {
       
     }
   };
+  const Item = ({ item, handleFollow, handleDelete }) => {
+    const [isVisible, setIsVisible] = useState(true); // État pour contrôler la visibilité
   
-
-  const Item = ({ item ,handleFollow, handleDelete}) => (
-    
-    
-    <TouchableOpacity 
-      activeOpacity={0.7} 
-      style={[styles.item, {backgroundColor: '#F4F4F4'}]} 
-      onPress={() => { getProductById(item._id); }}
-    >
-      
-    
-      <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-      <MaterialIcons style={{ position: 'absolute', top: 8, right: 8 }} name="close" size={24} color="black" onPress={() => handleDelete(item.userId)} />
-      <View style={[styles.profileIconWrapper, {width: 100, borderRadius: 100, marginBottom: "auto", backgroundColor: theme['color-primary-disabled-border'], aspectRatio: 1, overflow: 'hidden', justifyContent: "center"}]}>
-  {item.profileImage && item.profileImage.data ? (
-    <Image 
-      source={{ uri: `data:${item.profileImage.contentType};base64,${item.profileImage.data}` }}
-      style={[styles.profilePicture, { flex: 1, width: null, height: null }]}
-    />
-  ) : (
-    <Icon
-      name="image-outline"
-      width={24}
-      height={24}
-      fill={theme["background-basic-color-1"]}
-      style={{alignSelf: "center"}}
-    />
-  )}
-</View>
-
-        <View style={{ flex: 1, flexDirection:"column"}}>
-  <SubHeading style={{ marginLeft: 4, marginBottom: 30, color: 'black'}}>{item.userName}</SubHeading>
-  <Button onPress={() => handleFollow1(item.email)} title={item.isFollowing ? "following" : "follow"} />
-</View>
-
-      
-    </View>
-
-    </TouchableOpacity>
-  );
+    const handleClose = () => {
+      setIsVisible(false); // Masquer l'élément lorsqu'on clique sur l'icône de fermeture
+    };
+  
+    if (!isVisible) return null; // Ne rien rendre si l'élément est masqué
+  
+    return (
+      <View style={styles.slideMainContainer}>
+        <View style={styles.slideContainer}>
+          <TouchableOpacity activeOpacity={0.6} onPress={handleClose}>
+            <Image source={images.close} style={styles.closeIcon} />
+          </TouchableOpacity>
+  
+          {item.profileImage && item.profileImage.data ? (
+            <Image
+              source={{ uri: `data:${item.profileImage.contentType};base64,${item.profileImage.data}` }}
+              style={styles.userAvatar}
+              resizeMode='contain'
+            />
+          ) : (
+            <Image
+              source={images.homeCarouselAvatar}
+              style={styles.userAvatar}
+              resizeMode='contain'
+            />
+          )}
+  
+          <AppText text={item.userName} fontFamily='medium' style={styles.userName} size='font18px' />
+  
+          <View style={styles.productImagesContainer}>
+            <Image source={images.homeProductImage1} style={styles.productImage} />
+            <Image source={images.homeProductImage2} style={styles.productImage} />
+            <Image
+              source={images.homeProductImage3}
+              style={[styles.productImage, { marginRight: 0 }]}
+            />
+          </View>
+  
+          <AppButton
+            localizedText='Follow'
+            buttonStyle={styles.followButton}
+            onPress={() =>handleFollow1(item.email)}
+          />
+        </View>
+      </View>
+    );
+  };
   const FollowedProductItem = ({ item }) => (
     <View style={styles.card}>
     <TouchableOpacity 
@@ -344,15 +373,9 @@ function DiscoverHome({ navigation }) {
     </View>
   );
   
-  
-  
-  
-
-  
   return (
-    <Page style={{color: "red"}}>
-      <HomeHeader/>
-      
+      <SafeAreaView style={styles.mainContainer}>
+        <HomeHeader/>
       {followedProducts.length === 0 && ( // Condition pour afficher le texte uniquement si l'utilisateur ne suit pas encore de compte
         <>
           <View style={{ alignItems: 'center' }}>
@@ -366,25 +389,20 @@ function DiscoverHome({ navigation }) {
             </Text></Text>
           </View>
           
+          
         </>
       )}
-      <SafeAreaView>
-        <FlatList
-         horizontal
-          data={comments}
-          renderItem={({ item }) => <Item item={item}  handleDelete={handleDelete} />}
-          keyExtractor={(item) => item._id}
-          
-          refreshControl={
-            <RefreshControl
-              refreshing={isRefreshing}
-              onRefresh={onRefresh}
-              colors={[theme['color-primary-default']]} // Array of colors
-              progressBackgroundColor={theme["background-basic-color-2"]} // Background color of the indicator
-            />
-          }
-        />
         
+        <View style={styles.mainContainer1}>
+          <Carousel
+        layout={'default'}
+        data={comments}
+        renderItem={({ item }) => <Item item={item} />}
+        sliderWidth={900}
+        itemWidth={310}
+        hasParallaxImages={true}
+         />
+        </View>
         <FlatList
             data={followedProducts}
             renderItem={({ item }) => {
@@ -404,34 +422,12 @@ function DiscoverHome({ navigation }) {
             }}
             showsVerticalScrollIndicator={false}
           />
-        <FlatList
-        data={isSearchFilterApplied ? FavoriteFilterData.favoriteList : favoriteList}
-        numColumns={2}
-        horizontal={false}
-        style={styles.body}
-        showsVerticalScrollIndicator={false}
-        renderItem={({ item, index }) => {
-          return (
-            <ProductItemView
-              key={index}
-              isFromFavoriteList={true}
-              item={item}
-              onPressOption={() => setShowActionModal(true)}
-              onPressItem={() => {
-                navigation.navigate(Route.FavoriteDetailScreen, {
-                  listName: item.favoriteListName,
-                })
-              }}
-            />
-          )
-        }}
         
-      />
       <AddCategoryPopup
         listecategorie={favoriteList2} 
         isVisible={showAddEditCategoryModal}
         editTitle={selectedCategoryTitleForEdit}
-        isFromFavorite={true}
+        isFromFavorite={false}
         onPressClose={() => {
           setShowAddEditCategoryModal(false)
         }}
@@ -478,16 +474,20 @@ function DiscoverHome({ navigation }) {
         }}
       />
         
-
+      
        
       </SafeAreaView>
      
 
-    </Page>
+    
   );
 }
 
 const styles = StyleSheet.create({
+  mainContainer: {
+    flex: 1,
+    backgroundColor: colors.white,
+  },
   container: {
     flex: 1,
     marginTop: StatusBar.currentHeight || 0,
@@ -669,6 +669,69 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     fontSize: 14,
     color: '#333',
+  },
+  slideContainer: {
+    height: 340,
+    width: 310,
+    backgroundColor: colors.white,
+    alignSelf: 'center',
+    borderRadius: 20,
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 5,
+    shadowColor: colors.shadow,
+  },
+  slideMainContainer: {
+    padding: 2
+  },
+  closeIcon: {
+    height: 12,
+    width: 12,
+    top: 30,
+    position: 'absolute',
+    right: 22,
+    tintColor: colors.black,
+  },
+  userAvatar: {
+    height: 100,
+    width: 100,
+    borderRadius: 50,
+    alignSelf: 'center',
+    marginTop: 24,
+  },
+  userName: {
+    lineHeight: 27,
+    alignSelf: 'center',
+    marginTop: 10,
+    width: '100%',
+    textAlign: 'center'
+  },
+  productImagesContainer: {
+    flexDirection: 'row',
+    alignSelf: 'center',
+    justifyContent: 'center',
+    marginTop: 16,
+  },
+  productImage: {
+    height: 90,
+    width: 90,
+    borderRadius: 8,
+    marginRight: 2,
+  },
+  followButton: {
+    marginTop: 16,
+    width: 124,
+    alignSelf: 'center',
+    borderRadius: 8,
+    height: 36,
+  },
+  mainContainer1: {
+    alignItems: 'center',
+    marginTop: 20,
   },
 });
 

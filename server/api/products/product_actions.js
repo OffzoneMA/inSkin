@@ -233,7 +233,70 @@ router.put(
     res.status(200).send("Comment added successfully");
   })
 );
+router.put(
+  "/add-like",
+  auth,
+  asyncMiddleware(async (req, res) => {
+    const productId = req.body._id; 
+    const { userId, like } = req.body;
 
+    const product = await Product.findOne({ _id: productId });
+
+    if (!product) {
+      return res.status(404).send("Product not found");
+    }
+    console.log("product avant ",product)
+
+    // Vérifier si l'utilisateur a déjà "liké" ou "disliké" ce produit
+    const existingLike = product.likes.find((l) => l.userId.toString() === userId);
+    console.log("existingLike",existingLike)
+    if (existingLike) {
+      // Si l'utilisateur a déjà "liké" ou "disliké", mettre à jour son vote
+      console.log("deja exste")
+      existingLike.like = like;
+    } else {
+      console.log("on ajoute like")
+      product.likes.push({ userId, like });
+    }
+
+    // Sauvegarder les changements
+    await product.save();
+    console.log("product",product)
+    res.status(200).send({
+      message: "Vote enregistré avec succès",
+      product,
+    });
+  })
+);
+
+router.put(
+  "/add-dislike",
+  auth,
+  asyncMiddleware(async (req, res) => {
+    const productId = req.body._id; // Assuming you have the user ID in the request object
+    const { userId, dislike } = req.body; // Assuming userId, text, and review are in the request body
+
+    const updatedProduct = await Product.findOneAndUpdate(
+      { _id: productId },
+      {
+        $push: {
+          dislikes: {
+            userId: userId,
+            dislike: dislike,
+           
+          }
+        }
+      },
+      { new: true } // This option ensures that the updated document is returned
+    );
+    
+    if (!updatedProduct) {
+      return res.status(404).send("Product not found");
+    }
+
+    res.status(200).send("Comment added successfully");
+  })
+);
 
 // Add this route to your Express router
 router.get(
@@ -339,14 +402,72 @@ router.get(
   })
 );
 
+// router.get(
+//   "/followed-products",
+//   auth,
+//   asyncMiddleware(async (req, res) => {
+//     try {
+//       const userId = req.user._id;
+//       console.log("userId",userId);
+   
+//       const followedProducts = await Product.aggregate([
+//         {
+//           $lookup: {
+//             from: "users",
+//             localField: "userId",
+//             foreignField: "_id",
+//             as: "user",
+//           },
+//         },
+//         {
+//           $lookup: {
+//             from: "users",
+//             localField: "comments.userId",
+//             foreignField: "_id",
+//             as: "commentAuthors",
+//           },
+//         },
+//         {
+//           $match: {
+//             "user.followers": userId,
+//           },
+//         },
+//         {
+//           $project: {
+//             _id: 0,
+//             productId: "$_id",
+//             productName: "$productDetails.name",
+//             productBrand: "$productDetails.brand",
+//             productdescription: "$productDetails.description",
+//             userId: 1,
+//             userName: "$user.userName",
+//             images: "$images",
+//             createdAt:"$createdAt",
+//             review:"$comments.review",
+//             text:"$comments.text", // Inclure tous les commentaires associés à chaque produit
+//             userNamecomm:"$commentAuthors.userName",
+//             commentAuthors:"$commentAuthors",
+//           },
+//         },
+//       ]);
+//       console.log("commentAuthors",followedProducts.commentAuthors);
+//      console.log("followedProducts",followedProducts)
+//       res.json(followedProducts);
+      
+//     } catch (error) {
+//       console.error(error);
+//       res.status(500).json({ error: "Internal Server Error" });
+//     }
+//   })
+// );
 router.get(
   "/followed-products",
   auth,
   asyncMiddleware(async (req, res) => {
     try {
       const userId = req.user._id;
-      console.log("userId",userId);
-   
+      console.log("userId", userId);
+
       const followedProducts = await Product.aggregate([
         {
           $lookup: {
@@ -357,43 +478,99 @@ router.get(
           },
         },
         {
-          $lookup: {
-            from: "comments",
-            localField: "_id",
-            foreignField: "productId",
-            as: "comments",
-          },
+          $unwind: "$user", // Décomposer les documents d'utilisateur pour filtrage
         },
         {
           $match: {
-            "user.followers": userId,
+            "user.followers": userId, // Filtrer les produits basés sur les utilisateurs suivis
+          },
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "comments.userId",
+            foreignField: "_id",
+            as: "commentAuthors",
+          },
+        },
+        {
+          $unwind: {
+            path: "$comments",
+            preserveNullAndEmptyArrays: true // Conserver les produits même s'ils n'ont pas de commentaires
+          }
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "comments.userId",
+            foreignField: "_id",
+            as: "commentAuthor",
+          },
+        },
+        {
+          $unwind: {
+            path: "$commentAuthor",
+            preserveNullAndEmptyArrays: true // Conserver les commentaires même si les auteurs ne sont pas trouvés
+          }
+        },
+        {
+          $sort: {
+            "comments.review": -1, // Trier par note des commentaires (décroissante)
+            "comments.createdAt": -1 // Trier par date de création des commentaires (décroissante)
+          }
+        },
+        {
+          $group: {
+            _id: "$_id",
+            productId: { $first: "$_id" },
+            productName: { $first: "$productDetails.name" },
+            productBrand: { $first: "$productDetails.brand" },
+            productDescription: { $first: "$productDetails.description" },
+            userId: { $first: "$userId" },
+            userName: { $first: "$user.userName" },
+            images: { $first: "$images" },
+            createdAt: { $first: "$createdAt" },
+            review: { $first: "$comments.review" }, // Conserver la note du commentaire
+            text: { $first: "$comments.text" }, // Conserver le texte du commentaire
+            userNameComm: { $first: "$commentAuthor.userName" }, // Nom de l'auteur du commentaire
+            commentAuthors: { $first: "$commentAuthors" },
+            profileImage: { $first: "$commentAuthor.profileImage" }, // Image de profil de l'auteur du commentaire
+            commentCreatedAt: { $first: "$comments.createdAt" },
+            userIdComm: { $first: "$commentAuthor._id" }
           },
         },
         {
           $project: {
             _id: 0,
-            productId: "$_id",
-            productName: "$productDetails.name",
-            productBrand: "$productDetails.brand",
-            productdescription: "$productDetails.description",
+            productId: 1,
+            productName: 1,
+            productBrand: 1,
+            productDescription: 1,
             userId: 1,
-            userName: "$user.userName",
-            images: "$images",
-            createdAt:"$createdAt",
-            review:"$review",
-            comments: 1, // Inclure tous les commentaires associés à chaque produit
+            userName: 1,
+            images: 1,
+            createdAt: 1,
+            review: 1,
+            text: 1,
+            userNameComm: 1,
+            commentAuthors: 1,
+            profileImage: 1,
+            commentCreatedAt: 1,
+            userIdComm:1
           },
         },
       ]);
-     
+
+      console.log("followedProducts", followedProducts);
       res.json(followedProducts);
-      
+
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Internal Server Error" });
     }
   })
 );
+
 router.get(
   "/favorite-products",
   auth,

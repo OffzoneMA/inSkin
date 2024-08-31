@@ -1,10 +1,10 @@
-import { Image, TextInput, TouchableOpacity, View } from 'react-native'
-import React, { useContext } from 'react'
-import AppText from '../AppText'
-import { colors, images } from '../../constants'
-import styles from './styles'
-import { LocalizationContext } from '../../contexts/LocalizationContext'
-
+import { Image, TextInput, TouchableOpacity, View, Text } from 'react-native';
+import React, { useContext } from 'react';
+import AppText from '../AppText';
+import { colors, images } from '../../constants';
+import styles from './styles';
+import { LocalizationContext } from '../../contexts/LocalizationContext';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 const AppTextInput = ({
   mainContainerStyle,
   leftImageSource,
@@ -18,13 +18,19 @@ const AppTextInput = ({
   onPressCountryCode,
   onChangeText,
   isForPassword,
+  errorMessage,  // Ajout de la prop pour le message d'erreur
+  errorVisible,  // Ajout de la prop pour la visibilité de l'erreur
+  onFocus,
+  onBlur
 }) => {
   const [isFocused, setIsFocused] = React.useState(false);
   const [isShowPassword, setIsShowPassword] = React.useState(true);
   const { translate } = useContext(LocalizationContext);
+
   const onPressShowHidePassword = () => {
-    setIsShowPassword(!isShowPassword)
-  }
+    setIsShowPassword(!isShowPassword);
+  };
+
   return (
     <View style={[{ marginVertical: 10 }, mainContainerStyle]}>
       {labelTitle ? (
@@ -35,28 +41,28 @@ const AppTextInput = ({
           color={colors.lightBlackSecondary}
           style={[styles.titleText, labelTitleStyle]}
         />
-      ) : (
-        <></>
-      )}
+      ) : null}
+
       <View
         style={[
           styles.mainBorderContainer,
           {
             borderColor: isFocused ? colors.inputFocusBorderShadow : colors.white,
           },
-        ]}>
+        ]}
+      >
         <View
           style={[
             styles.borderContainer,
             {
               borderColor: isFocused ? colors.inputFocusBorder : colors.inputBorder,
             },
-          ]}>
+          ]}
+        >
           {leftImageSource ? (
             <Image source={leftImageSource} style={[styles.leftImage, leftImageStyle]} />
-          ) : (
-            <></>
-          )}
+          ) : null}
+
           {isPhoneNumber ? (
             <TouchableOpacity onPress={onPressCountryCode}>
               <View style={styles.countryCodeContainer}>
@@ -68,9 +74,8 @@ const AppTextInput = ({
                 <Image source={images.arrowIcon} style={styles.arrowImage} />
               </View>
             </TouchableOpacity>
-          ) : (
-            <></>
-          )}
+          ) : null}
+
           <TextInput
             value={value}
             style={[styles.textInput, { marginLeft: leftImageSource ? 8 : 0 }, textInputStyle]}
@@ -79,13 +84,16 @@ const AppTextInput = ({
             secureTextEntry={isForPassword && isShowPassword}
             keyboardType={isPhoneNumber ? 'phone-pad' : 'default'}
             onFocus={() => {
-              setIsFocused(true)
+              setIsFocused(true);
+              if (onFocus) onFocus();
             }}
             onBlur={() => {
-              setIsFocused(false)
+              setIsFocused(false);
+              if (onBlur) onBlur();
             }}
             onChangeText={onChangeText}
           />
+
           {isForPassword ? (
             <TouchableOpacity onPress={onPressShowHidePassword}>
               <View style={styles.passwordButtonContainer}>
@@ -95,13 +103,20 @@ const AppTextInput = ({
                 />
               </View>
             </TouchableOpacity>
-          ) : (
-            <></>
+          ) : null}
+          {errorVisible && (
+            <View style={styles.errorIconContainer}>
+              <FontAwesome name="exclamation-circle" color="red" size={24} />
+            </View>
           )}
         </View>
       </View>
-    </View>
-  )
-}
 
-export default AppTextInput
+      {errorVisible && errorMessage ? (
+        <Text style={{ color: 'red', marginTop: 5 }}>{errorMessage}</Text>
+      ) : null}
+    </View>
+  );
+};
+
+export default AppTextInput;

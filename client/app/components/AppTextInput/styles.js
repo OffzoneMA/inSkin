@@ -67,5 +67,18 @@ const styles = StyleSheet.create({
     height: 15,
     resizeMode: 'contain',
   },
+  errorContainer: {
+    position: 'absolute',
+    right: 10,
+    top: '50%',
+    transform: [{ translateY: -12 }], // Ajustez cette valeur selon vos besoins
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 14,
+    marginLeft: 5,
+  }
 })
 export default styles

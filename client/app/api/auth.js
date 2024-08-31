@@ -1,8 +1,6 @@
 import client from "./client";
 
-const login = (email, password) =>
-  client.post("/auth/login", { email, password });
-
+const login = (email, password) => client.post("/auth/login", { email, password });
 const updateUserInfo = async (
   _id,
   firstName,
@@ -31,9 +29,7 @@ const register = (
   lastName,
   email,
   password,
-  /* reader_type = null,
-  reader_goals = [],
-  reader_genres = [] */
+  
 ) =>
 
   client.post("/auth/register", {
@@ -46,8 +42,8 @@ const register = (
     reader_genres, */
   });
 
-const checkUserStatus = () => client.get("/auth/status");
 
+const checkUserStatus = () => client.get("/auth/status");
 const updateProfileImage = (userId, image) => {
   const formData = new FormData();
   formData.append("_id", userId); // Include userId in the FormData
@@ -71,6 +67,7 @@ const comparePassword = async (userId, currentPassword) => {
     throw error;
   }
 };
+
 const getProfileImage = (userId) => {
   return client.get(`/auth/profile-image/${userId}`);
 };

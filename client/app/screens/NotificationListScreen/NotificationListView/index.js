@@ -37,7 +37,7 @@ const NotificationListView = ({ item }) => {
               <TouchableOpacity>
                 <>
                   <AppText
-                  localizedText={LocalesMessages.goToPost}
+                  text={LocalesMessages.goToPost}
                     size='font10px'
                     color={colors.tabBarGray}
                     numberOfLines={1}

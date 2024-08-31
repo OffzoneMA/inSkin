@@ -11,6 +11,7 @@ import {
   Text,
   TextInput,
 } from "react-native";
+import { deviceWidth } from '../../constants/constants'
 import AppText from '../../components/AppText'
 import { LocalesMessages } from '../../constants/locales'
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -51,7 +52,7 @@ function ProductHome({ route }) {
   const [comments, setComments] = useState([]);
   const [showAddEditCategoryModal, setShowAddEditCategoryModal] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
-
+  
   const { user } = useContext(AuthContext);
 
   const [commentText, setCommentText] = useState("");
@@ -67,12 +68,12 @@ function ProductHome({ route }) {
   const [favoriteList2, setFavoriteList2] = useState([]);
   const [selectedCategoryTitleForEdit, setSelectedCategoryTitleForEdit] = useState('')
   const [bookmarkedProducts, setBookmarkedProducts] = useState({});
-  console.log("resultatah avant dhdh",isBookmarked);
+  const [liked, setLiked] = useState(false);
   const getfavoriteproducts = async () => {
     try {
-      console.log("resultatah initiale",isBookmarked);
+      
       const result = await authApi.allfavoriteproducts()
-      console.log("result",result);
+     
       if (result.ok) {
         const uniqueCategories = result.data.reduce((acc, current) => {
           const x = acc.find(item => item.category === current.category);
@@ -83,7 +84,7 @@ function ProductHome({ route }) {
               isSelected: false,
             }]);
           } else {
-            console.log("Catégorie déjà présente:", current.category);
+            
             return acc; // Si la catégorie est déjà présente, on ne l'ajoute pas
           }
         }, []);
@@ -97,7 +98,7 @@ function ProductHome({ route }) {
         } else {
           setIsBookmarked(false); // Sinon, le marquer comme non favori
         }
-        console.log("resultatah",isBookmarked);
+       
         setFavoriteList2(uniqueCategories)
       }
       
@@ -132,6 +133,7 @@ function ProductHome({ route }) {
       // const result = await authApi.getFavorites(user._id);
       // console.log("liste des favoris ",result);
       const updatedFavorites = await authApi.addToFavorites(user._id, productId, selectedCategory);
+      console.log("updatedFavorites",updatedFavorites);
       if(updatedFavorites.ok){
         setIsBookmarked(true);
         console.log('Produit ajouté aux favoris avec succès!');
@@ -180,14 +182,14 @@ function ProductHome({ route }) {
         //toast.show(result.data, { type: "danger" });
       } else {
         const userIds = result.data.map(comment => comment.userId).filter(id => id);
-        console.log("userids",userIds);
+        //console.log("userids",userIds);
         const usernamesIds = await authApi.getUsersByIds(userIds);
-        console.log("mais moi ",usernamesIds)
+        //console.log("mais moi ",usernamesIds)
         // Create a list of comments with usernames
         const comments = result.data.map(comment => {
           const user = usernamesIds.find(u => u._id === comment.userId);
           
-          console.log("user",user);
+          //console.log("user",user);
           return {
               ...comment,
               userName: user ? user.userName : 'Unknown User' ,// Handle the case if user is not found
@@ -197,9 +199,10 @@ function ProductHome({ route }) {
           };
           
         });
-        console.log("comments", comments);
+        //console.log("comments", comments);
         calculateProductRating(comments);
         const sortedComments = comments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        
         setComments(sortedComments);
       }
     } catch (error) {
@@ -247,29 +250,30 @@ function ProductHome({ route }) {
         commentText,
         commentRating
       );
-      
+      console.log("commentaire ",result);
       setCommentRating(0);
       setCommentText("");
       onRefresh();
-        
-      //console.log(result);
-      if (!result.ok) {
-        // Gérer les erreurs de l'API
-        console.error("Erreur lors de l'ajout du commentaire : ", result.problem);
-      } else {
-        // Afficher un message de succès
-        console.log("Commentaire ajouté avec succès !");
-      }
     } catch (error) {
+      console.log("Error fetching data: ", error);
       console.error("Error fetching data: ", error);
     }
   };
-
+  const handleLike = async () => {
+    try {
+      console.log("vous avez ajouter un like")
+      const result = await productActionsApi.addlikeToProduct(productId, user._id, 1); 
+      console.log("vous avez ajouter un like",result); 
+      setLiked(true);
+    } catch (error) {
+      console.error("Échec de l'ajout du like :", error); // Afficher un message d'erreur si l'ajout échoue
+    }
+  };
+  
   const getProductById = async (_id) => {
     try {
       const result = await productActionsApi.getProductById(_id);
       console.log("les infor sur produit choisi",result)
-
       setProduct(result);
 
       if (!result.ok) {
@@ -462,7 +466,7 @@ function ProductHome({ route }) {
           rightButtonOnPress={() => {}}
           isFromProfileMenu={false}
         />
-      {product && product.images && Array.isArray(product.images) && product.images.length > 0 ? (
+      {product && product.images && product.images.length > 0 ? (
     <View >
       {product.images[0] && product.images[0].contentType && product.images[0].data && product.images[0].data.data && product.images[0].data.data.length > 0 && (
         <Image 
@@ -473,7 +477,7 @@ function ProductHome({ route }) {
       )}
     </View>
   ) : (
-    <View style={{ height: 100, width: 100, alignSelf: "center" }}></View>
+    <Image source={images.homeCarouselAvatar} style={styles1.productImage} />
   )}
      <View style={styles.productRatingContainer}>
      <View style={styles.flexRowWithCenterItem}>
@@ -541,8 +545,14 @@ function ProductHome({ route }) {
                 style={styles.bookmarkImage}
               />
             </TouchableOpacity>
-            <TouchableOpacity>
-              <Image source={images.heart} style={styles.heartImage} />
+            <TouchableOpacity  onPress={() => { handleLike(); }}>
+            <Image
+            source={ liked? images.heart_marked: images.heart}
+            style={[
+            styles.heartImage,
+            
+        ]}
+      />
             </TouchableOpacity>
           </View>
 
@@ -672,10 +682,11 @@ const styles1 = StyleSheet.create({
     backgroundColor: 'white',
   },
   productImage: {
-    width: '100%',
-    height: 300,
-    borderRadius: 8,
+    width: '200',
+    height: 200,
     resizeMode: 'contain',
+    borderRadius: 10,
+    marginTop: 32,
   },
   star: {
       marginVertical: 8,

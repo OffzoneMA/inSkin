@@ -81,6 +81,30 @@ const addCommentToProduct = async (productId, userId, text, review) => {
     throw new Error("Failed to add comment to product");
   }
 };
+const addlikeToProduct = async (productId, userId, like) => {
+  try {
+    // Préparer le corps de la requête avec les données nécessaires
+    const requestBody = {
+      _id: productId,
+      userId: userId,
+      like: like, // Valeur du like (1 pour like, -1 pour dislike)
+    };
+
+    console.log(" requestBody", requestBody)
+    const response = await client.put(`/products/add-like`, requestBody);
+    console.log("response de requestBody", response);
+    // Vérification du statut de la réponse
+    if (response.status === 200) {
+      return response.data; // Retourner la réponse si le like a été ajouté avec succès
+    } else {
+      throw new Error("Échec de l'ajout du like au produit"); // Gérer les autres codes de statut
+    }
+  } catch (error) {
+    // Gérer les erreurs si la requête échoue
+    console.error("Erreur lors de l'ajout du like :", error);
+    throw new Error("Échec de l'ajout du like au produit");
+  }
+};
 
 const getProductComments = async (_id) => {
   try {
@@ -106,4 +130,5 @@ export default {
     getfollowedproducts,
     getmyproduct,
     getfavoriteproducts,
+    addlikeToProduct
 };
