@@ -41,6 +41,7 @@ export const RouteNavigator = Object.freeze({
   SearchUser: "SearchUser",
   DiscoverHomeWithFollowers: "DiscoverHomeWithFollowers",
   DiscoverHome1: "DiscoverHome1",
+  ScanNavigator:"ScanNavigator",
   
  
 })
@@ -75,6 +76,7 @@ export const Route = Object.freeze({
   DiscoverHome1: "DiscoverHome1",
   ProfileNavigator: "ProfileNavigator",
   FavoriteNavigator: 'FavoriteNavigator',
+  ScanNavigator:"ScanNavigator",
 })
 
 export const myProfileOptions = [

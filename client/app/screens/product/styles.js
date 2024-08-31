@@ -18,7 +18,7 @@ export const styles = StyleSheet.create({
   },
   likeCountFont: {
     marginLeft: 5,
-    lineHight: 16,
+    lineHeight: 16,
     color: colors.tabBarGray,
   },
   productRatingContainer: {
@@ -49,10 +49,10 @@ export const styles = StyleSheet.create({
     marginLeft: 11,
   },
   productName: {
-    lineHight: 24,
+    lineHeight: 24,
   },
   productSubDesc: {
-    lineHight: 15,
+    lineHeight: 15,
     color: colors.tabBarGray,
     marginTop: 3,
   },
@@ -100,14 +100,14 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   bookmarkImage: {
-    height: 18,
+    height: 30,
     width: 14,
     resizeMode: 'contain',
     marginRight: 12,
   },
   heartImage: {
-    height: 18,
-    width: 20,
+    height: 30,
+    width: 25,
     resizeMode: 'contain',
   },
   startImage: {
@@ -141,15 +141,15 @@ export const styles = StyleSheet.create({
     borderRadius: 20,
   },
   reviewerName: {
-    lineHight: 18,
+    lineHeight: 18,
   },
   reviewDateText: {
-    lineHight: 15,
+    lineHeight: 15,
     color: colors.tabBarGray,
     marginTop: 5,
   },
   reviewText: {
-    lineHight: 15,
+    lineHeight: 15,
     color: colors.tabBarGray,
     marginTop: 5,
     marginLeft: 55,

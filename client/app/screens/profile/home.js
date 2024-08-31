@@ -17,6 +17,7 @@ import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEff
 import CustomHeaderView from '../../components/CustomHeaderView';
 import { images } from '../../constants';
 import { selectProductDetailData } from '../../redux/selector/appSelectors'
+import { colors } from '../../constants'
 import { useSelector } from 'react-redux'
 function ProfileHome({ navigation }) {
   const authContext = useContext(AuthContext);
@@ -98,7 +99,6 @@ function ProfileHome({ navigation }) {
 
 
   return (
-    
      <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.scrollView} showsVerticalScrollIndicator={false} >
         <View style={styles.mainContainer}>
@@ -266,6 +266,10 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flexGrow: 1,
+  },
+  safeArea: {
+    flex: 1,
+    backgroundColor: colors.white,
   },
 });
 

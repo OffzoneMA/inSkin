@@ -62,6 +62,7 @@ const FavoriteDetailScreen = () => {
     try {
       
       const result = await authApi.favoriteproductsbycategory(listName1);
+      console.log("resulte",result)
       const sortedProducts = result.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       setProductList(sortedProducts);
     } catch (error) {

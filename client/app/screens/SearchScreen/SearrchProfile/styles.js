@@ -11,6 +11,7 @@ const styles = StyleSheet.create({
     width: 90,
     borderRadius: 45,
     marginRight: 10,
+    
   },
   nameFollowerMainContainer: {
     marginLeft: 27,
@@ -20,7 +21,10 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   followerContainer: {
-    marginRight: 32,
+    marginRight: 15,
+  },
+  postContainer: {
+    marginRight: 72,
   },
   numberText: {
     lineHeight: 17,
@@ -28,25 +32,9 @@ const styles = StyleSheet.create({
   followerPostText: {
     lineHeight: 17,
   },
-  profileIconWrapper: {
-    borderRadius: 98,
-    flex: 1,
-  },
-  profilePictureContainer: {
-    borderRadius: 100,
-    marginBottom: 10,
-    borderWidth: 2,
-    padding: 2,
-    width: 80,
-    height: 80,
-    marginRight: 15,
-  },
-  profileName: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: 'black',
-    size:'font18px',
-    fontFamily:'semiBold'
+  rightImage: {
+    width: 40,
+    height: 40,
     
   },
 })

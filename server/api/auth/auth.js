@@ -318,12 +318,11 @@ router.get(
 const mongoose = require('mongoose');
 
 router.put(
-  "/update-profile-image",
+  "/update-profile-image1",
   auth,
   upload.single('image'),
   asyncMiddleware(async (req, res) => {
     let userId;
-
     try {
       userId = JSON.parse(req.body._id); // Supprimer les guillemets doubles supplémentaires
     } catch (err) {
@@ -371,7 +370,7 @@ router.put(
 /// OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK
 
 router.put(
-  "/update-profile-image",
+  "/update-profile-image2",
   auth,
   upload.single('image'),
   asyncMiddleware(async (req, res) => {
@@ -419,7 +418,33 @@ router.put(
     }
   })
 );
+router.put(
+  "/update-profile-image",
+  auth, 
+  upload.single('image'),
+  asyncMiddleware(async (req, res) => {
+    const userId = req.body._id; // Assuming you have the user ID in the request object
+    console.log("user._id inserver",userId);
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: userId },
+      {
+        $set: {
+          profileImage: {
+            data: req.file.buffer,
+            contentType: req.file.mimetype
+          }
+        }
+      },
+      { new: true } // This option ensures that the updated document is returned
+    );
 
+    if (!updatedUser) {
+      return res.status(404).send("User not found");
+    }
+
+    res.status(200).send("Profile image updated successfully");
+  })
+);
 
 router.get(
   "/profile-image/:id",
@@ -650,7 +675,7 @@ router.get(
   asyncMiddleware(async (req, res) => {
     try {
       const userId = req.user._id;
-      const { categoryName } = req.params; // Récupère le nom de la catégorie depuis les paramètres de la requête
+      const { categoryName } = req.params; 
 
       // Étape 1: Trouver tous les produits favoris de l'utilisateur
       const favoriteProducts = await User.aggregate([

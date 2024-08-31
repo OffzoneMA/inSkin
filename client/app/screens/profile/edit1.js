@@ -90,7 +90,7 @@ function ProfileEdit1({ navigation }) {
         // Handle this error condition as per your application's requirements
     }
   };
-
+ 
   async function modifyProfileImage() {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status === "granted") {
@@ -104,8 +104,7 @@ function ProfileEdit1({ navigation }) {
         setSelectedImageUri(result.assets[0].uri); // Step 2: Update selected image URI
         //console.log(result.assets[0]);
         //toast.show("Logout Successful", { type: "success" });
-
-        // Extract file extension from the URI
+           console.log("changemnet d image de profile")
         const uriParts = result.assets[0].uri.split('.');
         const fileExtension = uriParts[uriParts.length - 1];
 
@@ -114,9 +113,11 @@ function ProfileEdit1({ navigation }) {
           type: 'image/' + fileExtension, // Dynamically set the image type based on the file extension
           name: 'image.' + fileExtension, // Dynamically set the file name with the extracted extension
         };
-
+      console.log("user._id inside ",user._id)
         const uploadResult = await updateProfileImageApi.request(user._id, image);
-        //console.log(uploadResult.message)
+        console.log("hdhdhdh",uploadResult)
+      } else{
+        console.log("cancelde");
       }
     }
     if (status !== "granted") {
@@ -269,47 +270,47 @@ function ProfileEdit1({ navigation }) {
     {
       id: 1,
       icon: images.personalDetail,
-      text: "Personal Details",
-      soustext:"View and manage your personal information",
+      text: LocalesMessages.personalDetail,
+      soustext: LocalesMessages.personalDetailDesc,
       iconColor: 'purple',
       onPress: () => navigation.navigate("ProfileEdit"),
     },
     {
         id: 2,
         icon: images.socialMediaProfile,
-        text: "Social Media Profiles",
-        soustext:"Create links to your social media profiles",
+        text:  LocalesMessages.socialMediaProfile,
+        soustext: LocalesMessages.socialMediaProfileDesc,
         iconColor: 'purple',
         onPress: () => navigation.navigate("ProfileSaved"),
       },
     {
       id: 3,
       icon: images.notificationsProfile,
-      text: "Notifications",
-      soustext:"Control your notification settings",
+      text: LocalesMessages.notifications,
+      soustext: LocalesMessages.notificationsDesc,
       iconColor: 'purple',
       onPress: () => navigation.navigate("ProfileAbout"),
     },
     {
       id: 4,
       icon: images.settingLegal,
-      text: "Settings",
-      soustext:"Manage app settings",
+      text:  LocalesMessages.settings,
+      soustext: LocalesMessages.settingsDesc,
       iconColor: 'purple',
       onPress: () => navigation.navigate("ProfileSettings"),
     },
     {
         id: 5,
         icon: images.settingLegal,
-        text: "Legal",
-        soustext:"Terms & conditions",
+        text: LocalesMessages.legal,
+        soustext: LocalesMessages.legalDesc,
         iconColor: 'purple',
         onPress: () => navigation.navigate("ProfileSettings"),
       },
     {
       id: 6,
       icon: images.logout,
-      text: "Log Out",
+      text: LocalesMessages.logout,
       soustext:"",
       iconColor: theme["notification-error"],
       onPress: handleLogOut,
@@ -356,11 +357,11 @@ function ProfileEdit1({ navigation }) {
               <View style={styles.followerPostContainer}>
                 <TouchableOpacity style={styles.followersContainerButton}>
                   <Text style={styles.followersNumber}>5</Text>
-                  <Text style={[styles.profileName, { fontSize: 13, fontWeight: 'normal' }]}>Followers</Text>
+                  <Text style={[styles.profileName, { fontSize: 13, fontWeight: 'normal' }]}>{LocalesMessages.followers}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.followersContainerButton}>
                   <Text style={styles.followersNumber}>2</Text>
-                  <Text style={[styles.profileName, { fontSize: 13, fontWeight: 'normal' }]}>Posts</Text>
+                  <Text style={[styles.profileName, { fontSize: 13, fontWeight: 'normal' }]}>{LocalesMessages.posts}</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -382,9 +383,6 @@ function ProfileEdit1({ navigation }) {
                 />
               )
             })}
-        
-         
-        
          </View>
     </Page>
   );

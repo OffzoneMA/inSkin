@@ -1,36 +1,28 @@
-import React, { useState } from 'react'
-import { FlatList, Image, TouchableOpacity, View } from 'react-native'
-import ReactNativeModal from 'react-native-modal'
-import styles from './styles'
-import AppText from '../../../components/AppText'
-import { colors, images } from '../../../constants'
-import { LocalesMessages } from '../../../constants/locales'
-import AppButton from '../../../components/AppButton'
-import FavoriteListData from '../../../../data/favoriteData.json'
+import React, { useState } from 'react';
+import { FlatList, Image, TouchableOpacity, View } from 'react-native';
+import ReactNativeModal from 'react-native-modal';
+import styles from './styles';
+import AppText from '../../../components/AppText';
+import { colors, images } from '../../../constants';
+import { LocalesMessages } from '../../../constants/locales';
+import AppButton from '../../../components/AppButton';
 
-const FilterModal = ({ isVisible = false, onPressClose, onApplyPress,  listecategorie }) => {
-  const mainCategoryList = FavoriteListData.favoriteList.map(value => {
-    return {
-      ...value,
-      isSelected: false,
-    }
-  })
-  
-  const [categoryList, setCategoryList] =  useState(listecategorie || []);
-  const renderItem = ({ item, index }) => {
+const FilterModal = ({ isVisible = false, onPressClose, onApplyPress, listecategorie }) => {
+  const [categoryList, setCategoryList] = useState(listecategorie || []);
+
+  // Fonction de rendu des catégories
+  const renderItem = ({ item }) => {
     return (
       <TouchableOpacity
         style={styles.categoryContainer}
         onPress={() => {
-          const arrFiltered = categoryList.map(value => {
-            if (value.category == item.category) {
-              value.isSelected = !item.isSelected
+          const updatedList = categoryList.map(value => {
+            if (value.category === item.category) {
+              value.isSelected = !item.isSelected;
             }
-            return {
-              ...value,
-            }
-          })
-          setCategoryList(arrFiltered)
+            return { ...value };
+          });
+          setCategoryList(updatedList);
         }}>
         <AppText text={item.category} size='font14px' color={colors.lightBlack} />
         <Image
@@ -38,10 +30,14 @@ const FilterModal = ({ isVisible = false, onPressClose, onApplyPress,  listecate
           style={styles.checkBoxImage}
         />
       </TouchableOpacity>
-    )
-  }
- 
-  
+    );
+  };
+
+  // Fonction pour récupérer les catégories sélectionnées
+  const getSelectedCategories = () => {
+    return categoryList.filter(category => category.isSelected);
+  };
+
   return (
     <ReactNativeModal
       isVisible={isVisible}
@@ -72,24 +68,24 @@ const FilterModal = ({ isVisible = false, onPressClose, onApplyPress,  listecate
           />
         </View>
         <View style={styles.divider} />
-        <FlatList data={categoryList} renderItem={item => renderItem(item)} />
+        <FlatList data={categoryList} renderItem={renderItem} keyExtractor={(item) => item.category} />
         <View style={styles.divider} />
         <AppButton
           localizedText={LocalesMessages.apply}
           buttonStyle={styles.confirmButton}
           labelStyle={[styles.confirmButtonText]}
           isDisable={
-            categoryList.filter(value => {
-              return value.isSelected
-            }).length == 0
+            categoryList.filter(value => value.isSelected).length === 0
           }
           onPress={() => {
-            onApplyPress()
-            onPressClose()
+            const selectedCategories = getSelectedCategories();
+            onApplyPress(selectedCategories); // Transmettre les catégories sélectionnées
+            onPressClose();
           }}
         />
       </View>
     </ReactNativeModal>
-  )
-}
+  );
+};
+
 export default FilterModal;
