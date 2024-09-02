@@ -1,8 +1,9 @@
 const express = require("express");
 const auth = require("../../middleware/auth");
 const asyncMiddleware = require("../../middleware/async");
-const { Product , validate } = require("./models/product");
-
+const { Product , validate, Notification } = require("./models/product");
+const { User } = require("../auth/models/user");
+//const Notification = require("../notifications/models/notifications")
 const router = express.Router();
 
 const mongoose = require("mongoose");
@@ -169,12 +170,10 @@ router.get(
     // Query the database to find a product by ID
     const product = await Product.findById(productId);
     console.log("product",Product)
-
     // Check if the product exists
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
-
     // Return the product as JSON response
     res.status(200).json(product);
   } catch (error) {
@@ -258,10 +257,34 @@ router.put(
       console.log("on ajoute like")
       product.likes.push({ userId, like });
     }
-
-    // Sauvegarder les changements
-    await product.save();
+     // Sauvegarder les changements
+     await product.save();
     console.log("product",product)
+    const liker = await User.findById(userId);
+    console.log("liked produit",liker);
+    if (!liker) {
+      return res.status(404).send("User not found");
+    }
+    console.log("product.userId",product.userId);
+    const author = await User.findById(product.userId);
+    console.log("author",author);
+    if (!author) {
+      return res.status(404).send("Author not found");
+    }
+    if (author) {
+      //const likingUser = await User.findById(userId);
+      const message = `${liker.userName} aime votre publication '${product.productDetails.name}' `;
+      const notification = new Notification({
+        userId: product.userId, 
+        messageText: message,
+        isPost: true
+      });
+      console.log("notification",notification)
+      await notification.save();
+
+    }
+   
+   
     res.status(200).send({
       message: "Vote enregistré avec succès",
       product,
@@ -682,6 +705,23 @@ router.get(
     }
   })
 );
+router.get("/notifications",auth, async (req, res) => {
+  try {
+    const userId = req.user._id; // ID de l'utilisateur connecté, obtenu via le middleware d'authentification
+
+    // Rechercher les notifications pour cet utilisateur
+    const notifications = await Notification.find({ userId }).sort({ date: -1 });
+
+    if (!notifications || notifications.length === 0) {
+      return res.status(404).send("Aucune notification trouvée.");
+    }
+
+    res.status(200).json(notifications);
+  } catch (err) {
+    console.error("Erreur lors de la récupération des notifications :", err);
+    res.status(500).send("Erreur serveur.");
+  }
+});
 
 
 // GET products by the connected user

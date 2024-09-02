@@ -4,6 +4,7 @@ const asyncMiddleware = require("../../middleware/async");
 const { User, validate } = require("./models/user");
 const PasswordReset = require("./models/PasswordReset");
 const auth = require("../../middleware/auth");
+const { Notification } = require("../products/models/product");
 const passport= require('passport');
 const GoogleStrategy = require( 'passport-google-oauth2' ).Strategy;
 const session = require('express-session');
@@ -780,12 +781,29 @@ router.post(
       if (userToFollow.followers.includes(userId)) {
         return res.status(400).json({ message: "You are already following this user" });
       }
-
       // Mettez à jour les tableaux de suiveurs et de suivis pour les deux utilisateurs
       await User.findByIdAndUpdate(userId, { $push: { following: userToFollow._id } });
       await User.findByIdAndUpdate(userToFollow._id, { $push: { followers: userId } });
+      const follower = await User.findById(userId);
+    console.log("liked produit",follower);
+    if (!follower) {
+      return res.status(404).send("User not found");
+    }
+    
+    if (userToFollow) {
+      //const likingUser = await User.findById(userId);
+      const message = `${follower.userName} Commence à vous suivre `;
+      const notification = new Notification({
+        userId:userToFollow._id, 
+        messageText: message,
+        isFollowing: true
+      });
+      console.log("notification",notification)
+      await notification.save();
 
+    }
       res.status(200).json({ message: "User followed successfully" });
+
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Internal Server Error" });
@@ -861,8 +879,6 @@ router.post(
         return res.status(400).json({ message: 'Utilisateur déjà suivi' });
       }
 
-      // Ajouter l'utilisateur cible à la liste des suivis et
-      // ajouter l'utilisateur connecté à la liste des suiveurs
       user.following.push(targetUserId);
       targetUser.followers.push(userId);
 

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useContext, useEffect, useLayoutEffect } from "react";
 import { FlatList, SafeAreaView, View } from 'react-native'
 import styles from './styles'
 import CustomHeaderView from '../../components/CustomHeaderView'
@@ -7,8 +7,29 @@ import { LocalesMessages } from '../../constants/locales'
 import { useNavigation } from '@react-navigation/native'
 import notificationData from '../../../data/notificationListData.json'
 import NotificationListView from './NotificationListView'
+import authApi from "../../api/auth";
+import { useFocusEffect } from "@react-navigation/native";
+import productActionsApi from "../../api/product_actions";
+import AuthContext from "../../contexts/auth";
 const NotificationListScreen = () => {
+  const [notificationliste, setNotificationliste] = useState([]);
   const navigation = useNavigation()
+  const getnotification = async () => {
+    try {
+      const result = await productActionsApi.getnotifications()
+      setNotificationliste(result.data)
+      console.log("result de notification",result.data);
+      
+    } catch (error) {
+      console.error("Error getting product data: ", error);
+    }
+  };
+  useFocusEffect(
+    React.useCallback(() => {
+      getnotification();
+      //setIsRefreshing(true); 
+    }, [])
+  );
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={[styles.mainContainer]}>
@@ -29,7 +50,7 @@ const NotificationListScreen = () => {
         />
       </View>
       <FlatList
-        data={notificationData.notifications}
+        data={notificationliste}
         renderItem={({ item, index }) => {
           return <NotificationListView item={item} />
         }}
