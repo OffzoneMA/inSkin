@@ -105,7 +105,6 @@ export default function LoginScreen({ navigation }) {
                     onChangeText={handleChange("email")}
                     onBlur={() => setFieldTouched("email")}
                   />
-                  
                   <AppTextInput
                 labelTitle="Mot de passe"
                 placeholderText="Confirmez votre mot de passe"
@@ -114,10 +113,9 @@ export default function LoginScreen({ navigation }) {
                 onChangeText={handleChange("password")}
                 errorMessage={errors.password}
                 onBlur={() => setFieldTouched("password")}
-                errorVisible={touched.password}
+                errorVisible={touched.password && errors.password}
               />
                   <TextLink
-                   
                     onPress={() => navigation.navigate("Forgotpassword")}
                     style={{ alignSelf: "flex-end", marginTop: 10 }}
                   >
