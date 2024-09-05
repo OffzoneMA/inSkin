@@ -12,6 +12,7 @@ const AppButton = (props) => {
     isDisable = false,
     isLoading = false,
     labelStyle,
+    isFollow = false,
     onPress,
     textColor = colors.white, // Default text color
     backgroundColor = colors.pink, // Default background color
@@ -28,7 +29,9 @@ const AppButton = (props) => {
         styles.appButtonContainer,
         buttonStyle,
         {
-          backgroundColor: isDisable ? colors.pink : colors.pink,
+          backgroundColor: isFollow
+            ? colors.categoryOptionSelected
+            : colors.pink, // Fixed background color assignment
           opacity: isDisable ? 0.4 : 1,
         },
       ]}>

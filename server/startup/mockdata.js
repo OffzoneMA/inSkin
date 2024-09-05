@@ -4,7 +4,7 @@ const { Product } = require("../api/products/models/product");
 const { Brand } = require("../api/brands/models/brand");
 const fs = require('fs').promises;
 const { resolve } = require('path');
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const { faker } = require('@faker-js/faker');
 const axios = require('axios');
 

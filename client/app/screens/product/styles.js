@@ -100,14 +100,14 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   bookmarkImage: {
-    height: 18,
+    height: 30,
     width: 14,
     resizeMode: 'contain',
     marginRight: 12,
   },
   heartImage: {
-    height: 18,
-    width: 20,
+    height: 30,
+    width: 25,
     resizeMode: 'contain',
   },
   startImage: {

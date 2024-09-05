@@ -152,6 +152,7 @@ console.log("fpllowers",followers)
        onPress={onPressEditProfile} 
        backgroundColor={colors.categoryOptionSelected} // Fond personnalisé
        textColor={colors.pink} // Texte blanc
+
      />
         
         

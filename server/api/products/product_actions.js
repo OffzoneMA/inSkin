@@ -1,8 +1,9 @@
 const express = require("express");
 const auth = require("../../middleware/auth");
 const asyncMiddleware = require("../../middleware/async");
-const { Product , validate } = require("./models/product");
-
+const { Product , validate, Notification } = require("./models/product");
+const { User } = require("../auth/models/user");
+//const Notification = require("../notifications/models/notifications")
 const router = express.Router();
 
 const mongoose = require("mongoose");
@@ -169,12 +170,10 @@ router.get(
     // Query the database to find a product by ID
     const product = await Product.findById(productId);
     console.log("product",Product)
-
     // Check if the product exists
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
-
     // Return the product as JSON response
     res.status(200).json(product);
   } catch (error) {
@@ -259,9 +258,11 @@ router.put(
       product.likes.push({ userId, like });
     }
 
+
     // Sauvegarder les changements
     await product.save();
     console.log("product",product)
+
     res.status(200).send({
       message: "Vote enregistré avec succès",
       product,
@@ -275,6 +276,7 @@ router.put(
   asyncMiddleware(async (req, res) => {
     const productId = req.body._id; // Assuming you have the user ID in the request object
     const { userId, dislike } = req.body; // Assuming userId, text, and review are in the request body
+
 
     const updatedProduct = await Product.findOneAndUpdate(
       { _id: productId },
@@ -293,6 +295,7 @@ router.put(
     if (!updatedProduct) {
       return res.status(404).send("Product not found");
     }
+
 
     res.status(200).send("Comment added successfully");
   })
@@ -478,6 +481,14 @@ router.get(
           },
         },
         {
+          $unwind: "$user", // Décomposer les documents d'utilisateur pour filtrage
+        },
+        {
+          $match: {
+            "user.followers": userId, // Filtrer les produits basés sur les utilisateurs suivis
+          },
+        },
+        {
           $lookup: {
             from: "users",
             localField: "comments.userId",
@@ -486,8 +497,49 @@ router.get(
           },
         },
         {
-          $match: {
-            "user.followers": userId,
+          $unwind: {
+            path: "$comments",
+            preserveNullAndEmptyArrays: true // Conserver les produits même s'ils n'ont pas de commentaires
+          }
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "comments.userId",
+            foreignField: "_id",
+            as: "commentAuthor",
+          },
+        },
+        {
+          $unwind: {
+            path: "$commentAuthor",
+            preserveNullAndEmptyArrays: true // Conserver les commentaires même si les auteurs ne sont pas trouvés
+          }
+        },
+        {
+          $sort: {
+            "comments.review": -1, // Trier par note des commentaires (décroissante)
+            "comments.createdAt": -1 // Trier par date de création des commentaires (décroissante)
+          }
+        },
+        {
+          $group: {
+            _id: "$_id",
+            productId: { $first: "$_id" },
+            productName: { $first: "$productDetails.name" },
+            productBrand: { $first: "$productDetails.brand" },
+            productDescription: { $first: "$productDetails.description" },
+            userId: { $first: "$userId" },
+            userName: { $first: "$user.userName" },
+            images: { $first: "$images" },
+            createdAt: { $first: "$createdAt" },
+            review: { $first: "$comments.review" }, // Conserver la note du commentaire
+            text: { $first: "$comments.text" }, // Conserver le texte du commentaire
+            userNameComm: { $first: "$commentAuthor.userName" }, // Nom de l'auteur du commentaire
+            commentAuthors: { $first: "$commentAuthors" },
+            profileImage: { $first: "$commentAuthor.profileImage" }, // Image de profil de l'auteur du commentaire
+            commentCreatedAt: { $first: "$comments.createdAt" },
+            userIdComm: { $first: "$commentAuthor._id" }
           },
         },
         {
@@ -675,6 +727,23 @@ router.get(
     }
   })
 );
+router.get("/notifications",auth, async (req, res) => {
+  try {
+    const userId = req.user._id; // ID de l'utilisateur connecté, obtenu via le middleware d'authentification
+
+    // Rechercher les notifications pour cet utilisateur
+    const notifications = await Notification.find({ userId }).sort({ date: -1 });
+
+    if (!notifications || notifications.length === 0) {
+      return res.status(404).send("Aucune notification trouvée.");
+    }
+
+    res.status(200).json(notifications);
+  } catch (err) {
+    console.error("Erreur lors de la récupération des notifications :", err);
+    res.status(500).send("Erreur serveur.");
+  }
+});
 
 
 // GET products by the connected user

@@ -35,10 +35,12 @@ const getAllProducts = () => client.get("/products/users-with-products");
 const getmyproduct = () => client.get("/products/my-products");
 const getfollowedproducts=()=>client.get("/products/followed-products")
 const getfavoriteproducts=()=>client.get("/products/favorite-products")
+const getnotifications=()=>client.get("/products/notifications");
 // GET a single product by ID
 const getProductById = async (id) => {
   try {
     const response = await client.get(`/products/get-product-byid/${id}`);
+    
     return response.data;
   } catch (error) {
     console.error(error);
@@ -131,4 +133,6 @@ export default {
     getmyproduct,
     getfavoriteproducts,
     addlikeToProduct
+    addlikeToProduct,
+    getnotifications
 };

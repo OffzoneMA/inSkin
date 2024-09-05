@@ -6,7 +6,7 @@
     "test:watch": "jest --watch",
     "test:unit": "jest --testPathPattern=test\\.js$",
     "test:integration": "jest --testPathPattern=spec\\.js$",
-
+    "start": "node index.js",
     "dev": "SET NODE_ENV=development& nodemon start.js",
     "staging": "NODE_ENV=staging&& nodemon start.js",
     "prod": "NODE_ENV=prod node&& start.js"
@@ -17,7 +17,7 @@
     "@faker-js/faker": "^8.2.0",
     "@shelf/jest-mongodb": "^1.2.4",
     "axios": "^1.5.1",
-    
+
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "debug": "^2.6.9",

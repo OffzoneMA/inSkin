@@ -8,6 +8,7 @@ import { LocalesMessages } from '../../../constants/locales'
 const NotificationListView = ({ item }) => {
   const isFollowing = item.isFollowing
   const isPost = item.isPost
+  const formattedDate = new Date(item.date).toLocaleDateString('en-CA', { month: 'short', day: 'numeric' });
   return (
     <View style={styles.mainContainer}>
       <View style={styles.shadowContainer}>
@@ -52,7 +53,7 @@ const NotificationListView = ({ item }) => {
           </View>
         </View>
         <AppText
-          text={'Oct 24'}
+          text={formattedDate}
           size='font10px'
           color={colors.tabBarGray}
           numberOfLines={1}

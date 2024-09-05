@@ -37,7 +37,9 @@ import Heading from "../../components/Heading";
 import Label from "../../components/Label";
 import SubHeading from "../../components/SubHeading";
 import Paragraph from "../../components/Paragraph";
+
 //import Carousel from 'react-native-snap-carousel'
+
 import productActionsApi from "../../api/product_actions";
 import brandActions from "../../api/brand_actions";
 import authApi from "../../api/auth";
@@ -94,6 +96,7 @@ function DiscoverHome({ navigation }) {
   const getAllComments = async () => {
     try {
       const result = await productActionsApi.getAllProducts();
+      console.log("user with product",result);
       if (!result.ok) {
         //toast.show(result.data, { type: "danger" });
       } else {
@@ -196,6 +199,7 @@ function DiscoverHome({ navigation }) {
         return;
       }
       const updatedFavorites = await authApi.addToFavorites(user._id, productId, selectedCategory);
+      console.log("updatedFavorites",updatedFavorites);
       if(updatedFavorites.ok){
         setBookmarkedProducts(prevState => ({
           ...prevState,
@@ -213,17 +217,21 @@ function DiscoverHome({ navigation }) {
   
   useFocusEffect(
     React.useCallback(() => {
+      onRefresh();
       getfavoriteproducts();
       getfollowedproducts();
       setIsRefreshing(true); 
+
      //getAllComments();
-      
+
     }, [])
   );
 
   const onRefresh = () => {
+
     setIsRefreshing(true); // Set refreshing state to true when the user pulls down to refresh
    //getAllComments();
+
    
   };
   
@@ -254,6 +262,7 @@ function DiscoverHome({ navigation }) {
       console.log(email)
       const response = await authApi.followUser(email); 
       console.log("User followed successfully:", response);
+      onRefresh();
       setIsFollowingAccounts(true);
       const updatedComments = comments.map(comment => {
         if (comment.email === email) {
@@ -268,7 +277,10 @@ function DiscoverHome({ navigation }) {
       
     }
   };
+  const Item = ({ item, handleFollow, handleDelete }) => {
+    const [isVisible, setIsVisible] = useState(true); // État pour contrôler la visibilité
   
+
 
   const Item = ({ item ,handleFollow, handleDelete}) => (
     <View style={styles.slideMainContainer}>
@@ -291,6 +303,7 @@ function DiscoverHome({ navigation }) {
   )}
   <AppText text={item.userName} fontFamily='medium' style={styles.userName} size='font18px' />
   <View style={styles.productImagesContainer}>
+
             <Image source={images.homeProductImage1} style={styles.productImage} />
             <Image source={images.homeProductImage2} style={styles.productImage} />
             <Image
@@ -307,6 +320,7 @@ function DiscoverHome({ navigation }) {
    
     </View>
   );
+
   const FollowedProductItem = ({ item }) => (
     <View style={styles.card}>
     <TouchableOpacity 
@@ -379,7 +393,9 @@ function DiscoverHome({ navigation }) {
         </>
       )}
         
+
         {/* <View style={styles.mainContainer1}>
+
           <Carousel
         layout={'default'}
         data={comments}
@@ -388,7 +404,9 @@ function DiscoverHome({ navigation }) {
         itemWidth={310}
         hasParallaxImages={true}
          />
+
         </View> */}
+
         <FlatList
             data={followedProducts}
             renderItem={({ item }) => {

@@ -11,6 +11,7 @@ import {
   Text,
   TextInput,
 } from "react-native";
+import { deviceWidth } from '../../constants/constants'
 import AppText from '../../components/AppText'
 import { LocalesMessages } from '../../constants/locales'
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -51,7 +52,9 @@ function ProductHome({ route }) {
   const [comments, setComments] = useState([]);
   const [showAddEditCategoryModal, setShowAddEditCategoryModal] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+
   
+
   const { user } = useContext(AuthContext);
 
   const [commentText, setCommentText] = useState("");
@@ -85,17 +88,13 @@ function ProductHome({ route }) {
             return acc; // Si la catégorie est déjà présente, on ne l'ajoute pas
           }
         }, []);
-        // const favorites = result.data.reduce((acc, item) => {
-        //     acc[item.productId] = true;
-        //     return acc;
-        //   }, {});
         const favoriteProductIds = result.data.map(item => item.productId)
         if (favoriteProductIds.includes(productId)) {
           setIsBookmarked(true);  // Si le produit est trouvé, le marquer comme favori
         } else {
           setIsBookmarked(false); // Sinon, le marquer comme non favori
         }
-       
+
         setFavoriteList2(uniqueCategories)
       }
       
@@ -127,16 +126,14 @@ function ProductHome({ route }) {
         console.error("Missing required parameters");
         return;
       }
-      // const result = await authApi.getFavorites(user._id);
-      // console.log("liste des favoris ",result);
+      
       const updatedFavorites = await authApi.addToFavorites(user._id, productId, selectedCategory);
+      console.log("updatedFavorites",updatedFavorites);
       if(updatedFavorites.ok){
         setIsBookmarked(true);
         console.log('Produit ajouté aux favoris avec succès!');
         
       }
-      
-      
     } catch (error) {
       console.error('Erreur lors de l\'ajout aux favoris:', error);
     }
@@ -246,19 +243,10 @@ function ProductHome({ route }) {
         commentText,
         commentRating
       );
-      
+      console.log("commentaire ",result);
       setCommentRating(0);
       setCommentText("");
       onRefresh();
-        
-      //console.log(result);
-      if (!result.ok) {
-        // Gérer les erreurs de l'API
-        console.error("Erreur lors de l'ajout du commentaire : ", result.problem);
-      } else {
-        // Afficher un message de succès
-        console.log("Commentaire ajouté avec succès !");
-      }
     } catch (error) {
       console.log("Error fetching data: ", error);
       console.error("Error fetching data: ", error);
@@ -280,17 +268,20 @@ function ProductHome({ route }) {
       const result = await productActionsApi.getProductById(_id);
       console.log("les infor sur produit choisi",result)
       setProduct(result);
-
+      const likedUserIds = result.likes.map(like => like.userId);
+      setLikedUserIds(likedUserIds);
+      if (likedUserIds.includes(user._id)) {
+        console.log("user id",user._id)
+        setLiked(true);  // Si le produit est trouvé, le marquer comme favori
+      } else {
+        console.log("user id",user._id)
+        setLiked(false); 
+      }
+      console.log("Liste des IDs des utilisateurs ayant liké:", likedUserIds);
       if (!result.ok) {
         //toast.show(result.data, { type: "danger" });
       } else {
-        //toast.show(result.data.message, { type: "success" });
-        /* const brandName = result.data.brands.map(brand => ({
-          value: brand._id, // Use _id as the key
-          label: brand.name // Use name as the value
-        })); */
-        //const brandName = result.data.brand;
-        //setBrandsNames(brandsNames);
+        
       }
     } catch (error) {
       console.error("Error fetching data: ", error);
@@ -502,7 +493,12 @@ function ProductHome({ route }) {
       </View>
       <View style={styles.flexRowWithCenterItem}>
             <Image source={images.thumbsUp} style={styles.thumbsUpImage} />
-            <AppText text="30" style={styles.likeCountFont} size='font12px' />
+            {likedUserIds ? (
+            <AppText text={likedUserIds.length} style={styles.likeCountFont} size='font12px' />
+            ) : (
+              <AppText text="0" style={styles.likeCountFont} size='font12px' />
+            )}
+            
             <Image source={images.eye} style={styles.eyeImage} />
             <AppText text="40" style={styles.likeCountFont} size='font12px' />
             <Image source={images.productShare} style={styles.productShareImage} />
@@ -552,10 +548,12 @@ function ProductHome({ route }) {
             </TouchableOpacity>
             <TouchableOpacity  onPress={() => { handleLike(); }}>
             <Image
+
             source={images.heart}
             style={[
             styles.heartImage,
             { tintColor: liked ? 'pink' : 'gray' } // Change la couleur en fonction de l'état
+
         ]}
       />
             </TouchableOpacity>
@@ -687,10 +685,11 @@ const styles1 = StyleSheet.create({
     backgroundColor: 'white',
   },
   productImage: {
-    width: '100%',
-    height: 300,
-    borderRadius: 8,
+    width: '200',
+    height: 200,
     resizeMode: 'contain',
+    borderRadius: 10,
+    marginTop: 32,
   },
   star: {
       marginVertical: 8,
