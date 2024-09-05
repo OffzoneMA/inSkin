@@ -257,34 +257,12 @@ router.put(
       console.log("on ajoute like")
       product.likes.push({ userId, like });
     }
-     // Sauvegarder les changements
-     await product.save();
-    console.log("product",product)
-    const liker = await User.findById(userId);
-    console.log("liked produit",liker);
-    if (!liker) {
-      return res.status(404).send("User not found");
-    }
-    console.log("product.userId",product.userId);
-    const author = await User.findById(product.userId);
-    console.log("author",author);
-    if (!author) {
-      return res.status(404).send("Author not found");
-    }
-    if (author) {
-      //const likingUser = await User.findById(userId);
-      const message = `${liker.userName} aime votre publication '${product.productDetails.name}' `;
-      const notification = new Notification({
-        userId: product.userId, 
-        messageText: message,
-        isPost: true
-      });
-      console.log("notification",notification)
-      await notification.save();
 
-    }
-   
-   
+
+    // Sauvegarder les changements
+    await product.save();
+    console.log("product",product)
+
     res.status(200).send({
       message: "Vote enregistré avec succès",
       product,
@@ -298,6 +276,7 @@ router.put(
   asyncMiddleware(async (req, res) => {
     const productId = req.body._id; // Assuming you have the user ID in the request object
     const { userId, dislike } = req.body; // Assuming userId, text, and review are in the request body
+
 
     const updatedProduct = await Product.findOneAndUpdate(
       { _id: productId },
@@ -316,6 +295,7 @@ router.put(
     if (!updatedProduct) {
       return res.status(404).send("Product not found");
     }
+
 
     res.status(200).send("Comment added successfully");
   })
@@ -563,6 +543,47 @@ router.get(
           },
         },
         {
+          $unwind: "$comments", // Décomposer les commentaires en documents individuels
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "comments.userId",
+            foreignField: "_id",
+            as: "commentAuthor",
+          },
+        },
+        {
+          $unwind: "$commentAuthor", // Décomposer les auteurs de commentaires en documents individuels
+        },
+        {
+          $sort: {
+            "comments.review": -1, // Trier par note (décroissante)
+            "comments.createdAt": -1 // Trier par date de création (décroissante) pour les cas d'égalité
+          }
+        },
+        {
+          $group: {
+            _id: "$_id",
+            productId: { $first: "$_id" },
+            productName: { $first: "$productDetails.name" },
+            productBrand: { $first: "$productDetails.brand" },
+            productDescription: { $first: "$productDetails.description" },
+            userId: { $first: "$userId" },
+            userName: { $first: "$user.userName" },
+            images: { $first: "$images" },
+            createdAt: { $first: "$createdAt" },
+            review: { $first: "$comments.review" }, // Conserver la note la plus élevée
+            text: { $first: "$comments.text" }, // Conserver le texte du commentaire
+            userNameComm: { $first: "$commentAuthor.userName" }, // Nom de l'auteur du commentaire
+            commentAuthors: { $first: "$commentAuthors" },
+            profileImage: { $first: "$commentAuthor.profileImage" }, // Image de profil de l'auteur du commentaire
+            commentCreatedAt: { $first: "$comments.createdAt" },
+            userIdComm: { $first: "$commentAuthor._id" }
+           
+          },
+        },
+        {
           $project: {
             _id: 0,
             productId: 1,
@@ -580,6 +601,7 @@ router.get(
             profileImage: 1,
             commentCreatedAt: 1,
             userIdComm:1
+
           },
         },
       ]);

@@ -52,7 +52,9 @@ function ProductHome({ route }) {
   const [comments, setComments] = useState([]);
   const [showAddEditCategoryModal, setShowAddEditCategoryModal] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const[likedUserIds,setLikedUserIds]= useState(null);
+
+  
+
   const { user } = useContext(AuthContext);
 
   const [commentText, setCommentText] = useState("");
@@ -92,6 +94,7 @@ function ProductHome({ route }) {
         } else {
           setIsBookmarked(false); // Sinon, le marquer comme non favori
         }
+
         setFavoriteList2(uniqueCategories)
       }
       
@@ -545,10 +548,12 @@ function ProductHome({ route }) {
             </TouchableOpacity>
             <TouchableOpacity  onPress={() => { handleLike(); }}>
             <Image
-            source={ liked? images.heart_marked: images.heart}
+
+            source={images.heart}
             style={[
             styles.heartImage,
-            
+            { tintColor: liked ? 'pink' : 'gray' } // Change la couleur en fonction de l'état
+
         ]}
       />
             </TouchableOpacity>

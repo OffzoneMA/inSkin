@@ -5,6 +5,7 @@ import {
 
 const settings = {
   dev: {
+
     //apiUrl: "https://in-skin-ochre.vercel.app/",
     apiUrl: "http://192.168.0.151:8000",
 
@@ -12,12 +13,7 @@ const settings = {
   staging: {
     apiUrl:"http://staging.api.com"
 
-  //   //apiUrl: "http://192.168.0.133:8000",
-  //   apiUrl: "http://192.168.235.223:8000",
-  //   //apiUrl:"http://100.102.232.239:8000",
-  // },
-  // staging: {
-  //   //apiUrl:"http://staging.api.com"ssss
+  
   },
   prod: {
     

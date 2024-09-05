@@ -132,6 +132,7 @@ export default {
     getfollowedproducts,
     getmyproduct,
     getfavoriteproducts,
+    addlikeToProduct
     addlikeToProduct,
     getnotifications
 };

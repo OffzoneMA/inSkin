@@ -4,7 +4,9 @@ import CustomHeaderView from '../../components/CustomHeaderView'
 import { images } from '../../constants'
 import styles from './styles'
 import { LocalesMessages } from '../../constants/locales'
-//import WebView from 'react-native-webview'
+
+// import WebView from 'react-native-webview'
+
 import { Route, termsHTMLContent } from '../../constants/constants'
 import { useNavigation } from '@react-navigation/native'
 import useScreenTracking from '../../hooks/screenTracking'
