@@ -1,6 +1,20 @@
 import client from "./client";
 
-const login = (email, password) => client.post("/auth/login", { email, password });
+//const login = (email, password) => client.post("/auth/login", { email, password });
+const login = async (email, password) => {
+  try {
+    console.log("email",email)
+    console.log("password", password)
+    const response = await client.post("/auth/login", { email, password });
+    console.log("Réponse du serveur:", response);
+    return response; // Retourner les données de la réponse
+  } catch (error) {
+    // Gérer les erreurs ici
+    console.error("Erreur lors de la requête:", error.response ? error.response.data : error.message);
+    throw error; // Rejeter l'erreur pour traitement ultérieur
+  }
+};
+
 const updateUserInfo = async (
   _id,
   firstName,

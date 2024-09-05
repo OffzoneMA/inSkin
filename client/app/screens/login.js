@@ -13,7 +13,7 @@ import * as Yup from "yup";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import AuthContext from "../contexts/auth";
-import jwt_decode from "jwt-decode";
+import jwt_decode from 'jwt-decode';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { APP_BUTTON_DEFAULT_HIGHT, APP_BUTTON_DEFAULT_MIN_WIDTH, FountsEnum } from '../constants/constants'
 

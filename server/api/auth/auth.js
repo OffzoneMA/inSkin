@@ -36,7 +36,6 @@ router.post(
       res.status(400).send("User does not exist!");
       return;
     }
-
     // Compare passwords
     const passwordMatch = await bcrypt.compare(
       req.body.password,
@@ -56,7 +55,7 @@ router.post(
   })
 );
 
-/// OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK
+
 
 router.put('/change-password', auth, async (req, res) => {
   const { email, newPassword } = req.body;
