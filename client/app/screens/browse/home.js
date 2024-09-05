@@ -37,9 +37,7 @@ import Heading from "../../components/Heading";
 import Label from "../../components/Label";
 import SubHeading from "../../components/SubHeading";
 import Paragraph from "../../components/Paragraph";
-
-//import Carousel from 'react-native-snap-carousel'
-
+import Carousel from 'react-native-snap-carousel';
 import productActionsApi from "../../api/product_actions";
 import brandActions from "../../api/brand_actions";
 import authApi from "../../api/auth";
@@ -92,7 +90,6 @@ function DiscoverHome({ navigation }) {
     }
   };
 
-
   const getAllComments = async () => {
     try {
       const result = await productActionsApi.getAllProducts();
@@ -122,7 +119,6 @@ function DiscoverHome({ navigation }) {
   const getfollowedproducts = async () => {
     try {
       const result = await productActionsApi.getfollowedproducts();
-      console.log("resilll",result)
       setProduct(result);
       //getBrandById(result.productBrand)
       if (!result.ok) {
@@ -221,17 +217,15 @@ function DiscoverHome({ navigation }) {
       getfavoriteproducts();
       getfollowedproducts();
       setIsRefreshing(true); 
-
-     //getAllComments();
-
+      getAllComments(); 
     }, [])
   );
 
   const onRefresh = () => {
-
-    setIsRefreshing(true); // Set refreshing state to true when the user pulls down to refresh
-   //getAllComments();
-
+    setIsRefreshing(true); 
+    getfollowedproducts();
+    getAllComments();
+    
    
   };
   
@@ -280,30 +274,36 @@ function DiscoverHome({ navigation }) {
   const Item = ({ item, handleFollow, handleDelete }) => {
     const [isVisible, setIsVisible] = useState(true); // État pour contrôler la visibilité
   
-
-
-  const Item = ({ item ,handleFollow, handleDelete}) => (
-    <View style={styles.slideMainContainer}>
-     <View style={styles.slideContainer}>
-          <TouchableOpacity activeOpacity={0.6}>
+    const handleClose = () => {
+      setIsVisible(false); // Masquer l'élément lorsqu'on clique sur l'icône de fermeture
+    };
+  
+    if (!isVisible) return null; // Ne rien rendre si l'élément est masqué
+  
+    return (
+      <View style={styles.slideMainContainer}>
+        <View style={styles.slideContainer}>
+          <TouchableOpacity activeOpacity={0.6} onPress={handleClose}>
             <Image source={images.close} style={styles.closeIcon} />
           </TouchableOpacity>
+  
           {item.profileImage && item.profileImage.data ? (
-    <Image 
-      source={{ uri: `data:${item.profileImage.contentType};base64,${item.profileImage.data}` }}
-      style={styles.userAvatar}
-            resizeMode='contain'
-    />
-  ) : (
-    <Image
-    source={images.homeCarouselAvatar}
-    style={styles.userAvatar}
-    resizeMode='contain'
-  />
-  )}
-  <AppText text={item.userName} fontFamily='medium' style={styles.userName} size='font18px' />
-  <View style={styles.productImagesContainer}>
-
+            <Image
+              source={{ uri: `data:${item.profileImage.contentType};base64,${item.profileImage.data}` }}
+              style={styles.userAvatar}
+              resizeMode='contain'
+            />
+          ) : (
+            <Image
+              source={images.homeCarouselAvatar}
+              style={styles.userAvatar}
+              resizeMode='contain'
+            />
+          )}
+  
+          <AppText text={item.userName} fontFamily='medium' style={styles.userName} size='font18px' />
+  
+          <View style={styles.productImagesContainer}>
             <Image source={images.homeProductImage1} style={styles.productImage} />
             <Image source={images.homeProductImage2} style={styles.productImage} />
             <Image
@@ -311,16 +311,16 @@ function DiscoverHome({ navigation }) {
               style={[styles.productImage, { marginRight: 0 }]}
             />
           </View>
+  
           <AppButton
             localizedText='Follow'
             buttonStyle={styles.followButton}
-            onPress={() => handleFollow1(item.email)}
+            onPress={() =>handleFollow1(item.email)}
           />
         </View>
-   
-    </View>
-  );
-
+      </View>
+    );
+  };
   const FollowedProductItem = ({ item }) => (
     <View style={styles.card}>
     <TouchableOpacity 
@@ -393,9 +393,7 @@ function DiscoverHome({ navigation }) {
         </>
       )}
         
-
-        {/* <View style={styles.mainContainer1}>
-
+        <View style={styles.mainContainer1}>
           <Carousel
         layout={'default'}
         data={comments}
@@ -404,9 +402,7 @@ function DiscoverHome({ navigation }) {
         itemWidth={310}
         hasParallaxImages={true}
          />
-
-        </View> */}
-
+        </View>
         <FlatList
             data={followedProducts}
             renderItem={({ item }) => {

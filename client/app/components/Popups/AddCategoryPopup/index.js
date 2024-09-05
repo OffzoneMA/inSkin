@@ -95,8 +95,7 @@ const AddCategoryPopup = ({ isVisible = false, onPressClose, onPressAdd, onPress
                     selectedCategory={selectedCategory}
                     onPressOption={(category) => {
                       console.log("Selected category:", category);
-                      setSelectedCategory(value.id);
-
+                      setSelectedCategory(category);
                       setSelectedCategoryTitle(category);
                     }}
                   />
