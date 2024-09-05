@@ -50,43 +50,35 @@ const ProfileFollowerView = ({ onPressEditProfile }) => {
     }, [])
   );
 
-  
-
   const userProfile = {
     profilePicture: "person",
     firstName: user ? user.firstName : null,
     lastName: user ? user.lastName : null,
     userName: user ? user.userName : null,
+    followers:user ? user.followers:null
   };
   
   return (
     <View>
       <View style={styles.topViewContainer}>
-      <View style={[styles.profilePictureContainer, { borderColor: theme["color-primary-default"] }]}>
-              <View style={[styles.profileIconWrapper, { overflow: 'hidden', backgroundColor: theme["background-basic-color-1"] }]}>
                 {selectedImageUri ? (
                   <Image 
                     source={{ uri: selectedImageUri }}
-                    style={[styles.profilePicture, { flex: 1, width: null, height: null }]}
+                    style={styles.avatarImage}
                   />
                 ) : (
-                  <Icon
-                    name={userProfile.profilePicture}
-                    style={[styles.profilePicture, { top: 10 }]}
-                    fill={theme["color-primary-disabled-border"]}
-                  />
-                )}
-              </View>
-              </View>
-        <View style={styles.nameFollowerMainContainer}>
-          
-          <Text style={[styles.profileName, { fontSize: 13 }]}>
-                  {userProfile.firstName} {userProfile.lastName}
-             </Text>
+                  <Image source={images.userAvatar} style={styles.avatarImage} />
+                )} 
+                 <View style={styles.nameFollowerMainContainer}>
+          <AppText
+            text={`${userProfile.firstName} ${userProfile.lastName}`}
+            size='font18px'
+            fontFamily='semiBold'
+          />
           <View style={styles.followerPostContainer}>
             <View style={styles.followerContainer}>
               <AppText
-                text='120'
+                text={userProfile.followers}
                 size='font12px'
                 fontFamily='medium'
                 color={colors.lightBlack}
@@ -116,6 +108,7 @@ const ProfileFollowerView = ({ onPressEditProfile }) => {
             </View>
           </View>
         </View>
+        
       </View>
       <AppButton localizedText={LocalesMessages.editProfile} onPress={onPressEditProfile} />
     </View>

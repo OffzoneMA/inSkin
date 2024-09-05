@@ -16,10 +16,12 @@ import FilterModal from '../FavoriteScreen/FilterModal'
 import AppText from '../../components/AppText'
 import { colors } from '../../constants'
 import authApi from "../../api/auth";
+import { images } from '../../constants'
 import productActionsApi from "../../api/product_actions";
 import AuthContext from "../../contexts/auth";
 import { useFocusEffect } from "@react-navigation/native";
-
+import CustomHeaderView from '../../components/CustomHeaderView';
+import { encode } from 'base-64';
 const MyPostScreen = () => {
   const navigation = useNavigation()
   const { translate } = useContext(LocalizationContext)
@@ -29,6 +31,30 @@ const MyPostScreen = () => {
   const [selectedCategoryTitleForEdit, setSelectedCategoryTitleForEdit] = useState('')
   const [showActionModal, setShowActionModal] = useState(false)
   const [isSearchFilterApplied, setIsSearchFilterApplied] = useState(false)
+  const [selectedImageUri, setSelectedImageUri] = useState(null);
+  const getProfileImageApi = useApi(authApi.getProfileImage);
+  const authContext = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
+  const getProfileImage = async () => {
+    try {
+      const profileImage = await getProfileImageApi.request(user._id);
+      if (profileImage && profileImage.data && profileImage.data.data && profileImage.data.data.data) {
+        const imageData = profileImage.data.data.data;
+        const base64ImageData = imageData.map(byte => String.fromCharCode(byte)).join('');
+        const imageUrl = 'data:' + profileImage.data.contentType + ';base64,' + encode(base64ImageData);
+        setSelectedImageUri(imageUrl);
+      }
+    } catch (error) {
+      console.error('Error fetching profile image:', error);
+    }
+  };
+  useFocusEffect(
+    React.useCallback(() => {
+      if (user && user._id) {
+        getProfileImage();
+      }
+    }, [])
+  );
 
   const getmyproduct = async () => {
     try {
@@ -60,58 +86,23 @@ const MyPostScreen = () => {
       
     }, [])
   );
-
+  const rightButtonImage = selectedImageUri ? selectedImageUri : images.userAvatar;
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.bodyContainer}>
-        <FavoriteHeaderView
-          isEmptyList={favoriteList.length == 0}
-          isFilterApplied={isSearchFilterApplied}
-          onFilterPress={() => {
-            setShowFilterModal(true)
+       <CustomHeaderView
+          title={LocalesMessages.posts}
+          isFromNotificationHeader={false}
+          rightButtonImage={selectedImageUri ?{ uri: selectedImageUri }:images.userAvatar} 
+          rightImageStyle={{
+            height: 50,
+            width: 50,
+            borderRadius: 25,
+            marginRight: 10,
+            resizeMode: 'contain',
           }}
-          onPlusIconPress={() => {
-            setShowAddEditCategoryModal(true)
-          }}
-          onClearFilterPress={() => setIsSearchFilterApplied(false)}
+          rightButtonOnPress={() => {}}
         />
-      </View>
-      {isSearchFilterApplied ? (
-        <View style={styles.body}>
-          <View style={styles.flxRow}>
-            <AppText
-              text={'Category:'}
-              size='font16px'
-              fontFamily='medium'
-              color={colors.lightBlackSecondary}
-              style={styles.categoryText}
-            />
-            <AppText
-              text={'Skin Care, Makeup'}
-              size='font16px'
-              color={colors.lightBlackSecondary}
-              style={[styles.categoryText]}
-            />
-          </View>
-          <View style={styles.flxRow}>
-            <AppText
-              text={'Routine:'}
-              size='font16px'
-              fontFamily='medium'
-              color={colors.lightBlackSecondary}
-              style={styles.categoryText}
-            />
-            <AppText
-              text={'Morning, Night'}
-              size='font16px'
-              color={colors.lightBlackSecondary}
-              style={[styles.categoryText]}
-            />
-          </View>
-        </View>
-      ) : (
-        <></>
-      )}
+      
       {favoriteList.length === 0 && (
           <ProductListEmptyView
             emptyMessage={LocalesMessages.youDontHaveAnyFavorites}

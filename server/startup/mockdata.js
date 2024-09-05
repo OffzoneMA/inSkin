@@ -29,10 +29,8 @@ async function createUsers() {
         const user1Password = faker.internet.password();
         const user2Password = faker.internet.password();
         unhashedPasswords.push(user1Password, user2Password);
-
         const user1ProfileImage = await getImageBufferFromURL(await faker.image.avatar());
         const user2ProfileImage = await getImageBufferFromURL(await faker.image.avatar());
-
         const users = await User.create([
             {
                 firstName: faker.person.firstName(),

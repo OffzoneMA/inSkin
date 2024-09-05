@@ -24,25 +24,27 @@ import AppText from '../components/AppText';
 import ScanButton from '../components/ScanButton';
 import  FavoriteNavigator from './FavoriteNavigator';
 import AddProduct from "../screens/scan/addproduct";
-import MyPostNavigator from './MyPostNavigator'
+import ScanHome from "../screens/scan/home";
+import MyPostNavigator from './MyPostNavigator';
+import { ScanContext } from "../contexts/scan-context";
 const BottomTab = createBottomTabNavigator();
 
 
 const getTabBarTitle = (route) => {
   if (route === RouteNavigator.BrowseNavigator) {
-    return 'Home'
+    return 'Accueil'
   }
   if (route === RouteNavigator.SearchUser) {
-    return 'Search'
+    return 'Recherche'
   }
   if (route === RouteNavigator.FavoriteNavigator) {
-    return 'Favourite'
+    return 'Favoris'
   }
   if (route === RouteNavigator.DiscoverHome1) {
-    return 'My posts'
+    return 'publication'
   }
   if (route === RouteNavigator.ProfileNavigator) {
-    return 'Profile'
+    return 'Profil'
   }
 }
 const getTabBarIcon = (route, focused) => {
@@ -62,6 +64,7 @@ const getTabBarIcon = (route, focused) => {
   if (route === RouteNavigator.ProfileNavigator) {
     imageIcon = images.profile
   }
+  
   return (
     <View
       style={[
@@ -82,30 +85,15 @@ const getTabBarIcon = (route, focused) => {
       />
     </View>
   )
+  
 }
  const AppTabNavigator= () => {
   const navigation = useNavigation();
 
   const handleScanButtonPress = () => {
+    console.log("scaaaaaaaaaaaaaaaan")
     navigation.navigate('ScanNavigator'); // Assurez-vous que 'AddProduct' est le nom correct de l'écran
   };
-  // const theme = useTheme();
-  // const windowWidth = Dimensions.get('window').width; 
-  // const navigation = useNavigation(); 
-  // const renderHeaderLogo = () => (
-  //   <Text style={{ color: theme["color-primary-default"], fontSize: 20, fontWeight: 'bold' }}>INSKIN</Text>
-  // );
-  // const renderProfileImage1=()=>(
-  //   <View>
-  //   {renderProfileImage()} 
-  // </View>
-  // )
-  // // Fonction pour afficher l'icône de notification dans l'entête
-  // const renderNotificationIcon = () => (
-  //   <MaterialCommunityIcons name='bell-outline' size={30} color='black' />
-  // );
-  
-  // // Fonction pour afficher la photo de profil dans l'entête
   
   
   return (
@@ -126,10 +114,10 @@ const getTabBarIcon = (route, focused) => {
         <BottomTab.Screen name={RouteNavigator.DiscoverHome1} component={MyPostNavigator} />
         <BottomTab.Screen name={RouteNavigator.ProfileNavigator} component={ProfileNavigator} />
       </BottomTab.Navigator>
-      <ScanButton onPress={handleScanButtonPress} />
+      <ScanButton onPressButton={handleScanButtonPress}/>
+      
       
   </>
-    
   );
 }
 export default AppTabNavigator;
@@ -152,5 +140,6 @@ const styles = StyleSheet.create({
   },
   tabBarText: {
     fontFamily: FountsEnum.PrimaryRegular,
+    
   },
 })

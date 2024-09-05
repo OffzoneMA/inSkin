@@ -1,10 +1,9 @@
 import { Image, View } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactNativeModal from 'react-native-modal';
 import AppText from '../../AppText';
 import { LocalesMessages } from '../../../constants/locales';
 import { colors, images } from '../../../constants';
-import bookmarkCategories from '../../../../data/bookmarkCategories.json';
 import AppIconButton from '../../AppIconButton';
 import AppButton from '../../AppButton';
 import styles from './styles';
@@ -13,15 +12,22 @@ import ProfileOptionView from '../../ProfileOptionView';
 import AppTextInput from '../../AppTextInput';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-const AddCategoryPopup = ({ isVisible = false, onPressClose, onPressAdd, onPressAdd1,isFromFavorite, editTitle = '',onChangeText,listecategorie,onPresscate }) => {
+const AddCategoryPopup = ({ isVisible = false, onPressClose, onPressAdd, onPressAdd1, isFromFavorite, editTitle = '', onChangeText, listecategorie, onPresscate }) => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedCategoryTitle, setSelectedCategoryTitle] = useState('');
   const [isSelectedCheckBox, setIsSelectedCheckBox] = useState(false);
   const [categoryName, setCategoryName] = useState(editTitle);
-  const [categoryList, setCategoryList] =  useState(listecategorie || []);
-  console.log("categoryList",categoryList);
-  console.log("listecategorie",listecategorie);
-  
+  const [categoryList, setCategoryList] = useState(listecategorie || []);
+  const [isEditingFavorite, setIsEditingFavorite] = useState(isFromFavorite);
+
+  useEffect(() => {
+    setCategoryList(listecategorie || []);
+  }, [listecategorie]);
+
+  useEffect(() => {
+    setCategoryName(editTitle);
+  }, [editTitle]);
+
   return (
     <ReactNativeModal
       isVisible={isVisible}
@@ -29,7 +35,7 @@ const AddCategoryPopup = ({ isVisible = false, onPressClose, onPressAdd, onPress
       animationOut='slideOutDown'
       onModalWillShow={() => {
         setSelectedCategory(null);
-        setCategoryName(editTitle); // Remplacez '' par editTitle pour pré-remplir le champ avec la valeur de l'édition
+        setCategoryName(editTitle); // Set category name from editTitle if editing
         setIsSelectedCheckBox(false);
       }}
       style={styles.modal}
@@ -37,7 +43,7 @@ const AddCategoryPopup = ({ isVisible = false, onPressClose, onPressAdd, onPress
       <KeyboardAwareScrollView
         contentContainerStyle={{ flexGrow: 1, justifyContent: 'flex-end' }}
         bounces={false}
-        scrollEnabled={isFromFavorite}
+        scrollEnabled={isEditingFavorite}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.mainContainer}>
@@ -57,19 +63,19 @@ const AddCategoryPopup = ({ isVisible = false, onPressClose, onPressAdd, onPress
           </View>
           <View style={styles.divider} />
           <View style={styles.bodyContainer}>
-            {isFromFavorite ? (
+            {isEditingFavorite ? (
               <>
                 <AppTextInput
                   placeholderText={LocalesMessages.enterTitleOfYourCategory}
                   value={categoryName}
                   onChangeText={text => {
                     setCategoryName(text);
-                    if (onChangeText) onChangeText(text); // Appel à la fonction de rappel
+                    if (onChangeText) onChangeText(text); // Call onChangeText callback
                   }}
                 />
                 <ProfileOptionView
                   leftImageSource={isSelectedCheckBox ? images.selectedcheckBox : images.checkBox}
-                  leftImageStyle={[styles.plusImage, isFromFavorite && styles.checkboxImage]}
+                  leftImageStyle={[styles.plusImage, isEditingFavorite && styles.checkboxImage]}
                   titleText={LocalesMessages.forMeOnly}
                   titleTextStyle={styles.createText}
                   mainContainerStyle={styles.createMainContainer}
@@ -82,15 +88,15 @@ const AddCategoryPopup = ({ isVisible = false, onPressClose, onPressAdd, onPress
               </>
             ) : (
               <>
-                {listecategorie.map(value => (
+                {categoryList.map(value => (
                   <CategoryOptionView
-                    key={value.id} // Ajoutez une clé unique pour chaque élément de la liste
+                    key={value.id} // Use unique key for each category
                     value={value}
                     selectedCategory={selectedCategory}
                     onPressOption={(category) => {
-                      console.log("category", category);
-                      setSelectedCategory(category);
-                      setSelectedCategoryTitle(category); // Capture le texte de la catégorie
+                      console.log("Selected category:", category);
+                      setSelectedCategory(value.id);
+                      setSelectedCategoryTitle(category);
                     }}
                   />
                 ))}
@@ -101,7 +107,7 @@ const AddCategoryPopup = ({ isVisible = false, onPressClose, onPressAdd, onPress
                   titleTextStyle={styles.createText}
                   mainContainerStyle={styles.createMainContainer}
                   leftImageTitleContainerStyle={styles.createLeftImageTitleContainer}
-                  onPress={() => {}}
+                  onPress={() => setIsEditingFavorite(true)} // Switch to create category mode
                   isHideDivider={true}
                 />
               </>
@@ -112,13 +118,11 @@ const AddCategoryPopup = ({ isVisible = false, onPressClose, onPressAdd, onPress
               labelStyle={[styles.confirmButtonText, styles.fontWeight500]}
               isDisable={!selectedCategory && !categoryName}
               onPress={() => {
-                if(isFromFavorite){
+                if (isEditingFavorite) {
                   onPressAdd1();
-                }else{
+                } else {
                   onPressAdd(selectedCategory);
                 }
-               
-                // Vous pouvez également appeler onPressAdd ici avec des paramètres, si nécessaire
               }}
             />
           </View>

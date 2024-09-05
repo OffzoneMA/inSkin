@@ -29,6 +29,7 @@ export const styles = StyleSheet.create({
   userAvatarImage: {
     height: 36,
     width: 36,
+    borderRadius: 25,
     marginRight: 10,
     resizeMode: 'contain',
   },

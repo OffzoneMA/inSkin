@@ -13,9 +13,8 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { encode } from 'base-64';
 // API
 import authApi from "../../api/auth";
-
+import { useNavigation } from '@react-navigation/native';
 const SearchUser = ({ navigation }) => {
-
   const [searchQuery, setSearchQuery] = useState('');
   const [users, setUsers] = useState([]);
 
@@ -28,8 +27,15 @@ const SearchUser = ({ navigation }) => {
       console.error(error);
     }
   };
+  const onPressUser = (userId) => {
+    navigation.navigate('SearchScreen', { userId });
+    // Logique pour récupérer les informations de l'utilisateur
+    console.log('User ID:', userId);
+  
+  };
 
   const renderItem = ({ item }) => {
+   
     let imageUrl = null;
     if (item.profileImage && item.profileImage.data && item.profileImage.data.data) {
      
@@ -40,21 +46,21 @@ const SearchUser = ({ navigation }) => {
     }
 
     return (
-      <View style={styles.userCard}>
+      <TouchableOpacity style={styles.userCard} onPress={() => onPressUser(item)}>
         {imageUrl ? (
           <Image source={{ uri: imageUrl }} style={styles.avatar} />
         ) : (
           <Image 
-                source={images.userAvatar} // Utilisez une image par défaut si imageUrl est null
-                style={styles.userAvatar}
-            />
+            source={images.userAvatar} // Utilisez une image par défaut si imageUrl est null
+            style={styles.avatar}
+          />
         )}
         <View style={styles.userInfo}>
           <Text style={styles.userName}>{item.firstName} {item.lastName}</Text>
-          <Text style={styles.userDetails}>{item.followers.length} Followers</Text>
-          <Text style={styles.userDetails}>{item.posts.length} Posts</Text>
+          <Text style={styles.userDetails}>{item.followers.length} abonnés</Text>
+          <Text style={styles.userDetails}>{item.posts.length} publications</Text>
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
 
@@ -63,7 +69,7 @@ const SearchUser = ({ navigation }) => {
       <View style={styles.searchBar}>
         <TextInput
           style={styles.searchInput}
-          placeholder="Search for a person"
+          placeholder="Rechercher une personne"
           value={searchQuery}
           onChangeText={setSearchQuery}
         />

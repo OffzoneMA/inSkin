@@ -70,7 +70,7 @@ const ProfileOptionView = props => {
           <View style={styles.rightImageContainer}>
             {isPushOption && rightButtonPushStatusText ? (
               <AppText
-                localizedText={rightButtonPushStatusText}
+                text={rightButtonPushStatusText}
                 size='font12px'
                 color={colors.tabBarGray}
                 style={[styles.rightPushOptionText, rightButtonPushStatusTextStyle]}

@@ -4,7 +4,7 @@ import AppText from '../AppText'
 import { styles } from './styles'
 import { colors } from '../../constants'
 
-const  AppButton = (props) => {
+const AppButton = (props) => {
   const {
     label,
     localizedText = {},
@@ -13,7 +13,10 @@ const  AppButton = (props) => {
     isLoading = false,
     labelStyle,
     onPress,
+    textColor = colors.white, // Default text color
+    backgroundColor = colors.pink, // Default background color
   } = props
+
   return (
     <TouchableOpacity
       onPress={() => {
@@ -36,7 +39,11 @@ const  AppButton = (props) => {
           size='font14px'
           text={localizedText}
           fontFamily='semiBold'
-          style={[styles.appButtonLabelText, labelStyle]}>
+          style={[
+            styles.appButtonLabelText,
+            labelStyle,
+            { color: textColor }, // Customizable text color
+          ]}>
           {label}
         </AppText>
       )}

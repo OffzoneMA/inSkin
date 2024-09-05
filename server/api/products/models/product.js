@@ -42,6 +42,37 @@ const productSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
+    dislikelike: {
+      type: Number,
+    },
+    likes: [
+      {
+        userId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User", // Reference to the User model
+          required: true,
+        },
+        like: {
+          type: Number,
+          enum: [1, -1, 0], // 1 pour "like", -1 pour "dislike", 0 pour annuler
+          required: true,
+        },
+        
+      },
+    ],
+    dislikes: [
+      {
+        userId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User", // Reference to the User model
+          required: true,
+        },
+        dislike: {
+          type: Number,
+        },
+        
+      },
+    ],
   comments: [
     {
       userId: {

@@ -22,6 +22,7 @@ import SupportScreen from '../screens/SupportScreen';
 import NotificationOptionsScreen from '../screens/NotificationOptionsScreen';
 import PushNotificationScreen from '../screens/PushNotificationScreen'
 import FeedDetailScreen from '../screens/FeedDetailScreen'
+import NotificationListScreen from '../screens/NotificationListScreen'
 const Stack = createStackNavigator();
 
 
@@ -82,11 +83,7 @@ export default function ProfileNavigator() {
         options={{ title: "Settings" }}
         component={Newpassword}
       />
-      <Stack.Screen
-        name="ScanNavigator"
-        options={{ title: "ScanNavigator" }}
-        component={ScanNavigator}
-      />
+      
       <Stack.Screen name={Route.SocialMediaListScreen} component={SocialMediaListScreen} />
       <Stack.Screen name={Route.SettingScreen} component={SettingScreen} />
       <Stack.Screen name={Route.PersonalDetailScreen} component={PersonalDetailScreen} />
@@ -96,6 +93,7 @@ export default function ProfileNavigator() {
       <Stack.Screen name={Route.NotificationOptionsScreen} component={NotificationOptionsScreen} />
       <Stack.Screen name={Route.PushNotificationScreen} component={PushNotificationScreen} />
       <Stack.Screen name={Route.FeedDetailScreen} component={FeedDetailScreen} />
+      <Stack.Screen name={Route.NotificationListScreen} component={NotificationListScreen} />
     </Stack.Navigator>
   );
 }

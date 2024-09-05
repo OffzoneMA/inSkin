@@ -32,7 +32,8 @@ const FavoriteScreen = () => {
   const [showActionModal, setShowActionModal] = useState(false)
   const [isSearchFilterApplied, setIsSearchFilterApplied] = useState(false)
   const { user } = useContext(AuthContext);
-  
+  const [selectedCategories, setSelectedCategories] = useState([]); // Pour stocker les catégories sélectionnées
+  const [filteredProducts, setFilteredProducts] = useState([]); // Produits filtrés à afficher
   // const getFavorite = async (_id) => {
   //   console.log("idhola",_id);
   //   try {
@@ -160,6 +161,30 @@ const FavoriteScreen = () => {
       
     }, [])
   );
+  const handleCategorySelect = (categoryName) => {
+    setSelectedCategories(prevCategories => {
+      if (prevCategories.includes(categoryName)) {
+        return prevCategories.filter(category => category !== categoryName); // Retirer la catégorie si déjà sélectionnée
+      } else {
+        return [...prevCategories, categoryName]; // Ajouter la catégorie si non sélectionnée
+      }
+    });
+  };
+
+  // Fonction pour filtrer les produits en fonction des catégories sélectionnées
+  const filterProductsByCategories = (selectedCategories) => {
+    console.log("selectedCategories",selectedCategories)
+    if (selectedCategories.length > 0) {
+      const filtered = favoriteList1.filter(product => 
+        selectedCategories.some(category => category.category === product.category)
+      );
+      setIsSearchFilterApplied(true)
+      console.log("filtered",filtered);
+      setFilteredProducts(filtered);
+    } else {
+      setFilteredProducts(favoriteList1); // Afficher tous les produits si aucune catégorie n'est sélectionnée
+    }
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -208,6 +233,7 @@ const FavoriteScreen = () => {
               style={[styles.categoryText]}
             />
           </View>
+         
         </View>
       ) : (
         <></>
@@ -224,7 +250,7 @@ const FavoriteScreen = () => {
           
         )}
       <FlatList
-        data={favoriteList1}
+        data={isSearchFilterApplied ? filteredProducts:favoriteList1}
         numColumns={2}
         horizontal={false}
         style={styles.body}
@@ -264,11 +290,9 @@ const FavoriteScreen = () => {
       <FilterModal
         isVisible={showFilterModal}
         listecategorie={favoriteList2}
-        onPressClose={() => {
-          setShowFilterModal(false)
-        }}
-        onApplyPress={() => {
-          setIsSearchFilterApplied(true)
+        onPressClose={() => setShowFilterModal(false)}
+        onApplyPress={(selectedCategories) => {
+          filterProductsByCategories(selectedCategories); // Appliquer les filtres
         }}
       />
       <ActionModal
