@@ -150,7 +150,7 @@ console.log("fpllowers",followers)
        <AppButton 
        localizedText="Ne plus suivre" 
        onPress={onPressEditProfile} 
-       backgroundColor={colors.categoryOptionSelected} // Fond personnalisé
+       isFollow="true"
        textColor={colors.pink} // Texte blanc
 
      />
