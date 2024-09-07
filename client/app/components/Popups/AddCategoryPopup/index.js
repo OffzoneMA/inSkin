@@ -94,7 +94,7 @@ const AddCategoryPopup = ({ isVisible = false, onPressClose, onPressAdd, onPress
                     value={value}
                     selectedCategory={selectedCategory}
                     onPressOption={(category) => {
-                      console.log("Selected category:", category);
+                      console.log("Selected category:", selectedCategory);
                       setSelectedCategory(category);
                       setSelectedCategoryTitle(category);
                     }}
@@ -120,6 +120,7 @@ const AddCategoryPopup = ({ isVisible = false, onPressClose, onPressAdd, onPress
               onPress={() => {
                 if (isEditingFavorite) {
                   onPressAdd1();
+                  setIsEditingFavorite(false)
                 } else {
                   onPressAdd(selectedCategory);
                 }

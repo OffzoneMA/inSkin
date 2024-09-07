@@ -374,6 +374,7 @@ function DiscoverHome({ navigation }) {
   );
   
   return (
+    
       <SafeAreaView style={styles.mainContainer}>
         <HomeHeader/>
       {followedProducts.length === 0 && ( // Condition pour afficher le texte uniquement si l'utilisateur ne suit pas encore de compte
@@ -429,6 +430,7 @@ function DiscoverHome({ navigation }) {
         editTitle={selectedCategoryTitleForEdit}
         isFromFavorite={false}
         onPressClose={() => {
+          
           setShowAddEditCategoryModal(false)
         }}
         onPressAdd1={() => {

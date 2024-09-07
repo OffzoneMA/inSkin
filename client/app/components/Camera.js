@@ -1,10 +1,10 @@
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View, Text ,TouchableOpacity} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useState, useContext, useEffect } from "react";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import { ScanContext } from "../contexts/scan-context";
-import { Camera } from "expo-camera";
-
+import { Camera, CameraType } from 'expo-camera/legacy';
+import { CameraView, useCameraPermissions } from 'expo-camera';
 import { TouchableNativeFeedback } from "react-native";
 
 import Paragraph from "./Paragraph";
@@ -15,18 +15,19 @@ import Button from './Button';
 
 export default function Cam({ flash, zoom }) {
 
+  //const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = Camera.useCameraPermissions();
   const {scanned, setScanned} = useContext(ScanContext);
 
   const { setQrcode } = useContext(ScanContext);
 
   const theme = useTheme();
-
-  const handleBarcodeScanned = (qr) => {
-    setQrcode({ date: new Date(), qr });
+ console.log("scanned".scanned)
+  const handleBarcodeScanned = ({ type, data }) => {
+    setQrcode({ date: new Date(), data});
     setScanned(true);
+    // alert(`Bar code with type ${type} and data ${data} has been scanned!`);
   };
-
   // Camera permissions are still loading
   if (!permission) return <View />;
 
@@ -51,7 +52,7 @@ export default function Cam({ flash, zoom }) {
 
   return (
     <View style={styles.container}>
-      <Camera
+      {/* <Camera
         style={styles.camera}
         flashMode={flash}
         zoom={zoom}
@@ -60,8 +61,23 @@ export default function Cam({ flash, zoom }) {
         }}
         onBarCodeScanned={scanned ? undefined : handleBarcodeScanned }
       >
-        <View />
-      </Camera>
+      </Camera> */}
+       <BarCodeScanner
+        onBarCodeScanned={scanned ? undefined : handleBarcodeScanned}
+        style={StyleSheet.absoluteFillObject}
+      />
+      {/* <View style={styles.container}>
+      <CameraView style={styles.camera}
+        flashMode={flash}
+        zoom={zoom}
+        barCodeScannerSettings={{
+          barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr],
+        }}
+        onBarCodeScanned={scanned ? undefined : handleBarcodeScanned } >
+          <View/>
+      </CameraView>
+    </View> */}
+      
     </View>
   );
 }
