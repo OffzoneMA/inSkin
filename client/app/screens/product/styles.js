@@ -13,6 +13,7 @@ export const styles = StyleSheet.create({
   productImage: {
     height: 300,
     width: deviceWidth - 40,
+    resizeMode: 'stretch',
     borderRadius: 10,
     marginTop: 32,
   },

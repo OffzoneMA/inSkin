@@ -27,7 +27,7 @@ export default function Home({ navigation }) {
   const [value, setValue] = useState(0);
 
   const { qrcode, setQrcode } = useContext(ScanContext);
-
+ console.log("qrcode",qrcode)
   const [isCustomPopupVisible, setIsCustomPopupVisible] = useState(false); // State to control custom pop-up visibility
   const { scanned, setScanned } = useContext(ScanContext);
 
@@ -72,7 +72,8 @@ export default function Home({ navigation }) {
 
   async function scanQRCodeFromGallery() {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status === "granted") {
+    console.log("status",status);
+    if (status === "denied") {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
       });
@@ -88,7 +89,7 @@ export default function Home({ navigation }) {
         }
       }
     }
-    if (status !== "granted") {
+    if (status !== "denied") {
       setAlertBox("File permission is required to scan qr-code from photo.");
     }
     setTimeout(() => {
@@ -101,7 +102,7 @@ export default function Home({ navigation }) {
     // Check if scanned is true
     if (scanned) {
       // Call getProductByBarcode function with the appropriate barcode value
-      getProductByBarcode(qrcode.qr.data);
+      getProductByBarcode(qrcode.data);
     }
   }, [scanned]); // Add scanned to the dependency array
 

@@ -464,13 +464,13 @@ function ProductHome({ route }) {
       {product.images[0] && product.images[0].contentType && product.images[0].data && product.images[0].data.data && product.images[0].data.data.length > 0 && (
         <Image 
           source={{ uri: 'data:' + product.images[0].contentType + ';base64,' + encode(product.images[0].data.data.map(byte => String.fromCharCode(byte)).join('')) }}
-          style={styles1.productImage}
+          style={styles.productImage}
 
         />  
       )}
     </View>
   ) : (
-    <Image source={images.homeCarouselAvatar} style={styles1.productImage} />
+    <Image source={images.homeCarouselAvatar} style={styles.productImage} />
   )}
      <View style={styles.productRatingContainer}>
      <View style={styles.flexRowWithCenterItem}>
