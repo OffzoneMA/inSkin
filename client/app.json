@@ -1,7 +1,7 @@
 {
   "expo": {
     "jsEngine": "hermes",
-    "name": "app",
+    "name": "inskin",
     "slug": "app",
     "version": "1.0.0",
     "userInterfaceStyle": "automatic",
@@ -19,16 +19,24 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.inskin.com"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./app/assets/images/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.inskin.com"
     },
     "web": {
       "favicon": "./app/assets/images/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "e65c7ac9-9da6-4cd0-a4fd-02e4992804d2"
+      }
+    },
+    "owner": "offzone"
   }
 }

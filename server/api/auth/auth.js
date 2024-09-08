@@ -1,5 +1,5 @@
 const express = require("express");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const asyncMiddleware = require("../../middleware/async");
 const { User, validate } = require("./models/user");
 const PasswordReset = require("./models/PasswordReset");

@@ -37,7 +37,7 @@ import Heading from "../../components/Heading";
 import Label from "../../components/Label";
 import SubHeading from "../../components/SubHeading";
 import Paragraph from "../../components/Paragraph";
-//import Carousel from 'react-native-snap-carousel';
+import Carousel from 'react-native-snap-carousel';
 import productActionsApi from "../../api/product_actions";
 import brandActions from "../../api/brand_actions";
 import authApi from "../../api/auth";
@@ -394,7 +394,7 @@ function DiscoverHome({ navigation }) {
         </>
       )}
         
-        {/* <View style={styles.mainContainer1}>
+        <View style={styles.mainContainer1}>
           <Carousel
         layout={'default'}
         data={comments}
@@ -403,7 +403,7 @@ function DiscoverHome({ navigation }) {
         itemWidth={310}
         hasParallaxImages={true}
          />
-        </View> */}
+        </View>
         <FlatList
             data={followedProducts}
             renderItem={({ item }) => {

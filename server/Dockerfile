@@ -11,10 +11,10 @@ WORKDIR /usr/src/app
 COPY package.json /usr/src/app/
 COPY package-lock.json /usr/src/app/
 
-RUN npm install --only=production
+#RUN npm install --only=production
 
 # RUN npm install -g npm@latest
-# RUN npm install --legacy-peer-deps
+ RUN npm install 
 
 # Copy app source code
 COPY . /usr/src/app

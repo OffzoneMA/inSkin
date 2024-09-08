@@ -1,5 +1,5 @@
 const superagent = require("supertest");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const { User } = require("./models/user");
 const app = require("../../server"); // Link to your server file
 const mongoose = require("mongoose");
