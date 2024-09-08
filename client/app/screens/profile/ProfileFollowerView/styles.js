@@ -24,6 +24,7 @@ const styles = StyleSheet.create({
   },
   numberText: {
     lineHeight: 17,
+    
   },
   followerPostText: {
     lineHeight: 17,

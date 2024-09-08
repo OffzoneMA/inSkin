@@ -92,14 +92,16 @@ function ProfileEdit1({ navigation }) {
   };
  
   async function modifyProfileImage() {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status === "granted") {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    console.log("status",status)
+    if (status == "granted") {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         aspect: [1, 1],
         quality: 1,
       });
+      console.log("rsult",result);
       if (!result.canceled) {
         setSelectedImageUri(result.assets[0].uri); // Step 2: Update selected image URI
         //console.log(result.assets[0]);
@@ -121,7 +123,7 @@ function ProfileEdit1({ navigation }) {
       }
     }
     if (status !== "granted") {
-      setAlertBox("File permission is required to upoad photo.");
+      setAlertBox("Une autorisation d'accès aux fichiers est requise pour télécharger la photo.");
     }
     setTimeout(() => {
       setAlertBox(null);

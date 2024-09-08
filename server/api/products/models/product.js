@@ -77,24 +77,15 @@ const productSchema = new mongoose.Schema({
     {
       userId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User", // Reference to the User model
+        ref: "User", 
         required: true,
       },
       text: {
         type: String,
-        /*
-        required: function() {
-          return !this.review; // Comment is required if review is not provided
-        },
-        */
       },
       review: {
         type: Number,
-        /*
-        required: function() {
-          return !this.text; // Review is required if comment is not provided
-        },
-        */
+      
       },
       createdAt: {
         type: Date,

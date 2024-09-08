@@ -33,11 +33,12 @@ const add_product = (
 // GET all products
 const getAllProducts = () => client.get("/products/users-with-products");
 const getmyproduct = () => client.get("/products/my-products");
+const getmyproductcount= () => client.get("/products/my-products/count");
 const getfollowedproducts=()=>client.get("/products/followed-products")
 const getfavoriteproducts=()=>client.get("/products/favorite-products")
 const getnotifications=()=>client.get("/products/notifications");
 // GET a single product by ID
-const getProductById = async (id) => {
+const getProductById = async (getmyproductcountid) => {
   try {
     const response = await client.get(`/products/get-product-byid/${id}`);
     
@@ -133,5 +134,6 @@ export default {
     getmyproduct,
     getfavoriteproducts,
     addlikeToProduct,
-    getnotifications
+    getnotifications,
+    getmyproductcount
 };

@@ -38,6 +38,17 @@ const FavoriteDetailScreen = () => {
   const average = sum / array.length; 
   return average;
 }
+function calculateratingsCount(array) {
+  if (!Array.isArray(array) || array.length === 0) {
+    return 0; // Retourne 0 si le tableau est vide ou non valide
+}
+const sum = array.reduce((accumulator, value) => {
+  return accumulator + value;
+}, 0);
+console.log("sum",sum);
+
+return sum;
+}
   const onShareProduct = async () => {
     try {
       const result = await Share.share({
@@ -136,6 +147,7 @@ const FavoriteDetailScreen = () => {
                 item={item}
                 onPressOption={() => setShowActionModal(true)}
                 averageRating={calculateProductRating(item.comment)}
+                ratingsCount={calculateratingsCount(item.comment)}
               />
             )
           }}

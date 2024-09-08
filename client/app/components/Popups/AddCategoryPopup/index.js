@@ -12,7 +12,7 @@ import ProfileOptionView from '../../ProfileOptionView';
 import AppTextInput from '../../AppTextInput';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-const AddCategoryPopup = ({ isVisible = false, onPressClose, onPressAdd, onPressAdd1, isFromFavorite, editTitle = '', onChangeText, listecategorie, onPresscate }) => {
+const AddCategoryPopup = ({ isVisible = false, onPressClose, onPressAdd, onPressAdd1, isFromFavorite, editTitle = '', onChangeText, listecategorie, isFromEdite }) => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedCategoryTitle, setSelectedCategoryTitle] = useState('');
   const [isSelectedCheckBox, setIsSelectedCheckBox] = useState(false);
