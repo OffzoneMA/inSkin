@@ -1192,5 +1192,28 @@ router.post(
     }
   })
 );
+router.get(
+  "/my-followers/count",
+  auth,
+  asyncMiddleware(async (req, res) => {
+    try {
+      const userId = req.user._id; // ID de l'utilisateur connecté
+
+      // Récupérer l'utilisateur connecté avec le nombre de followers
+      const user = await User.findById(userId).select("followers");
+
+      if (!user) {
+        return res.status(404).json({ error: "Utilisateur non trouvé" });
+      }
+
+      const followerCount = user.followers.length; // Calculer le nombre de followers
+
+      res.json({ followerCount }); // Retourner le nombre de followers
+    } catch (error) {
+      console.error("Erreur lors du calcul des followers:", error);
+      res.status(500).json({ error: "Erreur interne du serveur." });
+    }
+  })
+);
 
 module.exports = router;

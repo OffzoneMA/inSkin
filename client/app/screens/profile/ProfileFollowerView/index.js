@@ -10,7 +10,7 @@ import { selectUserProfile } from '../../../redux/selector/appSelectors'
 import { useContext, useLayoutEffect } from "react";
 import { StyleSheet, View, Image, ScrollView, SafeAreaView, TouchableOpacity } from "react-native";
 import { useTheme, Text, Icon } from "@ui-kitten/components";
-
+import productActionsApi from "../../../api/product_actions";
 import AuthContext from "../../../contexts/auth";
 import authStorage from "../../../utilities/authStorage";
 import { useState } from "react";
@@ -26,7 +26,8 @@ const ProfileFollowerView = ({ onPressEditProfile }) => {
   const { user } = useContext(AuthContext);
   const theme = useTheme();
   const [selectedImageUri, setSelectedImageUri] = useState(null);
-
+  const [productCount, setProductCount] = useState(null);
+  const [folowedCount, setfolowedCount] = useState(null);
   const getProfileImageApi = useApi(authApi.getProfileImage);
 
   const getProfileImage = async () => {
@@ -42,20 +43,52 @@ const ProfileFollowerView = ({ onPressEditProfile }) => {
       console.error('Error fetching profile image:', error);
     }
   };
+  const getmyproductcount = async () => {
+    try {
+      const result = await productActionsApi.getmyproductcount();
+      product=result.data;
+      if (!result.ok) {
+        console.error("Erreur lors de la récupération des favoris");
+        return;
+      } else{
+        product=result.data;
+        setProductCount(product)
+      }
+    } catch (error) {
+      console.error("Error getting product data: ", error);
+    }
+  };
+  const getmyfollowerscount = async () => {
+    try {
+      const result = await authApi.getmyfollowerscount();
+      product=result.data;
+      if (!result.ok) {
+        console.error("Erreur lors de la récupération des favoris");
+        return;
+      } else{
+        product=result.data;
+        setfolowedCount(product)
+      }
+    } catch (error) {
+      console.error("Error getting product data: ", error);
+    }
+  };
+  
   useFocusEffect(
     React.useCallback(() => {
+      getmyproductcount();
+      getmyfollowerscount();
       if (user && user._id) {
         getProfileImage();
       }
     }, [])
   );
-
   const userProfile = {
     profilePicture: "person",
     firstName: user ? user.firstName : null,
     lastName: user ? user.lastName : null,
     userName: user ? user.userName : null,
-    followers:user ? user.followers:null
+    
   };
   
   return (
@@ -77,13 +110,19 @@ const ProfileFollowerView = ({ onPressEditProfile }) => {
           />
           <View style={styles.followerPostContainer}>
             <View style={styles.followerContainer}>
-              <AppText
-                text={userProfile.followers}
+            {folowedCount ? ( <AppText
+                text={folowedCount.followerCount}
                 size='font12px'
                 fontFamily='medium'
                 color={colors.lightBlack}
                 style={styles.numberText}
-              />
+              />):( <AppText
+                text='0'
+                size='font12px'
+                fontFamily='medium'
+                color={colors.lightBlack}
+                style={styles.numberText}
+              />)}
               <AppText
               text={LocalesMessages.followers}
                 size='font12px'
@@ -92,13 +131,20 @@ const ProfileFollowerView = ({ onPressEditProfile }) => {
               />
             </View>
             <View>
-              <AppText
-                text='34'
+            {productCount ? ( <AppText
+                text={productCount.productCount}
                 size='font12px'
                 fontFamily='medium'
                 color={colors.lightBlack}
                 style={styles.numberText}
-              />
+              />):( <AppText
+                text='0'
+                size='font12px'
+                fontFamily='medium'
+                color={colors.lightBlack}
+                style={styles.numberText}
+              />)}
+             
               <AppText
               text={LocalesMessages.posts}
                 size='font12px'

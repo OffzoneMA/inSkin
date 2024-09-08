@@ -56,6 +56,7 @@ function ProductHome({ route }) {
   const { user } = useContext(AuthContext);
 
   const [commentText, setCommentText] = useState("");
+  const [sortByRecent, setSortByRecent] = useState(true); // true pour les plus récents, false pour les plus anciens
 
   const [commentRating, setCommentRating] = useState(0);
 
@@ -135,7 +136,17 @@ function ProductHome({ route }) {
       console.error('Erreur lors de l\'ajout aux favoris:', error);
     }
   };
-  
+  const toggleSortOrder = () => {
+    const comments1 = comments.sort((a, b) => {
+      if (sortByRecent) {
+        return new Date(b.createdAt) - new Date(a.createdAt); // Trier par date décroissante
+      } else {
+        return new Date(a.createdAt) - new Date(b.createdAt); // Trier par date croissante
+      }
+    });
+    setComments(comments1);
+    setSortByRecent(prevState => !prevState);
+  };
   
   useFocusEffect(
     React.useCallback(() => {
@@ -174,8 +185,6 @@ function ProductHome({ route }) {
         const userIds = result.data.map(comment => comment.userId).filter(id => id);
         //console.log("userids",userIds);
         const usernamesIds = await authApi.getUsersByIds(userIds);
-        //console.log("mais moi ",usernamesIds)
-        // Create a list of comments with usernames
         const comments = result.data.map(comment => {
           const user = usernamesIds.find(u => u._id === comment.userId);
           
@@ -184,7 +193,6 @@ function ProductHome({ route }) {
               ...comment,
               userName: user ? user.userName : 'Unknown User' ,// Handle the case if user is not found
               profileImage: user && user.profileImage && user.profileImage.data ? user.profileImage : 'Unknown User',
-              
               firstName:user ? user.firstName : 'Unknown User' ,
           };
           
@@ -581,13 +589,21 @@ function ProductHome({ route }) {
             size={'font18px'}
             fontFamily='medium'
           />
-          <TouchableOpacity style={styles.flexRowWithCenterItem}>
-            <AppText
-              text={LocalesMessages.mostRecent}
-              style={styles.mostRecentText}
-              size={'font14px'}
-            />
-            <Image source={images.arrowThin} style={styles.arrowIcon} />
+          <TouchableOpacity style={styles.flexRowWithCenterItem} onPress={toggleSortOrder}>
+          <AppText
+    text={sortByRecent ? "Les plus anciens" :LocalesMessages.mostRecent} // Affiche "Les plus récents" ou "Les plus anciens"
+    style={styles.mostRecentText}
+    size={'font14px'}
+  />
+  
+  {/* Changer l'icône en fonction de l'ordre de tri */}
+  <Image 
+    source={images.arrowThin} // Icone flèche vers le haut si récent, vers le bas si ancien
+    style={[
+      styles.arrowIcon, 
+      { transform: [{ rotate: sortByRecent ? '180deg' : '0deg' }] }  // Rotation de 180 degrés si récent
+    ]} 
+  />
           </TouchableOpacity>
         </View>
         <View

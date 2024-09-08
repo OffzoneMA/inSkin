@@ -313,7 +313,7 @@ function DiscoverHome({ navigation }) {
           </View>
   
           <AppButton
-            localizedText='Follow'
+            localizedText='Suivre'
             buttonStyle={styles.followButton}
             onPress={() =>handleFollow1(item.email)}
           />

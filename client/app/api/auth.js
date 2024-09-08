@@ -56,7 +56,7 @@ const register = (
     reader_genres, */
   });
 
-
+const getmyfollowerscount= () => client.get("/auth/my-followers/count");
 const checkUserStatus = () => client.get("/auth/status");
 const updateProfileImage = (userId, image) => {
   const formData = new FormData();
@@ -229,6 +229,7 @@ export default {
   getfavoriteproducts,
   getCategories,
   favoriteproductsbycategory,
-  allfavoriteproducts
+  allfavoriteproducts,
+  getmyfollowerscount,
 
 };

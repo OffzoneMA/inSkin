@@ -6,8 +6,8 @@ import styles from './styles'
 import { colors, images } from '../../constants'
 import RatingView from '../RatingView'
 
-const ProductItemView = ({ index, item, item1, onPressOption, isFromFavoriteList,averageRating, onPressItem}) => {
- 
+const ProductItemView = ({ index, item, item1, onPressOption, isFromFavoriteList,averageRating, ratingsCount , onPressItem}) => {
+  console.log("averageRating", averageRating)
     
   const imageSource = item.images && item.images.length > 0  
   ? { uri: `data:${item.images[0].contentType};base64,${item.images[0].data}` }
@@ -79,9 +79,9 @@ const ProductItemView = ({ index, item, item1, onPressOption, isFromFavoriteList
             ) : (
               <></>
             )}
-            {item.ratingsCount ? (
+            {item.comment ? (
               <AppText size='font12px' color={colors.lightGray} style={[styles.reviewTotalCntText]}>
-                {`(${item.ratingsCount})`}
+                {`(${ratingsCount})`}
               </AppText>
             ) : (
               <></>

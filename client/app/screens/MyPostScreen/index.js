@@ -35,6 +35,7 @@ const MyPostScreen = () => {
   const getProfileImageApi = useApi(authApi.getProfileImage);
   const authContext = useContext(AuthContext);
   const { user } = useContext(AuthContext);
+  const [comments, setComments] = useState([]);
   const getProfileImage = async () => {
     try {
       const profileImage = await getProfileImageApi.request(user._id);
@@ -48,6 +49,30 @@ const MyPostScreen = () => {
       console.error('Error fetching profile image:', error);
     }
   };
+  function calculateProductRating(array) {
+    if (!Array.isArray(array) || array.length === 0) {
+      return 0; // Retourne 0 si le tableau est vide ou non valide
+  }
+  const sum = array.reduce((accumulator, value) => {
+    return accumulator + value;
+}, 0);
+
+  console.log("sum",sum);
+  const average = sum / array.length; 
+  return average;
+}
+function calculateratingsCount(array) {
+  if (!Array.isArray(array) || array.length === 0) {
+    return 0; // Retourne 0 si le tableau est vide ou non valide
+}
+const sum = array.reduce((accumulator, value) => {
+  return accumulator + value;
+}, 0);
+console.log("sum",sum);
+
+return sum;
+}
+
   useFocusEffect(
     React.useCallback(() => {
       if (user && user._id) {
@@ -69,9 +94,10 @@ const MyPostScreen = () => {
         return;
       } else{
         product=result.data;
-        console.log("pdhdhdh",product)
+        console.log("avant le set",product);
+       
         setFavoriteList(product);
-        console.log("favorit",favoriteList);
+        console.log("publuier post",favoriteList);
       }
     } catch (error) {
       console.error("Error getting product data: ", error);
@@ -81,8 +107,6 @@ const MyPostScreen = () => {
   useFocusEffect(
     React.useCallback(() => {
       getmyproduct();
-      // getCategories();
-      // getFavorite(user._id)
       
     }, [])
   );
@@ -90,7 +114,7 @@ const MyPostScreen = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
        <CustomHeaderView
-          title={LocalesMessages.posts}
+          title="Mes publications"
           isFromNotificationHeader={false}
           rightButtonImage={selectedImageUri ?{ uri: selectedImageUri }:images.userAvatar} 
           rightImageStyle={{
@@ -105,7 +129,7 @@ const MyPostScreen = () => {
       
       {favoriteList.length === 0 && (
           <ProductListEmptyView
-            emptyMessage={LocalesMessages.youDontHaveAnyFavorites}
+            emptyMessage="vous n'avez aucune publication"
             mainContainerStyle={styles.emptyViewMainContainer}
             onPressScanProduct={() => {
               setFavoriteList(FavoriteListData.favoriteList)
@@ -126,6 +150,8 @@ const MyPostScreen = () => {
               isFromFavoriteList={false}
               item={item}
               onPressOption={() => setShowActionModal(true)}
+              averageRating={calculateProductRating(item.comment)}
+              ratingsCount={calculateratingsCount(item.comment)}
               onPressItem={() => {
                 navigation.navigate(Route.FavoriteDetailScreen, {
                   listName: item.favoriteListName,

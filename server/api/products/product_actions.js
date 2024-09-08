@@ -639,6 +639,63 @@ router.get(
     }
   })
 );
+// router.get(
+//   "/my-products",
+//   auth,
+//   asyncMiddleware(async (req, res) => {
+//     try {
+//       const userId = req.user._id; // ID de l'utilisateur connecté
+
+//       // Agrégation pour récupérer les produits publiés par l'utilisateur connecté
+//       const publishedProducts = await Product.aggregate([
+//         {
+//           $match: {
+//             userId: userId, // Filtrer les produits publiés par l'utilisateur connecté
+//           },
+//         },
+//         {
+//           $lookup: {
+//             from: "users", // Nom de la collection des utilisateurs
+//             localField: "userId",
+//             foreignField: "_id",
+//             as: "user",
+//           },
+//         },
+//         {
+//           $unwind: "$user", // Décomposer le tableau pour avoir un seul objet utilisateur
+//         },
+//         {
+//           $lookup: {
+//             from: "comments", // Nom de la collection des commentaires
+//             localField: "_id", // Champ de correspondance dans le produit
+//             foreignField: "productId", // Correspond à "productId" dans les commentaires
+//             as: "comments",
+//           },
+//         },
+//         {
+//           $project: {
+//             productId: "$_id",
+//             productName: "$productDetails.name",
+//             productBrand: "$productDetails.brand",
+//             productDescription: "$productDetails.description",
+//             userId: "$user._id", // Informations sur l'utilisateur
+//             userName: "$user.name", // Nom de l'utilisateur
+//             images: "$images",
+//             createdAt: "$createdAt",
+//             comments:"$comments",
+//             comment: "$comments.review", // Projette le champ review des commentaires
+//             commentDate: "$comments.createdAt",
+//           },
+//         },
+//       ]);
+//      console.log("publishedProducts",publishedProducts);
+//       res.json(publishedProducts); // Retourner les produits publiés avec leurs détails
+//     } catch (error) {
+//       console.error("Erreur lors de la récupération des produits:", error);
+//       res.status(500).json({ error: "Erreur interne du serveur." });
+//     }
+//   })
+// );
 router.get(
   "/my-products",
   auth,
@@ -655,7 +712,7 @@ router.get(
         },
         {
           $lookup: {
-            from: "users", // Nom de la collection des utilisateurs
+            from: "users", // Collection des utilisateurs
             localField: "userId",
             foreignField: "_id",
             as: "user",
@@ -665,46 +722,47 @@ router.get(
           $unwind: "$user", // Décomposer le tableau pour avoir un seul objet utilisateur
         },
         {
-          $lookup: {
-            from: "comments", // Nom de la collection des commentaires
-            localField: "_id", // Champ de correspondance dans le produit
-            foreignField: "productId", // Correspond à "productId" dans les commentaires
-            as: "comments",
-          },
-        },
-        {
           $project: {
             productId: "$_id",
             productName: "$productDetails.name",
             productBrand: "$productDetails.brand",
             productDescription: "$productDetails.description",
-            userId: "$user._id", // Informations sur l'utilisateur
-            userName: "$user.name", // Nom de l'utilisateur
             images: "$images",
             createdAt: "$createdAt",
-            comments: {
-              // Extraire les informations des commentaires
-              $map: {
-                input: "$comments",
-                as: "comment",
-                in: {
-                  text: "$$comment.text",
-                  review: "$$comment.review",
-                  createdAt: "$$comment.createdAt",
-                },
-              },
-            },
+            userId: "$user._id",
+            userName: "$user.userName",
+            comment:"$comments.review",
+           
           },
         },
       ]);
-     console.log("publishedProducts",publishedProducts);
-      res.json(publishedProducts); // Retourner les produits publiés avec leurs détails
+
+      res.json(publishedProducts); // Retourner les produits publiés avec leurs commentaires
+      console.log("publishedProducts",publishedProducts);
     } catch (error) {
       console.error("Erreur lors de la récupération des produits:", error);
       res.status(500).json({ error: "Erreur interne du serveur." });
     }
   })
 );
+router.get(
+  "/my-products/count",
+  auth,
+  asyncMiddleware(async (req, res) => {
+    try {
+      const userId = req.user._id; // ID de l'utilisateur connecté
+
+      // Compter le nombre de produits publiés par l'utilisateur connecté
+      const productCount = await Product.countDocuments({ userId: userId });
+
+      res.json({ productCount }); // Retourner le nombre de produits publiés
+    } catch (error) {
+      console.error("Erreur lors du comptage des produits:", error);
+      res.status(500).json({ error: "Erreur interne du serveur." });
+    }
+  })
+);
+
 router.get("/notifications",auth, async (req, res) => {
   try {
     const userId = req.user._id; // ID de l'utilisateur connecté, obtenu via le middleware d'authentification

@@ -71,9 +71,9 @@ export default function Home({ navigation }) {
   
 
   async function scanQRCodeFromGallery() {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
     console.log("status",status);
-    if (status === "denied") {
+    if (status === "granted") {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
       });
@@ -85,12 +85,12 @@ export default function Home({ navigation }) {
           setQrcode({ date: new Date(), qr: scanResult[0] });
           setScanned(true);
         } else {
-          setAlertBox("No qr-code found");
+          setAlertBox("Pas de code QR trouvé.");
         }
       }
     }
-    if (status !== "denied") {
-      setAlertBox("File permission is required to scan qr-code from photo.");
+    if (status !== "granted") {
+      setAlertBox("Une autorisation d'accès aux fichiers est requise pour scanner le code QR à partir de la photo.");
     }
     setTimeout(() => {
       setAlertBox(null);
