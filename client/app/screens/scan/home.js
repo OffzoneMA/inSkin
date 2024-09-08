@@ -53,7 +53,7 @@ export default function Home({ navigation }) {
   const getProductByBarcode = async (barcode) => {
     try {
       const result = await productActionsApi.getProductByBarcode(barcode);
-  
+      
       if (result.ok) {
         // Handle the case when result is ok
         setScannedProduct(result.data);
@@ -176,7 +176,7 @@ export default function Home({ navigation }) {
         isVisible={isCustomPopupVisible}
         onClose={closeCustomPopup}
         onAddProduct={() => 
-          navigation.navigate("AddProduct", {barcode: qrcode.qr.data})
+          navigation.navigate("AddProduct", {barcode: qrcode.data})
         }
       />
     </View>
