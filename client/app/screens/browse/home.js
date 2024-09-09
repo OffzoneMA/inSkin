@@ -37,7 +37,7 @@ import Heading from "../../components/Heading";
 import Label from "../../components/Label";
 import SubHeading from "../../components/SubHeading";
 import Paragraph from "../../components/Paragraph";
-import Carousel from 'react-native-snap-carousel';
+//import Carousel from 'react-native-snap-carousel';
 import productActionsApi from "../../api/product_actions";
 import brandActions from "../../api/brand_actions";
 import authApi from "../../api/auth";
@@ -393,16 +393,23 @@ function DiscoverHome({ navigation }) {
           
         </>
       )}
+        <View style={styles.mainContainer}>
+        <FlatList
+        horizontal
         
-        <View style={styles.mainContainer1}>
-          <Carousel
-        layout={'default'}
-        data={comments}
-        renderItem={({ item }) => <Item item={item} />}
-        sliderWidth={900}
-        itemWidth={310}
-        hasParallaxImages={true}
-         />
+          data={comments}
+          renderItem={({ item }) => <Item item={item}  handleDelete={handleDelete} />}
+          keyExtractor={(item) => item._id}
+          
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={onRefresh}
+              colors={[theme['color-primary-default']]} // Array of colors
+              progressBackgroundColor={theme["background-basic-color-2"]} // Background color of the indicator
+            />
+          }
+        />
         </View>
         <FlatList
             data={followedProducts}
@@ -486,6 +493,10 @@ function DiscoverHome({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  mainContainer: {
+    flex: 1,
+    backgroundColor: colors.white,
+  },
   mainContainer: {
     flex: 1,
     backgroundColor: colors.white,
