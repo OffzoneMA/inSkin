@@ -52,6 +52,7 @@ const ProfileFollowerView = ({ onPressEditProfile }) => {
         return;
       } else{
         product=result.data;
+
         setProductCount(product)
       }
     } catch (error) {
@@ -111,7 +112,7 @@ const ProfileFollowerView = ({ onPressEditProfile }) => {
           <View style={styles.followerPostContainer}>
             <View style={styles.followerContainer}>
             {folowedCount ? ( <AppText
-                text={folowedCount.followerCount}
+               text={folowedCount?.followerCount !== undefined && folowedCount?.followerCount !== 0 ? folowedCount.followerCount : '0'}
                 size='font12px'
                 fontFamily='medium'
                 color={colors.lightBlack}
@@ -132,7 +133,7 @@ const ProfileFollowerView = ({ onPressEditProfile }) => {
             </View>
             <View>
             {productCount ? ( <AppText
-                text={productCount.productCount}
+                text={productCount?.productCount !== undefined && productCount?.productCount !== 0 ? productCount.productCount : '0'}
                 size='font12px'
                 fontFamily='medium'
                 color={colors.lightBlack}
