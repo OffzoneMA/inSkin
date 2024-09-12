@@ -157,6 +157,7 @@ const handleOKPress = ({
   };
 
   const handleImagePicker = async () => {
+    
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -188,7 +189,7 @@ const handleOKPress = ({
     // Your function to run when the component is mounted
     getAllBrands();
     (async () => {
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
       if (status !== 'granted') {
         Alert.alert('Permission required', 'You need to enable camera roll access for selecting images.');
       }

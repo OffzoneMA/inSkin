@@ -56,7 +56,6 @@ router.post(
 );
 
 
-
 router.put('/change-password', auth, async (req, res) => {
   const { email, newPassword } = req.body;
 

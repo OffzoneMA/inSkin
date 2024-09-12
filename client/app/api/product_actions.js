@@ -38,7 +38,7 @@ const getfollowedproducts=()=>client.get("/products/followed-products")
 const getfavoriteproducts=()=>client.get("/products/favorite-products")
 const getnotifications=()=>client.get("/products/notifications");
 // GET a single product by ID
-const getProductById = async (getmyproductcountid) => {
+const getProductById = async (id) => {
   try {
     const response = await client.get(`/products/get-product-byid/${id}`);
     
