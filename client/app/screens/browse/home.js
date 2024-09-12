@@ -232,6 +232,7 @@ function DiscoverHome({ navigation }) {
 
   const getProductById = async (_id) => {
     try {
+      console.log("_id",_id);
       const result = await productActionsApi.getProductById(_id);
       console.log("les produits disponibles ", {
         _id: result._id,
@@ -311,7 +312,6 @@ function DiscoverHome({ navigation }) {
               style={[styles.productImage, { marginRight: 0 }]}
             />
           </View>
-  
           <AppButton
             localizedText='Suivre'
             buttonStyle={styles.followButton}
@@ -380,33 +380,29 @@ function DiscoverHome({ navigation }) {
       {followedProducts.length === 0 && ( // Condition pour afficher le texte uniquement si l'utilisateur ne suit pas encore de compte
         <>
           <View style={{ alignItems: 'center' }}>
-            <Text style={{ color: 'black', fontWeight: 'bold', textAlign: 'center', fontSize: 25 }}>Welcome to INSKINE</Text>
+            <Text style={{ color: 'black', fontWeight: 'bold', textAlign: 'center', fontSize: 25 }}>Bienvenue sur InSkin</Text>
           </View>
           <View style={{ alignItems: 'center' }}>
             <Text style={{ textAlign: 'center', fontSize: 18 }}><Text style={{ textAlign: 'center' }}>
-              Follow people to {'\n'}
-              start seeing the products{'\n'}
-              and posts they share.
+            Suivez des personnes pour  {'\n'}
+            commencer à voir les produits et  et les {'\n'}
+            publications qu’ils partagent.
             </Text></Text>
           </View>
           
           
         </>
       )}
-        <View style={styles.mainContainer}>
+        <View style={styles.mainContainer1}>
         <FlatList
         horizontal
-        
           data={comments}
           renderItem={({ item }) => <Item item={item}  handleDelete={handleDelete} />}
-          keyExtractor={(item) => item._id}
-          
+          keyExtractor={(item) => item._id}  
           refreshControl={
             <RefreshControl
               refreshing={isRefreshing}
               onRefresh={onRefresh}
-              colors={[theme['color-primary-default']]} // Array of colors
-              progressBackgroundColor={theme["background-basic-color-2"]} // Background color of the indicator
             />
           }
         />
@@ -497,9 +493,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.white,
   },
-  mainContainer: {
-    flex: 1,
-    backgroundColor: colors.white,
+  mainContainer1: {
+    alignItems: 'center',
+    marginTop: 60,
   },
   container: {
     flex: 1,

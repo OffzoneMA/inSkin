@@ -19,17 +19,20 @@ import authApi from "../api/auth";
 import useApi from "../hooks/useApi";
 import authStorage from "../utilities/authStorage";
 import style from './style';
+import AppTextInput from '../components/AppTextInput';
+import AppText from '../components/AppText'
+import { colors, images } from '../constants';
+import { LocalesMessages } from '../constants/locales'
 const validationSchema = Yup.object({
   firstName: Yup.string().required().label("First name"),
-  //lastName: Yup.string().label("Last Name"),
   lastName: Yup.string().label("Last Name"),
-  email: Yup.string().required().email().label("Email"),
-  password: Yup.string().required().min(4).label("Password"),
+  lastName: Yup.string().label("Last Name"),
+  email: Yup.string().required("Email est requis").email("Email invalide").label("Email"),
+  password: Yup.string().required("Mot de passe requis").min(4, "Le mot de passe doit contenir au moins 4 caractères").label("Password"),
   passwordConfirmation: Yup.string()
     .required("Password needs to be confirmed")
-    .oneOf([Yup.ref("password"), null], "Passwords must match"),
+    .oneOf([Yup.ref("password"), null], "Les mots de passe ne correspondent pas"),
 });
-
 export default function RegisterScreen({ route, navigation }) {
   const [isFormValid, setIsFormValid] = useState(false);
   const [isFormFilled, setIsFormFilled] = useState(false);
@@ -39,6 +42,7 @@ export default function RegisterScreen({ route, navigation }) {
   const [acceptedConditions, setAcceptedConditions] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
   const authContext = useContext(AuthContext);
+  const [currentError,setCurrentError] = React.useState('');
   const checkFormFilled = (values) => {
     const { firstName, lastName, email, password, passwordConfirmation } = values;
     return !!firstName && !!lastName && !!email && !!password && !!passwordConfirmation;
@@ -129,8 +133,17 @@ export default function RegisterScreen({ route, navigation }) {
       readerGenres
     );
    console.log(result)
+
     if (!result.ok) {
-      //toast.show(result.data, {type: "danger"});
+      setShowTerms(false);
+      if (result.status === 400) {
+        console.log("Un utilisateur est déjà enregistré avec cet e-mail !");
+        setCurrentError("Un utilisateur est déjà enregistré avec cet e-mail !")
+      } else {
+        console.log("Une erreur est survenue !");
+        setCurrentError("Une erreur est survenue !")
+      }
+
       return;
     }
      
@@ -149,9 +162,8 @@ export default function RegisterScreen({ route, navigation }) {
     }, 300);
   };
  const handleSubmit1 = async() => {
+   setCurrentError("")
     console.log("sgsgsgsg")
-    
-
     setShowTerms(true);
   };
   const handleSubmitwhithgoogle = async() => {
@@ -168,11 +180,13 @@ export default function RegisterScreen({ route, navigation }) {
         <KeyboardAwareScrollView contentContainerStyle={{ flex: 1 }}>
        
           <View >
-             <Text style={{fontSize: 40, fontWeight: 'bold'}}>Create Account</Text> 
-             <Text style={{ fontSize: 18, marginVertical: 10}}>Sign Up</Text>
+             <Text style={{fontSize: 30, fontWeight: 'bold'}}>Créer un compte</Text> 
+             <Text style={{ fontSize: 18, marginVertical: 10}}>S'inscrire</Text>
             
           </View>
-
+          {currentError ? (
+                  <Text style={{ color: 'red', marginTop: 5 }}>{currentError}</Text>
+                ) : null}
           <Formik
             initialValues={{
               firstName: "",
@@ -195,131 +209,58 @@ export default function RegisterScreen({ route, navigation }) {
             }) => (
               <>
                 <ScrollView>
-                <Text style={style.label}>Username:</Text>
-                    <View style={[style.action, touched.firstName && errors.firstName && styles.inputError]}>
-                      <TextInput
-                      style={style.textInput}
-                        placeholder="Enter your username"
-                        autoCompleteType="name"
-                        keyboardType="default"
-                        returnKeyType="next"
-                        textContentType="givenName"
-                        autoCapitalize="none"
-                        value={values.firstName}
-                        onChangeText={handleChange("firstName")}
-                        errorMessage={errors.firstName}
-                        onBlur={() => setFieldTouched("firstName")}
-                        errorVisible={touched.firstName}
-                      />
-                      {touched.firstName && errors.firstName && (
-                 <FontAwesome name="exclamation-circle" color="red" size={24} style={{ marginRight: 5 }} />
-                    )}
-                    </View>
-                    {touched.firstName  && errors.firstName && (
-                      <Text style={styles.errorText}>{errors.firstName}</Text>
-                              )}
-                              <Text style={style.label}>lastName:</Text>
-                    <View style={[style.action, touched.lastName && errors.lastName && styles.inputError]}>
-                      <TextInput
-                      style={style.textInput}
-                        placeholder="Enter your lastName"
-                        autoCompleteType="name"
-                        keyboardType="default"
-                        returnKeyType="next"
-                        textContentType="givenName"
-                        autoCapitalize="none"
-                        value={values.lastName}
-                        onChangeText={handleChange("lastName")}
-                        errorMessage={errors.lastName}
-                        onBlur={() => setFieldTouched("lastName")}
-                        errorVisible={touched.lastName}
-                      />
-                      {touched.lastName && errors.lastName && (
-                 <FontAwesome name="exclamation-circle" color="red" size={24} style={{ marginRight: 5 }} />
-                    )}
-                    </View>
-                    {touched.lastName  && errors.lastName && (
-                      <Text style={styles.errorText}>{errors.lastName}</Text>
-                              )}
-                    <Text style={style.label}>Email adress:</Text>
-                   <View style={[style.action, touched.email && errors.email && styles.inputError]}>
-                  
-                    <Fontisto
-                      name="email"
-                      color="#420475"
-                      size={24}
-                     style={{marginLeft: 0, paddingRight: 5}}
-            />
-                  <TextInput
-                 style={style.textInput}
-                    placeholder="Enter your email address"
-                    autoCompleteType="email"
-                    keyboardType="email-address"
-                    returnKeyType="next"
-                    textContentType="emailAddress"
-                    autoCapitalize="none"
+                <AppTextInput
+                    placeholderText="saisir votre Prénom "
+                    labelTitle="Prénom "
+                    value={values.firstName}
+                    errorVisible={touched.firstName && errors.firstName}
+                    errorMessage={errors.firstName}
+                    onChangeText={handleChange("firstName")}
+                    onBlur={() => setFieldTouched("firstName")}
+                  />
+                   <AppTextInput
+                    placeholderText="saisir votre Nom  "
+                    labelTitle="Nom "
+                    value={values.lastName}
+                    errorVisible={touched.lastName && errors.lastName}
+                    errorMessage={errors.lastName}
+                    onChangeText={handleChange("lastName")}
+                    onBlur={() => setFieldTouched("lastName")}
+                  />
+                   
+                   <AppTextInput
+                    placeholderText="Saisir votre adresse e-mail"
+                    labelTitle="Adresse e-mail"
+                    leftImageSource={images.email}
                     value={values.email}
-                    onChangeText={handleChange("email")}
+                    errorVisible={touched.email && errors.email}
                     errorMessage={errors.email}
+                    onChangeText={handleChange("email")}
                     onBlur={() => setFieldTouched("email")}
-                    errorVisible={touched.email}
                   />
-                  {touched.email && errors.email && (
-                 <FontAwesome name="exclamation-circle" color="red" size={24} style={{ marginRight: 5 }} />
-                    )}
-                  </View>
-                  {touched.email && errors.email && (
-                      <Text style={styles.errorText}>Please verify the entered email address and try again!</Text>)}
-                  <Text style={style.label}>Password:</Text>
-                  <View style={[style.action, touched.password && errors.password && styles.inputError]}>
-                  <TextInput
-                   style={style.textInput}
-                    placeholder="Password"
-                    autoCompleteType="password"
-                    keyboardType="default"
-                    returnKeyType="next"
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                    secureTextEntry={true}
-                    value={values.password}
-                    onChangeText={handleChange("password")}
-                    errorMessage={errors.password}
-                    onBlur={() => setFieldTouched("password")}
-                    errorVisible={touched.password}
-                  />
-                   {touched.password && errors.password && (
-                 <FontAwesome name="exclamation-circle" color="red" size={24} style={{ marginRight: 5 }} />
-                    )}
-                  </View>
-                  {touched.firstName  && errors.firstName && (
-                      <Text style={styles.errorText}>{errors.password}</Text>
-                              )}
-                  <Text style={style.label}>Confirm Password:</Text>
-                 <View style={[style.action, touched.passwordConfirmation && errors.passwordConfirmation && styles.inputError]}>
-                  <TextInput
-                   style={style.textInput}
-                    placeholder="Confirm Password"
-                    autoCompleteType="password"
-                    keyboardType="default"
-                    returnKeyType="done"
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                    secureTextEntry={true}
-                    value={values.passwordConfirmation}
-                    onChangeText={handleChange("passwordConfirmation")}
-                    errorMessage={errors.passwordConfirmation}
-                    onBlur={() => setFieldTouched("passwordConfirmation")}
-                    errorVisible={touched.passwordConfirmation}
-                  />
-                   {touched.passwordConfirmation && errors.passwordConfirmation && (
-                 <FontAwesome name="exclamation-circle" color="red" size={24} style={{ marginRight: 5 }} />
-                    )}
-                  </View>
-                  {touched.passwordConfirmation && errors.passwordConfirmation && (
-            <Text style={styles.errorText}>{errors.passwordConfirmation}</Text>
-        )}
+                  <AppTextInput
+                  labelTitle={LocalesMessages.yourPassword}
+                  placeholderText="saisir votre mot de passe"  
+                  isForPassword={true}
+                  value={values.password}
+                  onChangeText={handleChange("password")}
+                  errorMessage={errors.password}
+                  onBlur={() => setFieldTouched("password")}
+                  errorVisible={touched.password && errors.password}
+                />
+                <AppTextInput
+                  labelTitle={LocalesMessages.confirmPassword}
+                  placeholderText="confirmer votre mot de passe"
+                  isForPassword={true}
+                  value={values.passwordConfirmation}
+                  onChangeText={handleChange("passwordConfirmation")}
+                  errorMessage={errors.password}
+                  onBlur={() => setFieldTouched("passwordConfirmation")}
+                  errorVisible={touched.passwordConfirmation && errors.passwordConfirmation}
+                />
+                
         {touched.passwordConfirmation && values.password !== values.passwordConfirmation && (
-            <Text style={styles.errorText}>Please verify the entered information and try again!</Text>
+            <Text style={styles.errorText}>Les mots de passe ne correspondent pas!</Text>
         )}
           
                   <Button
@@ -338,13 +279,13 @@ export default function RegisterScreen({ route, navigation }) {
                    
                     >
                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-                        <Text style={{ color: 'white', marginRight: 5 }}>Continue</Text>
+                        <Text style={{ color: 'white', marginRight: 5 }}>Continuer</Text>
                              <FontAwesome name="long-arrow-right" size={18} color="white" />
                               </View>
                          </Button>
                          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginTop: 10 }}>
                         <View style={{ flex: 1, height: 1, backgroundColor: 'black' }} />
-                        <Text style={{ paddingHorizontal: 5 }}>or</Text>
+                        <Text style={{ paddingHorizontal: 5 }}>ou</Text>
                         <View style={{ flex: 1, height: 1, backgroundColor: 'black' }} />
                         </View>
                         <Button
@@ -366,7 +307,7 @@ export default function RegisterScreen({ route, navigation }) {
                             source={require('../../img/google_icone.png')} 
                             style={{ width: 24, height: 24, marginRight: 5 }} 
     />
-                       <Text style={{ color: 'black', marginLeft: 5 }}>Sign up with Google</Text>
+                       <Text style={{ color: 'black', marginLeft: 5 }}>S'inscrire avec Google</Text>
                             
                               </View>
                          </Button>
@@ -390,25 +331,25 @@ export default function RegisterScreen({ route, navigation }) {
       >
         <FontAwesome name="close" size={18} color="gray" />
       </TouchableOpacity>
-      <Text style={{ marginBottom: 10, color: 'black', fontSize: 25, fontWeight: 'bold' }}>Terms and Conditions</Text>
+      <Text style={{ marginBottom: 10, color: 'black', fontSize: 20, fontWeight: 'bold' }}>Conditions Générales d'Utilisation</Text>
       <View style={{ borderBottomWidth: 1, borderBottomColor: 'gray', marginBottom: 10 }} />
       <Text style={{ marginRight: 10, color: 'black', fontWeight: 'bold' }} >
-  Please read and accept the conditions below. Thank you.
+      Veuillez lire et accepter les conditions ci-dessous. Merci.
 </Text>
 
-      <Text>In accordance with the law 09-08, you have the right to access, rectify, and object to the processing of your personal data. This processing has been authorized by the CNDP under number (in progress).</Text>
+      <Text>Conformément à la loi 09-08, vous disposez d'un droit d'accès, de rectification et d'opposition au traitement de vos données personnelles. Ce traitement a été autorisé par la CNDP sous le numéro (en cours).</Text>
       <CheckBox
-        title="I accept the Terms of Service and the Privacy Policy of InSkin."
+        title="J'accepte les Conditions d'Utilisation et la Politique de Confidentialité de InSkin."
         onPress={() => setMusic(!music)}
         isChecked={music}
       />
       <CheckBox
-        title="Remember my username."
+        title="Mémorisez mon nom d'utilisateur."
       />
       <Button
         loading={registerApi.loading}
         onPress={handleSubmit}
-        title="Sign up"
+        title="S'inscrire."
         // style={[styles.button, music ? styles.buttonChecked : styles.buttonUnchecked]}
         style={{
           marginTop: 20,
@@ -422,7 +363,7 @@ export default function RegisterScreen({ route, navigation }) {
         textStyle={styles.buttonText}
         disabled={!music}
       >
-        Sign up
+        S'inscrire
       </Button>
     </View>
   </View>
@@ -437,9 +378,9 @@ export default function RegisterScreen({ route, navigation }) {
           <View
             style={{ marginTop: 20, marginBottom: 10, flexDirection: "row" }}
           >
-            <Paragraph style={{ marginRight: 10, color: 'black' }}>Already have an account? </Paragraph>
+            <Paragraph style={{ marginRight: 10, color: 'black' }}>Vous avez déjà un compte ? </Paragraph>
             <TextLink onPress={() => navigation.navigate("Login")}>
-            Sign In
+            Connectez-vous.
             </TextLink>
           </View>
           

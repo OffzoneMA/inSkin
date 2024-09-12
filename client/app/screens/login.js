@@ -42,12 +42,18 @@ export default function LoginScreen({ navigation }) {
   const loginApi = useApi(authApi.login);
   const authContext = useContext(AuthContext);
   //const toast = useToast();
-
+  const [currentError,setCurrentError] = React.useState('');
   const loginHandler = async ({ email, password }) => {
     const result = await loginApi.request(email, password);
     console.log("j ai pas compris",result)
     if (!result.ok) {
-      //toast.show(result.data, {type: "danger"});
+      if (result.status === 400) {
+        console.log("L'email ou le mot de passe est incorrect !");
+        setCurrentError("L'email ou le mot de passe est incorrect  !")
+      } else {
+        console.log("Une erreur est survenue !");
+        setCurrentError("Une erreur est survenue !")
+      }
       console.log("n est pas comris")
       return;
     }
@@ -72,11 +78,13 @@ export default function LoginScreen({ navigation }) {
       <Page>
         <KeyboardAwareScrollView contentContainerStyle={{ flex: 1 }}>
         <View >
-             <Text style={{fontSize: 25, fontWeight: 'bold'}}>Bienvenue de nouveau,</Text> 
+             <Text style={{fontSize: 25, fontWeight: 'bold'}}>Bienvenue de nouveau</Text> 
              <Text style={{ fontSize: 18, marginVertical: 10}}>Connectez-vous pour continuer</Text>
             
           </View>
-
+          {currentError ? (
+                  <Text style={{ color: 'red', marginTop: 5 }}>{currentError}</Text>
+                ) : null}
           <Formik
             initialValues={{
               email: "",
