@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet, Text } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-
+import { images } from '../../constants'
 export default function Getstarted({ navigation }) {
   const [colorsReversed, setColorsReversed] = useState(false);
 
@@ -23,6 +23,9 @@ export default function Getstarted({ navigation }) {
     >
       <View style={styles.content}>
         <Text style={[styles.text, styles.shadow, { color: colorsReversed ? "#FB74E2" : "#FFFFFF" }]}>INSKIN</Text>
+        <View style={styles.appTitleContainer}>
+        <Image source={images.appTitle} style={styles.appTitleImage} />
+      </View>
       </View>
     </LinearGradient>
   );

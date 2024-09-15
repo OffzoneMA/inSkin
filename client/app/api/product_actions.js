@@ -37,6 +37,7 @@ const getmyproductcount= () => client.get("/products/my-products/count");
 const getfollowedproducts=()=>client.get("/products/followed-products")
 const getfavoriteproducts=()=>client.get("/products/favorite-products")
 const getnotifications=()=>client.get("/products/notifications");
+const getmycommentedproducts=()=>client.get("/products/my-commented-products");
 // GET a single product by ID
 const getProductById = async (id) => {
   try {
@@ -135,5 +136,6 @@ export default {
     getfavoriteproducts,
     addlikeToProduct,
     getnotifications,
-    getmyproductcount
+    getmyproductcount,
+    getmycommentedproducts
 };

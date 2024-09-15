@@ -2,6 +2,7 @@ import React, { useContext, useLayoutEffect,useEffect } from "react";
 import { StyleSheet, View, Image, ScrollView, SafeAreaView,FlatList, TouchableOpacity } from "react-native";
 import { useTheme, Text, Icon } from "@ui-kitten/components";
 import { LocalesMessages } from '../../constants/locales';
+//import Icon from 'react-native-vector-icons/Ionicons';
 import Page from "../../components/Page";
 import AuthContext from "../../contexts/auth";
 import authStorage from "../../utilities/authStorage";
@@ -30,8 +31,8 @@ function SearchScreen({route}) {
   const productData = useSelector(selectProductDetailData)
   const [productList, setProductList] = useState([])
   const getProfileImageApi = useApi(authApi.getProfileImage);
-   // Données utilisateur et ID utilisateur actuel
-
+  const [favoriteList, setFavoriteList1] = useState([]);
+  const [FavoriteList2, setFavoriteList2] = useState([]);
   const { userId } = route.params;
   const [isFollower, setIsFollower] = useState(false);
   const currentUserId=user._id;
@@ -49,19 +50,37 @@ function SearchScreen({route}) {
       console.error('Error fetching profile image:', error);
     }
   };
+  const getfavoriteproducts = async () => {
+    try {
+      console.log("i m here")
+      const result = await authApi.getfavori(userId._id);
+      console.log("resulte", result);
+      if (!result) {
+      
+      } else {
 
+        setFavoriteList1(result); 
+        console.log("FavoriteList1",favoriteList.length)
+        
+        
+      }
+    } catch (error) {
+      console.error("Error getting product data: ", error);
+    }
+  };
   const handleLogOut = () => {
     setTimeout(() => {
       authContext.setUser(null);
       authStorage.removeToken();
     }, 300);
   };
-
+  console.log("j arrive ici 1");
   useFocusEffect(
     React.useCallback(() => {
       if (user && user._id) {
         getProfileImage();
       }
+      getfavoriteproducts();
       if (userId.followers.includes(currentUserId)) {
         console.log("il existe ici ");
         setIsFollower(true);
@@ -131,9 +150,51 @@ console.log("isFollower",isFollower);
 
             //navigation.navigate(Route.PersonalDetailScreen)
           />
-            
-            
+          <View style={styles.navbar}>
+        <TouchableOpacity style={styles.iconContainer} >
+          <Icon name="brush" size={30}  />
+          
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.iconContainer}>
+          <Icon name="heart" size={30}  />
+          
+        </TouchableOpacity>
+      </View>
           </View>
+          {favoriteList.length === 0 && (
+          
+          <ProductListEmptyView
+            emptyMessage={LocalesMessages.youDontHaveAnyFavorites}
+            mainContainerStyle={styles.emptyViewMainContainer}
+            onPressScanProduct={() => {
+              setFavoriteList(FavoriteListData.favoriteList)
+            }}
+          />
+        
+      )}
+    <FlatList
+      data={favoriteList}
+      numColumns={2}
+      horizontal={false}
+      style={styles.body}
+      showsVerticalScrollIndicator={false}
+      renderItem={({ item, index }) => {
+        return (
+          <ProductItemView
+            key={index}
+            isFromFavoriteList={true}
+            item={item}
+            onPressItem={() => {
+              navigation.navigate(Route.FavoriteDetailScreen, {
+                listName: item.category,
+              })
+            }}
+          />
+        )
+      }}
+     
+    />
         </ScrollView>
       </SafeAreaView>
   );
@@ -267,6 +328,24 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: colors.white,
+  },
+  navbar: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginVertical: 20,
+  },
+  iconContainer: {
+    alignItems: 'center',
+  },
+  iconText: {
+    color: 'gray',
+    fontSize: 12,
+  },
+  iconTextActive: {
+    color: '#ff5a5a',
+    fontSize: 12,
+    fontWeight: 'bold',
   },
 });
 

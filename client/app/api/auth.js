@@ -87,7 +87,7 @@ const getProfileImage = (userId) => {
 };
 const getfavoriteproducts=()=>client.get("/auth/favorite-products")
 const allfavoriteproducts=()=>client.get("/auth/allfavorite-products")
-
+const getfavori1=(userId)=>client.get(`/auth/favorite-products/${userId}`)
 const favoriteproductsbycategory=(categoryName)=>client.get(`/auth/favorite-products-by-category/${categoryName}`)
 const getCategories=()=>client.get("/auth/getCategories")
 const addToFavorites = (userId, productId, category) => 
@@ -100,6 +100,17 @@ const getFavorites = async (id) => {
   try {
     console.log("iddddd",id);
     const response = await client.get(`/auth/favorites/${id}`);
+
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to fetch product by ID");
+  }
+};
+const getfavori = async (id) => {
+  try {
+    console.log("l id dde rechercheur",id);
+    const response = await client.get(`/auth/favorite-products/${id}`);
     return response.data;
   } catch (error) {
     console.error(error);
@@ -231,5 +242,6 @@ export default {
   favoriteproductsbycategory,
   allfavoriteproducts,
   getmyfollowerscount,
+  getfavori
 
 };

@@ -284,7 +284,7 @@ function ProductHome({ route }) {
       }
       console.log("Liste des IDs des utilisateurs ayant liké:", likedUserIds);
       if (!result.ok) {
-        //toast.show(result.data, { type: "danger" });
+       
       } else {
         
       }
@@ -306,7 +306,6 @@ function ProductHome({ route }) {
   useEffect(() => {
     // Check if product is not null and its productDetails property is present
     if (product && product.productDetails && product.productDetails.brand) {
-      // Call getBrandById when product is not null
       getBrandById(product.productDetails.brand)
         .then((brandData) => {
           // Handle the retrieved brand data here if needed
@@ -390,7 +389,7 @@ function ProductHome({ route }) {
     }
 
     return (
-      <View style={styles.reviewContainer}>
+      <View  key={index} style={styles.reviewContainer}>
         <View
           style={{
           flexDirection: 'row',
@@ -458,7 +457,7 @@ function ProductHome({ route }) {
         style={styles.scrollView}
         keyboardDismissMode='interactive'>
            <CustomHeaderView
-          title={LocalesMessages.countraMix}
+          title={product? product.productDetails.name: null}
           leftButtonImage={images.backButton}
           leftButtonOnPress={() => {
             navigation.goBack()
@@ -538,12 +537,10 @@ function ProductHome({ route }) {
             <TouchableOpacity
               onPress={() => {
                 if (isBookmarked) {
-                  // Si l'icône est marquée (le produit est déjà dans les favoris)
-                  handleRemoveFavorite(productId); // Appeler la fonction pour retirer des favoris
+                  handleRemoveFavorite(productId); 
                 } else {
-                  // Si l'icône n'est pas marquée (le produit n'est pas encore dans les favoris)
-                  setProductId(productId); // Mettre à jour l'état avec l'ID du produit
-                  setShowAddEditCategoryModal(true); // Afficher le modal pour ajouter une catégorie
+                  setProductId(productId); 
+                  setShowAddEditCategoryModal(true); 
                 }
               }}>
               <Image
@@ -572,11 +569,16 @@ function ProductHome({ route }) {
             style={styles.productName}
             size={'font18px'}
           />
-          <AppText
-            text="wiahdhdhcvdieryftddfdy hdfudi0thr7rtgcgdrstsysu"
-            style={[styles.productSubDesc, { marginTop: 8 }]}
-            size={'font14px'}
-          />
+           {product ? (
+            <AppText
+              text={product.productDetails.description}
+              style={[styles.productSubDesc, { marginTop: 8 }]}
+              size={'font14px'}
+            />
+            
+            ) : (
+              <SubHeading>...</SubHeading>
+            )}
         </View>
         <View
           style={[

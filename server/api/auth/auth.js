@@ -617,6 +617,76 @@ router.get(
     }
   })
 );
+router.get(
+ "/favorite-products/:userId",
+  auth,
+  asyncMiddleware(async (req, res) => {
+    try {
+      const userId = req.params.userId; 
+      console.log("userId", userId);
+
+      const favoriteProducts = await User.aggregate([
+        {
+          $match: { _id: mongoose.Types.ObjectId(userId) }
+        },
+        {
+          $unwind: "$favorites" // Décompose le tableau des favoris en documents distincts
+        },
+        {
+          $lookup: {
+            from: "products", // Nom de la collection des produits
+            localField: "favorites.productId",
+            foreignField: "_id",
+            as: "favoriteProduct"
+          }
+        },
+        {
+          $unwind: "$favoriteProduct" // Décompose le tableau des produits favoris en documents distincts
+        },
+        {
+          $project: {
+            _id: 0,
+            productId: "$favoriteProduct._id",
+            images: "$favoriteProduct.images",
+            category: "$favorites.category",
+            createdAt: "$favoriteProduct.createdAt" // Assurez-vous que vous avez le champ createdAt
+          }
+        },
+        {
+          $sort: {
+            category: 1, // Trier par catégorie pour le regroupement
+            createdAt: -1 // Trier par date de création pour obtenir le produit le plus récent
+          }
+        },
+        {
+          $group: {
+            _id: "$category", // Grouper par catégorie
+            product: {
+              $first: { // Obtenir le premier produit dans chaque groupe, c'est-à-dire le plus récent
+                productId: "$productId",
+                images: "$images",
+              }
+            }
+          }
+        },
+        {
+          $project: {
+            _id: 0,
+            category: "$_id", // Renommer _id en category
+            productId: "$product.productId",
+            images: "$product.images"
+          }
+        }
+      ]);
+
+      console.log("favoriteProducts", favoriteProducts);
+      res.json(favoriteProducts);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
 
 router.get(
   "/allfavorite-products",
@@ -674,9 +744,11 @@ router.get(
   asyncMiddleware(async (req, res) => {
     try {
       const userId = req.user._id;
+      console.log("userId", userId);
       const { categoryName } = req.params; 
-
-      // Étape 1: Trouver tous les produits favoris de l'utilisateur
+      console.log("categoryName",categoryName);
+      const regex = new RegExp(categoryName, 'i');
+     console.log("regex",  regex );
       const favoriteProducts = await User.aggregate([
         {
           $match: { _id: mongoose.Types.ObjectId(userId) }
@@ -697,7 +769,7 @@ router.get(
           $unwind: "$favoriteProduct" // Décompose le tableau des produits favoris
         },
         {
-          $match: { "favorites.category": categoryName } // Filtre par nom de catégorie
+          $match: { "favorites.category": { $regex: regex } } // Filtre par nom de catégorie
         },
         {
           $project: {

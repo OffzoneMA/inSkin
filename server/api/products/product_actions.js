@@ -762,6 +762,80 @@ router.get(
     }
   })
 );
+router.get(
+  "/my-commented-products",
+  auth,
+  asyncMiddleware(async (req, res) => {
+    try {
+      const userId = req.user._id; // ID de l'utilisateur connecté
+
+      // Agrégation pour récupérer les produits commentés par l'utilisateur connecté
+      const commentedProducts = await Product.aggregate([
+        {
+          $match: {
+            "comments.userId": userId, // Filtrer les produits où l'utilisateur a laissé un commentaire
+          },
+        },
+        {
+          $lookup: {
+            from: "users", // Collection des utilisateurs
+            localField: "userId",
+            foreignField: "_id",
+            as: "user", // Associer les informations utilisateur
+          },
+        },
+        {
+          $unwind: "$user", // On garde un seul utilisateur
+        },
+        {
+          $project: {
+            productId: "$_id",
+            productName: "$productDetails.name",
+            productBrand: "$productDetails.brand",
+            productDescription: "$productDetails.description",
+            images: "$images",
+            createdAt: "$createdAt",
+            userId: "$user._id",
+            userName: "$user.userName",
+            comments: {
+              $filter: {
+                input: "$comments", // Filtrer les commentaires
+                as: "comment",
+                cond: { $eq: ["$$comment.userId", userId] } // Garder uniquement les commentaires de l'utilisateur connecté
+              }
+            },
+          },
+        },
+        {
+          $unwind: "$comments", // Décomposer les commentaires restants (normalement un seul)
+        },
+        {
+          $project: {
+            productId: 1,
+            productName: 1,
+            productBrand: 1,
+            productDescription: 1,
+            images: 1,
+            createdAt: 1,
+            userId: 1,
+            userName: 1,
+            commentText: "$comments.text", // Commentaire de l'utilisateur connecté
+            comment: "$comments.review", // Review de l'utilisateur connecté
+          },
+        },
+      ]);
+      console.log("commentedProducts", commentedProducts);
+      if (!commentedProducts || commentedProducts.length === 0) {
+        return res.status(404).send("Aucun produit commenté trouvé pour cet utilisateur.");
+      }
+     
+      res.json(commentedProducts); // Retourner les produits commentés avec les détails
+    } catch (error) {
+      console.error("Erreur lors de la récupération des produits commentés:", error);
+      res.status(500).json({ error: "Erreur interne du serveur." });
+    }
+  })
+);
 
 router.get("/notifications",auth, async (req, res) => {
   try {
@@ -780,7 +854,23 @@ router.get("/notifications",auth, async (req, res) => {
     res.status(500).send("Erreur serveur.");
   }
 });
+router.get("/my-commented-products1", auth, async (req, res) => {
+  try {
+    const userId = req.user._id; // ID de l'utilisateur connecté récupéré via le middleware auth
 
+    // Chercher les produits où l'utilisateur connecté a laissé un commentaire
+    const products = await Product.find({ "comments.userId": userId });
+    console.log("my-commented-products", products);
+    if (!products || products.length === 0) {
+      return res.status(404).send("Aucun produit commenté trouvé pour cet utilisateur.");
+    }
+   
+    res.status(200).send(products);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Erreur lors de la récupération des produits commentés.");
+  }
+});
 
 // GET products by the connected user
 router.get(

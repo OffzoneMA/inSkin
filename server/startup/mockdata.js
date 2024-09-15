@@ -30,9 +30,7 @@ async function createUsers() {
         const user2Password = faker.internet.password();
         unhashedPasswords.push(user1Password, user2Password);
 
-        const user1ProfileImage = await getImageBufferFromURL(await faker.image.avatar());
-        const user2ProfileImage = await getImageBufferFromURL(await faker.image.avatar());
-
+     
         const users = await User.create([
             {
                 firstName: faker.person.firstName(),
@@ -40,7 +38,7 @@ async function createUsers() {
                 userName: faker.internet.userName(),
                 email: faker.internet.email(),
                 password: await bcrypt.hash(user1Password, 10),
-                profileImage: { data: user1ProfileImage, contentType: "image/jpg" }
+               
             },
             {
                 firstName: faker.person.firstName(),
@@ -48,7 +46,7 @@ async function createUsers() {
                 userName: faker.internet.userName(),
                 email: faker.internet.email(),
                 password: await bcrypt.hash(user2Password, 10),
-                profileImage: { data: user2ProfileImage, contentType: "image/jpg" }
+               
             }
         ]);
 
@@ -64,7 +62,7 @@ async function createBrands() {
     const imageBuffer1 = Buffer.from(imageData1);
     const contentType1 = imageFilePath1.split('/').pop().split('.').pop();
 
-    const imageFilePath2 = '../img/nivea.jpg';
+    const imageFilePath2 = '../img/countraMix.png';
     const imageData2 = await fs.readFile(resolve(__dirname, imageFilePath2));
     const imageBuffer2 = Buffer.from(imageData2);
     const contentType2 = imageFilePath2.split('/').pop().split('.').pop();
@@ -74,7 +72,7 @@ async function createBrands() {
     if (brandsCount === 0) {
         const brandPromises = [
             Brand.create({ name: "La Roche Posay", image: { data: imageBuffer1, contentType: contentType1 } }),
-            Brand.create({ name: "Nivea", image: { data: imageBuffer2, contentType: contentType2 }  })
+            Brand.create({ name: "countra Mix", image: { data: imageBuffer2, contentType: contentType2 }  })
         ];
 
         return Promise.all(brandPromises);
@@ -83,16 +81,15 @@ async function createBrands() {
 }
 
 async function createProducts(users, brands) {
-    const imageFilePath1 = '../img/nivea-men-creme-front.jpg';
+    const imageFilePath1 = '../img/blemish.jpeg';
     const imageData1 = await fs.readFile(resolve(__dirname, imageFilePath1));
     const imageBuffer1 = Buffer.from(imageData1);
     const contentType1 = imageFilePath1.split('/').pop().split('.').pop();
 
-    const imageFilePath2 = '../img/nivea-men-creme-barcode.png';
+    const imageFilePath2 = '../img/productImage.png';
     const imageData2 = await fs.readFile(resolve(__dirname, imageFilePath2));
     const imageBuffer2 = Buffer.from(imageData2);
     const contentType2 = imageFilePath2.split('/').pop().split('.').pop();
-
     // Create products if the collection is empty
     const productsCount = await Product.countDocuments();
     if (productsCount === 0) {
@@ -101,28 +98,35 @@ async function createProducts(users, brands) {
                 barcode: "30070349",
                 userId: users[0]._id,
                 productDetails: {
-                    name: "nutritic lip balm",
+                    name: "Effaclar Duo",
                     brand: brands[0]._id,
+                    description:"La Roche-Posay Effaclar Duo Double Action Acne Spot Traitement Crème avec Benzoyl Peroxyde Acné Traitement pour l'acné et les points noirs, Léger Sheerness, Sûr Pour Peau Sensible ",
                 },
+               
                 comments: [
                     { userId: users[0]._id, text: "Awesome !", review: 5 },
                     { userId: users[1]._id, text: "Not bad", review: 3 },
+                ],
+                images: [
+                    { data: imageBuffer1, contentType: contentType1 }
+                   
                 ],
             },
             {
                 barcode: "4005900115775",
                 userId: users[1]._id,
                 productDetails: {
-                    name: "nivea men creme",
+                    name: "countra mix",
                     brand: brands[1]._id,
+                    description:"Countra Mix peut être utilisé comme agent émulsifiant, humectant et conditionneur dans les soins de la peau et des cheveux. Countra Mix est d'origine végétale et peut être utilisé dans les crèmes, lotions, nettoyants pour le visage et produits de bain tels que les beurres de bain et les gommages. La cire d'abeille blanche est une forme chimiquement blanchie de la cire jaune et est utilisée dans des applications similaires : par exemple, pour augmenter la consistance des crèmes et des pommades, et pour stabiliser les émulsions eau-dans-huile."
                 },
                 comments: [
                     { userId: users[1]._id, text: "Average !", review: 2 },
                     { userId: users[0]._id, text: "Pretty Good", review: 3.5 },
                 ],
                 images: [
-                    { data: imageBuffer1, contentType: contentType1 },
                     { data: imageBuffer2, contentType: contentType2 },
+                    
                 ],
             }
             // Add more products as needed

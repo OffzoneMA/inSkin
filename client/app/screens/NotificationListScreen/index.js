@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect, useLayoutEffect } from "react";
-import { FlatList, SafeAreaView, View } from 'react-native'
+import { FlatList, SafeAreaView, View ,Text,} from 'react-native'
 import styles from './styles'
 import CustomHeaderView from '../../components/CustomHeaderView'
 import { images } from '../../constants'
@@ -27,7 +27,8 @@ const NotificationListScreen = () => {
   useFocusEffect(
     React.useCallback(() => {
       getnotification();
-      //setIsRefreshing(true); 
+      console.log("notificationliste.length",notificationliste.length)
+      console.log("notificationliste.length",notificationliste)
     }, [])
   );
   return (
@@ -49,12 +50,19 @@ const NotificationListScreen = () => {
           rightButtonOnPress={() => {}}
         />
       </View>
-      <FlatList
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      {notificationliste.length == 28 ? (
+        <Text>Aucune notification trouvée.</Text>
+      ) : (
+        <FlatList
         data={notificationliste}
         renderItem={({ item, index }) => {
           return <NotificationListView item={item} />
         }}
-      />
+      /> 
+      )}
+    </View>
+  
     </SafeAreaView>
   )
 }
