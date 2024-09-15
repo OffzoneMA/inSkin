@@ -358,11 +358,11 @@ function ProfileEdit1({ navigation }) {
               </View>
               <View style={styles.followerPostContainer}>
                 <TouchableOpacity style={styles.followersContainerButton}>
-                  <Text style={styles.followersNumber}>5</Text>
+                  <Text style={styles.followersNumber}>0</Text>
                   <Text style={[styles.profileName, { fontSize: 13, fontWeight: 'normal' }]}>{LocalesMessages.followers}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.followersContainerButton}>
-                  <Text style={styles.followersNumber}>2</Text>
+                  <Text style={styles.followersNumber}>0</Text>
                   <Text style={[styles.profileName, { fontSize: 13, fontWeight: 'normal' }]}>{LocalesMessages.posts}</Text>
                 </TouchableOpacity>
               </View>

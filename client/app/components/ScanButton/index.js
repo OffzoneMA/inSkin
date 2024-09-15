@@ -8,7 +8,7 @@ import { Route } from '../../constants/constants'
 
 const ScanButton = ({ onPressButton }) => {
   const currentScreen = useSelector(selectCurrentScreen)
-
+  console.log('Current Screen:', currentScreen);
   const screensToHideButton = [
     Route.FeedDetailScreen,
     Route.PersonalDetailScreen,

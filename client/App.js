@@ -55,6 +55,7 @@ export default function App() {
 
   const restoreUser = async () => {
     const user = await authStorage.getUser();
+    console.log("user",user);
     if (user) setUser(user);
   };
 
@@ -62,7 +63,6 @@ export default function App() {
     const value = await AsyncStorage.getItem("hasOnboarded");
     if (value) setInitialRoute("Auth");
   };
-
   const startUp = async () => {
     await SplashScreen.preventAutoHideAsync();
     await restoreUser();

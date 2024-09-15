@@ -71,9 +71,8 @@ return sum;
 
   const favoriteproductsbycategory = async (listName1) => {
     try {
-      
       const result = await authApi.favoriteproductsbycategory(listName1);
-      console.log("resulte",result)
+      console.log("favoriteproductsbycategory",result)
       const sortedProducts = result.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       setProductList(sortedProducts);
     } catch (error) {

@@ -8,6 +8,7 @@ import authStorage from "../../utilities/authStorage";
 import Button from "../../components/Button";
 import { useState } from "react";
 import authApi from "../../api/auth";
+import productActionsApi from "../../api/product_actions";
 import useApi from "../../hooks/useApi";
 import { encode } from 'base-64';
 import ProductItemView from '../../components/ProductItemView'
@@ -41,7 +42,21 @@ function ProfileHome({ navigation }) {
       console.error('Error fetching profile image:', error);
     }
   };
-
+  const getmycommentedproducts = async () => {
+    try {
+      const result = await productActionsApi.getmycommentedproducts();
+      setProductList(result.data)
+      console.log("getmycommentedproducts" ,result)
+      if (!result.ok) {
+      
+      } else {
+       
+        
+      }
+    } catch (error) {
+      console.error("Error getting product data: ", error);
+    }
+  };
   const handleLogOut = () => {
     setTimeout(() => {
       authContext.setUser(null);
@@ -54,6 +69,7 @@ function ProfileHome({ navigation }) {
       if (user && user._id) {
         getProfileImage();
       }
+      getmycommentedproducts();
     }, [])
   );
 
@@ -123,7 +139,12 @@ function ProfileHome({ navigation }) {
             contentContainerStyle={styles.flatListContainer}
             showsVerticalScrollIndicator={false}
             renderItem={({ item, index }) => {
-              return <ProductItemView index={index} item={item} onPressOption={() => {}} />
+              return <ProductItemView index={index} 
+              isFromFavoriteList={false}
+              item={item}
+              averageRating={item.comment}
+              ratingsCount={item.comment}
+                />
             }}
             ListEmptyComponent={() => {
               return (

@@ -11,7 +11,7 @@ const ChatEmptyView = () => {
       <AppText
         size='font16px'
         color={colors.subTitleGray}
-        localizedText={LocalesMessages.youHaveNoMessages}
+        text={LocalesMessages.youHaveNoMessages}
       />
     </View>
   )

@@ -93,12 +93,11 @@ function DiscoverHome({ navigation }) {
   const getAllComments = async () => {
     try {
       const result = await productActionsApi.getAllProducts();
-      console.log("user with product",result);
+      
       if (!result.ok) {
         //toast.show(result.data, { type: "danger" });
       } else {
-        //toast.show(result.data.message, { type: "success" });
-        // Sort the comments array by 'createdAt' property in descending order
+       
         const sortedComments = result.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         setComments(sortedComments);
       }
@@ -127,7 +126,7 @@ function DiscoverHome({ navigation }) {
         // Trier les produits par date de création
       const sortedProducts = result.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       setFollowedProducts(sortedProducts); 
-      console.log("sortProduct", sortedProducts)
+      
       }
     } catch (error) {
       console.error("Error fetching data: ", error);
@@ -213,7 +212,6 @@ function DiscoverHome({ navigation }) {
   
   useFocusEffect(
     React.useCallback(() => {
-      onRefresh();
       getfavoriteproducts();
       getfollowedproducts();
       setIsRefreshing(true); 
@@ -238,7 +236,6 @@ function DiscoverHome({ navigation }) {
         _id: result._id,
         barcode: result.barcode,
         productDetails: result.productDetails,
-        // Filtrage des images si elles sont volumineuses
         images: result.images ? result.images.map(img => ({ _id: img._id, contentType: img.contentType })) : [],
       });
       navigation.navigate('Product', { productId: result._id });
@@ -256,7 +253,6 @@ function DiscoverHome({ navigation }) {
     try {
       console.log(email)
       const response = await authApi.followUser(email); 
-      console.log("User followed successfully:", response);
       onRefresh();
       setIsFollowingAccounts(true);
       const updatedComments = comments.map(comment => {

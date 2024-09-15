@@ -29,7 +29,6 @@ const SearchUser = ({ navigation }) => {
   };
   const onPressUser = (userId) => {
     navigation.navigate('SearchScreen', { userId });
-    // Logique pour récupérer les informations de l'utilisateur
     console.log('User ID:', userId);
   
   };
@@ -38,8 +37,6 @@ const SearchUser = ({ navigation }) => {
    
     let imageUrl = null;
     if (item.profileImage && item.profileImage.data && item.profileImage.data.data) {
-     
-      // Convertir les données binaires en base64
       const imageData = item.profileImage.data.data;
       const base64ImageData = imageData.map(byte => String.fromCharCode(byte)).join('');
         imageUrl = 'data:' + item.profileImage.contentType + ';base64,' + encode(base64ImageData);

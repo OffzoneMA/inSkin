@@ -25,9 +25,10 @@ const SupportScreen = () => {
   const flatListRef = useRef()
   useScreenTracking(navigation, Route.SupportScreen)
   const onPressSendButton = () => {
+    const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     if (messageText.length > 0) {
       dispatch(
-        updateChatData([{ isSender: true, message: messageText, sentTime: '01:23' }, ...chatData]),
+        updateChatData([{ isSender: true, message: messageText, sentTime: currentTime }, ...chatData]),
       )
       setMessageText('')
       flatListRef.current.scrollToIndex({
