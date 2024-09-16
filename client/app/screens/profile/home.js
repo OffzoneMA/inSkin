@@ -46,6 +46,7 @@ function ProfileHome({ navigation }) {
     try {
       const result = await productActionsApi.getmycommentedproducts();
       setProductList(result.data)
+      console.log("productList", productList.length)
       console.log("getmycommentedproducts" ,result)
       if (!result.ok) {
       
@@ -130,7 +131,17 @@ function ProfileHome({ navigation }) {
             }}
             //navigation.navigate(Route.PersonalDetailScreen)
           />
-            
+             {productList.length === 0 && (
+            <ProductListEmptyView
+            fromrecherche={true}
+              emptyMessage={"Ce client n'a aucun produit favori."} // Message à afficher
+              mainContainerStyle={styles.emptyViewMainContainer}
+              onPressScanProduct={() => {
+                // Ajoute des produits fictifs pour simuler une liste remplie
+                setFavoriteList(FavoriteListData.favoriteList);
+              }}
+            />
+          )}
             <FlatList
             data={productList}
             scrollEnabled={false}
@@ -146,16 +157,7 @@ function ProfileHome({ navigation }) {
               ratingsCount={item.comment}
                 />
             }}
-            ListEmptyComponent={() => {
-              return (
-                <ProductListEmptyView
-                  emptyMessage={LocalesMessages.youHaveToCommentOrRateProduct}
-                  onPressScanProduct={() => {
-                    setProductList(productData)
-                  }}
-                />
-              )
-            }}
+            
           />
           </View>
         </ScrollView>

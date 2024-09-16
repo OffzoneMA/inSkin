@@ -12,6 +12,7 @@ import authApi from "../../api/auth";
 import useApi from "../../hooks/useApi";
 import { encode } from 'base-64';
 import ProductItemView from '../../components/ProductItemView'
+import TopIcons from "../../components/TopIcons";
 import ProductListEmptyView from '../../components/ProductListEmptyView'
 import SearchFollowerView from './SearrchProfile';
 import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEffect from React Navigation
@@ -35,6 +36,7 @@ function SearchScreen({route}) {
   const [FavoriteList2, setFavoriteList2] = useState([]);
   const { userId } = route.params;
   const [isFollower, setIsFollower] = useState(false);
+  const [selectedIcon, setSelectedIcon] = useState('grid'); // Par défaut sur 'grid'
   const currentUserId=user._id;
   console.log("j arrive ici", userId);
   const getProfileImage = async () => {
@@ -150,57 +152,66 @@ console.log("isFollower",isFollower);
 
             //navigation.navigate(Route.PersonalDetailScreen)
           />
-          <View style={styles.navbar}>
-        <TouchableOpacity style={styles.iconContainer} >
-          <Icon name="brush" size={30}  />
-          
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.iconContainer}>
-          <Icon name="heart" size={30}  />
-          
-        </TouchableOpacity>
-      </View>
+          <View>
+          <TopIcons selectedIcon={selectedIcon} onIconSelect={setSelectedIcon} />
+      {/* Autres éléments ici */}
+       </View>
           </View>
+          {selectedIcon === 'grid' ? (
+        <>
+          {/* Si la liste est vide, afficher la vue vide */}
           {favoriteList.length === 0 && (
-          
-          <ProductListEmptyView
-            emptyMessage={LocalesMessages.youDontHaveAnyFavorites}
-            mainContainerStyle={styles.emptyViewMainContainer}
-            onPressScanProduct={() => {
-              setFavoriteList(FavoriteListData.favoriteList)
+            <ProductListEmptyView
+            fromrecherche={true}
+              emptyMessage={"Ce client n'a aucun produit favori."} // Message à afficher
+              mainContainerStyle={styles.emptyViewMainContainer}
+              onPressScanProduct={() => {
+                // Ajoute des produits fictifs pour simuler une liste remplie
+                setFavoriteList(FavoriteListData.favoriteList);
+              }}
+            />
+          )}
+
+          {/* Affichage des produits favoris en grille si la liste n'est pas vide */}
+          <FlatList
+            data={favoriteList}
+            numColumns={2} // Grille avec 2 colonnes
+            horizontal={false}
+            style={styles.body}
+            showsVerticalScrollIndicator={false}
+            renderItem={({ item, index }) => {
+              return (
+                <ProductItemView
+                  key={index}
+                  isFromFavoriteList={true}
+                  item={item}
+                  onPressItem={() => {
+                    navigation.navigate('FavoriteDetailScreen', {
+                      listName: item.category,
+                    });
+                  }}
+                />
+              );
             }}
           />
-        
+        </>
+      ) : (
+        // Affichage alternatif si l'icône "nature" est sélectionnée
+        <Text style={styles.text}>Affichage en nature (arbre) sélectionné</Text>
       )}
-    <FlatList
-      data={favoriteList}
-      numColumns={2}
-      horizontal={false}
-      style={styles.body}
-      showsVerticalScrollIndicator={false}
-      renderItem={({ item, index }) => {
-        return (
-          <ProductItemView
-            key={index}
-            isFromFavoriteList={true}
-            item={item}
-            onPressItem={() => {
-              navigation.navigate(Route.FavoriteDetailScreen, {
-                listName: item.category,
-              })
-            }}
-          />
-        )
-      }}
-     
-    />
+         
         </ScrollView>
       </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  text: {
+    fontSize: 18,
+    textAlign: 'center',
+    marginVertical: 20,
+    color: "black"
+  },
   profileContainer: {
     flexDirection: 'row',
     marginBottom: 5,
