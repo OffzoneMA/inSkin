@@ -52,100 +52,70 @@ export default function Cam({ flash, zoom }) {
 
   return (
     <View style={styles.container}>
-      {/* <Camera
-        style={styles.camera}
-        flashMode={flash}
-        zoom={zoom}
-        barCodeScannerSettings={{
-          barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr],
-        }}
-        onBarCodeScanned={scanned ? undefined : handleBarcodeScanned }
-      >
-      </Camera> */}
-       <BarCodeScanner
-        onBarCodeScanned={scanned ? undefined : handleBarcodeScanned}
-        style={StyleSheet.absoluteFillObject}
-      />
-      {/* <View style={styles.container}>
-      <CameraView style={styles.camera}
-        flashMode={flash}
-        zoom={zoom}
-        barCodeScannerSettings={{
-          barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr],
-        }}
-        onBarCodeScanned={scanned ? undefined : handleBarcodeScanned } >
-          <View/>
-      </CameraView>
-    </View> */}
-      
+   
+        <BarCodeScanner
+          onBarCodeScanned={scanned ? undefined : handleBarcodeScanned}
+          style={StyleSheet.absoluteFillObject}
+        />
+       
+    <View style={styles.textContainer}>
+      <Text style={styles.boldText}>
+        Scanner le code-barres
+      </Text>
+      <Text style={styles.regularText}>
+        {"\n"}Placez l'article correctement et prenez une photo.
+      </Text>
+      <Text style={styles.regularText}>
+        {"\n"}L'intégralité du code-barres doit être dans le cadre.
+      </Text>
     </View>
-  );
+  </View>
+);
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    aspectRatio: 3 / 4,
-  },
-  camera: {
-    flex: 1,
-  },
-  text: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "white",
-  },
-  permissionContainer: {
-    flex: 1,
-    borderColor: "red",
-    padding: 20,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  permissionDialogBox: {
-    padding: 10,
-    backgroundColor: "#CED0FF",
-    borderRadius: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 10, height: 10 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 4,
-    gap: 40,
-    width: "100%",
-  },
-  permissionBtn: {
-  },
-  customPopup: {
-    position: "absolute",
-    top: "10%",
-    left: "10%",
-    right: "10%",
-    backgroundColor: "white",
-    padding: 20,
-    borderRadius: 10,
-    alignItems: "center",
-    zIndex: 1, // Make sure the pop-up is above the camera view
-  },
-  modalBackground: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background
+container: {
+  flex: 1,
+  justifyContent: "center",
+  aspectRatio: 3 / 4,
+},
+camera: {
+  flex: 1,
+},
+
+textContainer: {
+  position: 'absolute',
+  bottom: 130,
+  left: 10,
+  right: 130,
+  padding: 10,
+  backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
+  borderRadius: 10,
+  alignItems: 'center',
+},
+boldText: {
+  fontSize: 18,
+  fontWeight: 'bold',
+  color: 'white',
+  textAlign: 'center',
+},
+regularText: {
+  fontSize: 16,
+  color: 'white',
+  textAlign: 'center',
+},
+modalBackground: {
+  flex: 1,
+  justifyContent: "center",
+  alignItems: "center",
+  backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background
 },
 modalContainer: {
-    borderRadius: 10,
-    padding: 20,
-    width: "80%", // Adjust the width as needed
-    alignItems: "center",
+  borderRadius: 10,
+  padding: 20,
+  width: "80%", // Adjust the width as needed
+  alignItems: "center",
 },
-buttonContainer: {
-    flexDirection: "row",
-    marginTop: 10,
-},
-button: {
-    flex: 1,
-    marginHorizontal: 5,
+permissionBtn: {
 },
 });

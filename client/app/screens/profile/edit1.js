@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { StyleSheet, View, Image, ScrollView, TouchableOpacity ,Alert} from "react-native";
+import { StyleSheet, View, Image,SafeAreaView, ScrollView, TouchableOpacity ,Alert} from "react-native";
 import { useTheme, Text, Icon } from "@ui-kitten/components";
 import AuthContext from "../../contexts/auth";
 import authStorage from "../../utilities/authStorage";
@@ -15,7 +15,7 @@ import useApi from "../../hooks/useApi";
 import ProfileOptionView from '../../components/ProfileOptionView';
 import { LocalesMessages } from '../../constants/locales'
 import { encode } from 'base-64';
-
+import AppText from '../../components/AppText';
 import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEffect from React Navigation
 
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -321,11 +321,21 @@ function ProfileEdit1({ navigation }) {
 
 
   return (
-    <Page>
+    <SafeAreaView style={styles.safeArea}>
+     <KeyboardAwareScrollView
+        contentContainerStyle={styles.scrollView}
+        showsVerticalScrollIndicator={false}>
       <View style={styles.mainContainer}>
+      <AppText
+            text={LocalesMessages.profile}
+            size='font20px'
+            fontFamily='semiBold'
+            color={colors.lightBlack}
+          />
+
       <View style={styles.profileContainer}>
         <View style={[styles.profilePictureContainer, { borderColor: theme["color-primary-default"] }]}>
-          <View style={[styles.profileIconWrapper, { overflow: 'hidden', backgroundColor: theme["background-basic-color-1"] }]}>
+          <View style={[styles.profileIconWrapper, { backgroundColor: theme["background-basic-color-1"] }]}>
             {selectedImageUri ? ( // Step 3: Conditionally render selected image or default icon
               <Image 
                 source={{ uri: selectedImageUri }} /* style={styles.profilePicture} */ 
@@ -345,7 +355,6 @@ function ProfileEdit1({ navigation }) {
             onPress={modifyProfileImage}
             style={[styles.actionButtonIcon, { borderColor: theme["background-basic-color-2"], borderWidth: 3, borderRadius: 5, bottom: -10, right: -15, position: "absolute", margin: 5, padding: 8, borderRadius: 100,width: 40, height: 40, backgroundColor: theme["background-basic-color-1"] }]}>
               <Icon name="download-outline" fill={theme["color-primary-default"]} style={styles.actionButtonIcon} />
-              
           </TouchableOpacity>
         </View>
         </View>
@@ -386,14 +395,26 @@ function ProfileEdit1({ navigation }) {
               )
             })}
          </View>
-    </Page>
+         </KeyboardAwareScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: colors.white,
+  },
+  scrollView: {
+    flexGrow: 1
+  },
+  scrollViewContainer: {
+    flexGrow: 1,
+    paddingBottom: 30
+  },
   profileContainer: {
-    alignItems: "center",
-    marginBottom: 1,
+    marginTop: 26,
+    alignItems: 'center',
   },
   followerPostContainer: {
     flexDirection: 'row',
@@ -441,10 +462,12 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   profileIconWrapper: {
-    borderRadius: 98,
+    borderRadius: 100,
     flex: 1,
+    
   },
   profilePicture: {
+    borderRadius: 100,
   },
   profileName: {
     fontSize: 18,

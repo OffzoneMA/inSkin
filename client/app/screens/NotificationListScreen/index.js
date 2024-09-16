@@ -51,7 +51,7 @@ const NotificationListScreen = () => {
         />
       </View>
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      {notificationliste.length == 28 ? (
+      {notificationliste.length == 0 ? (
         <Text>Aucune notification trouvée.</Text>
       ) : (
         <FlatList

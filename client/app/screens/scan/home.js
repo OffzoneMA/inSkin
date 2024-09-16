@@ -9,11 +9,11 @@ import {
   Ionicons,
   MaterialIcons,
 } from "@expo/vector-icons";
-
+import CustomHeaderView from '../../components/CustomHeaderView';
 import Slider from "@react-native-community/slider";
 import AlertBox from "../../components/AlertBox";
 import Cam from "../../components/Camera";
-
+import { colors, images } from '../../constants';
 import productActionsApi from "../../api/product_actions";
 
 import AddProductModal from '../../components/AddProductModal'; // Import CustomModal component
@@ -120,6 +120,22 @@ export default function Home({ navigation }) {
 
   return (
     <View style={styles.container}>
+    <CustomHeaderView
+          title="Scanner le produit"
+          isFromNotificationHeader={false}
+          rightImageStyle={{
+            height: 50,
+            width: 50,
+            borderRadius: 25,
+            marginRight: 10,
+            resizeMode: 'contain',
+          }}
+          leftButtonImage={images.backButton}
+          leftButtonOnPress={() => {
+            navigation.goBack()
+          }}
+          rightButtonOnPress={() => {}}
+        />
       {alertBox && <AlertBox message={alertBox} />}
 
       {isFocus && <Cam flash={flashlightOn ? 2 : 0} zoom={value} />}
@@ -176,7 +192,7 @@ export default function Home({ navigation }) {
         isVisible={isCustomPopupVisible}
         onClose={closeCustomPopup}
         onAddProduct={() => 
-          navigation.navigate("AddProduct", {barcode: qrcode.data})
+          navigation.navigate("PostHome", {barcode: qrcode.data})
         }
       />
     </View>

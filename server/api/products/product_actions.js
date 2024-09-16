@@ -825,10 +825,6 @@ router.get(
         },
       ]);
       console.log("commentedProducts", commentedProducts);
-      if (!commentedProducts || commentedProducts.length === 0) {
-        return res.status(404).send("Aucun produit commenté trouvé pour cet utilisateur.");
-      }
-     
       res.json(commentedProducts); // Retourner les produits commentés avec les détails
     } catch (error) {
       console.error("Erreur lors de la récupération des produits commentés:", error);
@@ -861,10 +857,6 @@ router.get("/my-commented-products1", auth, async (req, res) => {
     // Chercher les produits où l'utilisateur connecté a laissé un commentaire
     const products = await Product.find({ "comments.userId": userId });
     console.log("my-commented-products", products);
-    if (!products || products.length === 0) {
-      return res.status(404).send("Aucun produit commenté trouvé pour cet utilisateur.");
-    }
-   
     res.status(200).send(products);
   } catch (error) {
     console.error(error);
